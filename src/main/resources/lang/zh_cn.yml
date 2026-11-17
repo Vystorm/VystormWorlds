@@ -1,0 +1,513 @@
+template-exists: "<yellow>此模板已存在。可以关闭或开放它，而不替换已保存的世界。"
+template-saved: "<yellow>已保存访问模板 {template}。"
+template-missing: "<yellow>此模板不存在或已关闭。"
+template-opened: "<yellow>模板 {template} 已开放。"
+template-closed: "<yellow>模板 {template} 已关闭；已保存的世界会保留。"
+template-usage: "<yellow>/worlds template create 名称 flat|island 秒数 locked|kit | list | close 名称 | open 名称"
+template-none: "<yellow>还没有参观模板。创建：/worlds template create NAME flat|island SECONDS locked|kit"
+template-failed: "<yellow>模板操作失败。现有数据已保留，请检查服务器日志。"
+template-busy: "<yellow>请先结束当前访问或完成物品栏恢复。"
+template-preparing: "<yellow>正在准备访问 {template}…"
+template-entry-failed: "<yellow>访问被拒绝。原始状态已保留。请离开载具，并在待处理的恢复完成后重试。"
+template-arrived: "<yellow>欢迎来到 {template}：限时 {seconds}秒。使用 /worlds leave 返回并恢复原始物品栏。"
+template-not-visiting: "<yellow>你当前没有访问 Worlds 模板。"
+template-exit-pending: "<yellow>返回仍在等待中。已保存的物品栏会保留。"
+template-timeout: "<yellow>访问时间已到。正在返回原来的位置。"
+template-info: "<yellow>{template} — {terrain}，{seconds}秒，{inventory}，{state}"
+template-terrain-flat: "平坦地形"
+template-terrain-island: "岛屿"
+template-inventory-locked: "锁定的空物品栏"
+template-inventory-kit: "临时探索装备"
+template-state-open: "开放"
+template-state-closed: "关闭"
+usage-arrival: "<yellow>用法：/{label} 抵达 出生点|上次"
+arrival-spawn: "<green>世界旅行现在会将你传送到出生点。已保存的位置会保留。"
+arrival-last: "<green>世界旅行现在会在服务器和世界允许时使用你上次的位置。"
+# Vystorm Worlds - 简体中文文本（MiniMessage）。占位符写在 {花括号} 中。
+denied: "<red>你没有权限执行此操作。"
+player-only: "<red>请在游戏内执行。"
+feature-off: "<red>此功能在本服务器上已关闭。"
+unknown-world: "<red>不存在名为 {world} 的世界。"
+player-offline: "<red>{player} 不在线。"
+cancelled: "<gray>已取消。"
+"yes": "是"
+"no": "否"
+page-back: "<yellow>返回"
+page-next: "<yellow>下一页"
+toggle-on: "<green>开启 <gray>- 点击关闭"
+toggle-off: "<red>关闭 <gray>- 点击开启"
+value-lore: "<gray>当前：<white>{value}\n<yellow>点击更改"
+cycle-lore: "<gray>当前：<white>{value}\n<yellow>左键：下一个，右键：上一个"
+
+help-player: "<gold>世界</gold> <gray>/{label} - 世界选择器 | /{label} tp WORLD | /{label} spawn | /{label} 抵达 出生点|上次"
+help-admin: "<gray>管理员：/{label} admin | list | info WORLD | create | import | load WORLD | unload WORLD | delete WORLD | regen WORLD | clone WORLD NEW | set WORLD PROPERTY VALUE | edit WORLD | link WORLD nether|end TARGET | groups | generators | reload"
+usage-info: "<gray>/{label} info WORLD"
+usage-create: "<gray>/{label} create NAME [normal|nether|end|flat|void|amplified|large-biomes] [seed:SEED] [generator:Plugin:id] [biomes:Plugin:id] [structures:false] [with-nether] [with-end] [group:GROUP] [min-y:-128 height:512]"
+usage-world: "<gray>/{label} {sub} WORLD"
+usage-clone: "<gray>/{label} clone WORLD NEW-NAME [confirm]"
+usage-set: "<gray>/{label} set WORLD PROPERTY VALUE"
+usage-link: "<gray>/{label} link WORLD nether|end TARGET-WORLD（或 none）"
+usage-tp: "<gray>/worlds tp WORLD"
+usage-delete: "<gray>/{label} delete WORLD"
+usage-regen: "<gray>/{label} regen WORLD [same|random|SEED]"
+properties-list: "<gray>属性：<white>{keys}"
+
+bad-name: "<red>世界名称只能使用 a-z、0-9、_ 和 -（最多 32 个字符，小写）。"
+exists: "<red>名为 {world} 的世界已存在。"
+folder-exists: "<red>{world} 的文件夹已存在。请使用 /worlds import 加载它。"
+not-loaded: "<red>{world} 未加载。"
+world-changed: "<red>{world} 在此期间已被更改或移除（/worlds reload）。请重新打开菜单。"
+spawn-searching: "<gray>正在后台为 {world} 寻找干燥的出生点，服务器照常运行。你现在就可以前往。"
+spawn-search-progress: "<gray>仍在为 {world} 寻找出生点（已检查 {count} 个区域）……"
+spawn-found: "<green>{world} 的出生点已设为 {x} {y} {z}。"
+already-loaded: "<yellow>{world} 已经加载。"
+server-world: "<red>{world} 是服务器世界（主世界及其下界或末地），无法卸载、删除或重新生成。"
+unload-failed: "<red>无法卸载 {world}。"
+busy: "<red>{world} 正在进行其他操作，请稍后再试。"
+refused: "<red>{world} 的文件夹受保护（位于世界文件夹之外、属于服务器世界或 Vystorm Core 插件世界）。未做任何更改。"
+delete-failed: "<red>无法移动或删除 {world} 的文件，详见控制台。世界条目已保留。"
+generator-missing: "<red>{world} 的生成器缺失，因此无法重新生成。请先安装生成器插件。"
+load-failed: "<red>无法重新加载 {world}，详见控制台。"
+clone-failed: "<red>复制 {world} 失败，详见控制台。未创建任何内容。"
+clone-confirm-evacuate: "<yellow>{world} 中有玩家。为了得到干净的副本，复制期间该世界会被卸载：玩家将被移至主出生点。执行 <white>/{label} clone {world} {target} confirm</white> 以继续。"
+clone-confirm-live: "<yellow>{world} 中有玩家，且复制期间该世界保持加载（服务器世界、自定义建筑高度或其他插件的世界）：复制过程中的更改不会出现在副本中。执行 <white>/{label} clone {world} {target} confirm</white> 以继续，或在没有人时再复制。"
+bad-value: "<red>{value} 不是 {key} 的有效值。"
+unknown-property: "<red>未知属性 {key}。 <gray>按 Tab 键查看可用的值。"
+bad-group: "<red>组名只能使用 a-z、0-9、_ 和 -（最多 32 个字符）。"
+bad-option: "<red>未知或无效的选项：{token}"
+height-both: "<red>自定义建筑高度需要同时指定 min-y 和 height。"
+height-multiple: "<red>min-y 和 height 必须是 16 的倍数（{token}）。"
+height-range: "<red>建筑高度超出范围（{token}）：min-y 至少为 -2032，height 为 16 到 4064，顶部（min-y + height）最多为 2032。"
+height-terrain: "<red>原版地形无法放入 {token}：主世界类型至少需要 -64 到 320，下界和末地需要 0 到 128。"
+height-generator: "<red>使用自定义建筑高度时，只有原版类型或生成器插件（Plugin:id，在服务器启动时加载）可用；预设和单独的生物群系提供器不可用。"
+links-overworld: "<red>只有主世界类型才能关联下界和末地。"
+registry-broken: "<red>无法读取 worlds.yml（{error}）。请修复该文件并执行 /worlds reload；在此之前不会做任何更改。"
+fixed-at-creation: "<red>{key} 在创建世界时确定，之后无法更改（否则新旧地形会混在一起）。"
+confirm-mismatch: "<red>未确认：你输入的不是 {world}。未做任何更改。"
+confirm-console-delete: "<yellow>要删除 {world}，请再次输入名称：/{label} delete {world} {world}"
+confirm-console-regen: "<yellow>要重新生成 {world}，请再次输入名称：/{label} regen {world} {seed} {world}"
+stand-in-world: "<red>请站在 {world} 中来设置其出生点。"
+
+no-entry: "<red>你不能进入 {world}。"
+world-full: "<red>{world} 已满（{limit} 名玩家）。"
+too-poor: "<red>进入 {world} 需要 {price}。"
+paid: "<green>你支付了 {price} 以进入 {world}。"
+arrival-title: "<gold>{world}"
+pay-title: "入场费"
+pay-question: "进入 {world} 需要 {price}。是否支付并前往？"
+no-safe-spot: "<red>在 {world} 的目标附近找不到安全位置。请让管理员设置出生点。"
+teleported: "<green>欢迎来到 {world}"
+evacuated: "<yellow>{world} 已关闭，你已被移至主世界。"
+portal-unlinked: "<red>此世界没有为该传送门关联的维度。"
+sent: "<green>{player} 正在前往 {world}。"
+
+group-switched: "<gray>物品栏组：<yellow>{group}"
+group-failed: "<red>无法将你的物品栏切换到此世界的组，因此未做任何更改。请告知管理员。"
+group-file-broken: "<red>无法读取你保存的 {group} 物品栏，已将其另存以供管理员处理；你在这里将从空物品栏开始。"
+groups-header: "<gold>世界组</gold> <gray>（每组独立：{separate}）"
+groups-header-off: "<gold>世界组</gold> <red>（已在 config.yml 中关闭，所有世界共享一切）"
+groups-entry: "<yellow>{group}</yellow><gray>：{worlds}"
+
+creating: "<gray>正在创建 {world}……"
+created: "<green>世界 <yellow>{world}</yellow> 已创建（{type}，种子 {seed}，关联：{extra}）。"
+created-restart: "<green>{world} 已准备就绪，建筑高度为 {min} 到 {max}。<yellow>请重启服务器</yellow>以创建它：服务器只在启动时读取新的维度类型。"
+create-failed: "<red>无法加载 {world}：{error}"
+loaded: "<green>{world} 已加载。"
+unloaded: "<green>{world} 已保存并卸载。"
+deleting: "<gray>正在删除 {world}……"
+deleted: "<green>{world} 已删除。"
+deleted-backup: "<green>{world} 已删除。其文件夹已移至 plugins/VystormWorlds/backups。"
+regenerating: "<gray>正在重新生成 {world}……"
+regenerated: "<green>{world} 已重新生成。"
+cloning: "<gray>正在将 {world} 复制为 {target}……"
+cloned: "<green>{target} 已创建为 {world} 的副本。"
+importing: "<gray>正在导入 {world}……"
+imported: "<green>{world} 已导入并加载。"
+import-none: "<gray>未找到未加载的世界文件夹。"
+import-header: "<gold>可导入的世界文件夹（{count}）："
+import-entry: "<gray>- <yellow>{world}</yellow>（{type}）"
+import-entry-legacy: "<gray>- <yellow>{world}</yellow>（{type}，位于服务器文件夹中的旧版 1.21 文件夹：导入时服务器会将其移入世界文件夹）"
+import-unknown: "<red>没有名为 {world} 的可导入文件夹。/worlds import 会列出它们。"
+import-bukkit-generator: "<gray>已沿用 bukkit.yml 中的生成器：<white>{generator}"
+spawn-set: "<green>{world} 的出生点已设为 {x} {y} {z}。"
+property-set: "<green>{world}：{key} = <white>{value}"
+reloaded: "<green>Vystorm Worlds 已重新加载（{count} 个世界）。"
+
+delete-title: "删除 {world}"
+delete-question: "这将删除 {world} 及其所有建筑。请输入世界名称以确认。"
+regen-title: "重新生成 {world}"
+regen-question: "这会用全新地形替换 {world} 的所有地形和建筑。请输入世界名称以确认。"
+clone-question: "{world} 副本的名称："
+
+list-header: "<gold>世界（{count}）</gold> <gray>服务器：{tps}"
+list-entry-loaded: "<green>●</green> <yellow>{world}</yellow> <gray>{type}，组 {group}，{players} 名玩家，{chunks} 个区块，{entities} 个实体"
+list-entry-unloaded: "<gray>○ {world} {type}，组 {group}，未加载"
+list-entry-busy: "<gold>◌</gold> <gray>{world} 忙碌中"
+list-entry-error: "<red>✖</red> <gray>{world}：<red>{error}"
+info-header: "<gold>世界 {world}</gold> <gray>-</gray> {title}"
+info-state: "<gray>{state}，类型 {type}，种子 {seed}，生成器 {generator}，组 {group}，建筑高度 {height}"
+info-load: "<gray>{players} 名玩家，{chunks} 个区块，{entities} 个实体，{tiles} 个方块实体。服务器：{tps}"
+info-error: "<red>未加载：{error}"
+info-properties: "<gray>{properties}"
+state-loaded: "已加载"
+state-unloaded: "未加载"
+button-tp: "[前往]"
+button-tp-hover: "传送到那里"
+button-edit: "[编辑]"
+button-edit-hover: "打开世界设置"
+button-info: "[信息]"
+button-info-hover: "显示详情"
+button-load: "[加载]"
+button-load-hover: "加载此世界"
+button-unload: "[卸载]"
+button-unload-hover: "保存并卸载此世界"
+button-create: "[创建世界]"
+button-create-hover: "打开创建对话框"
+button-import: "[导入文件夹]"
+button-import-hover: "列出可导入的世界文件夹"
+button-import-one: "[导入]"
+button-import-one-hover: "导入并加载此文件夹"
+
+generators-header: "<gold>生成器（{count}）</gold> <gray>用法 generator:VALUE"
+generators-none: "<gray>未安装任何生成器插件或预设。"
+generators-preset: "<gray>- <yellow>{value}</yellow>（{name}）"
+generators-plugin: "<gray>- <yellow>{value}</yellow> <gray>（插件；如需要请添加 :id）"
+generator-none: "原版（按世界类型）"
+generator-preset: "预设：{name}"
+generator-plugin: "插件：{name}"
+
+vmenu-worlds: "世界"
+vmenu-worlds-desc: "前往服务器的其他世界"
+vmenu-admin: "世界管理"
+vmenu-admin-desc: "创建、导入和配置世界"
+selector-title: "世界（{count}）"
+selector-players: "<gray>玩家：<white>{players}{limit}"
+selector-mode: "<gray>游戏模式：<white>{mode}"
+selector-price-once: "<gold>入场费：{price}（一次性）"
+selector-price-every-visit: "<gold>入场费：每次 {price}"
+selector-unlocked: "<green>已解锁"
+selector-locked: "<red>已锁定：你没有权限"
+selector-full: "<red>已满"
+selector-too-poor: "<red>你付不起入场费"
+selector-here: "<green>你在这里\n<yellow>右键：前往出生点"
+selector-click: "<yellow>左键：前往（按你的抵达偏好）\n<yellow>右键：前往出生点"
+selector-admin: "<dark_gray>Shift + 左键：世界设置"
+selector-none: "<gray>没有其他世界"
+selector-spawn: "<yellow>此世界的出生点"
+selector-spawn-lore: "<gray>传送到你所在世界的出生点"
+selector-to-admin: "<gold>世界管理"
+mode-survival: "生存模式"
+mode-creative: "创造模式"
+mode-adventure: "冒险模式"
+mode-spectator: "旁观模式"
+
+admin-title: "世界管理（{count}）- {tps}"
+admin-world-name: "<yellow>{world}"
+admin-world-loaded: "<green>已加载</green> <gray>- {type}，组 {group}\n<gray>{players} 名玩家，{chunks} 个区块，{entities} 个实体\n<gray>在选择器中隐藏：{hidden}\n<yellow>点击：设置"
+admin-world-unloaded: "<gray>未加载 - {type}，组 {group}\n<yellow>点击：设置"
+admin-world-error: "<red>未加载：{error}\n<gray>{type}，组 {group}\n<yellow>点击：设置"
+admin-create: "<green>创建世界"
+admin-create-lore: "<gray>类型、种子、生成器、关联的下界和末地"
+admin-import: "<yellow>导入文件夹"
+admin-import-lore: "<gray>列出尚未加载的世界文件夹"
+admin-list: "<yellow>在聊天栏中列出"
+admin-list-lore: "<gray>所有世界，附带可点击的按钮"
+admin-selector: "<yellow>世界选择器"
+admin-config: "<yellow>插件设置"
+admin-config-lore: "<gray>在 Core 配置编辑器中编辑 config.yml"
+
+world-title: "世界 {world}"
+w-pvp: "PvP"
+w-monsters: "生成怪物"
+w-animals: "生成动物"
+w-hunger: "饥饿"
+w-fly: "允许飞行"
+w-keep-spawn: "保持出生点加载"
+w-autoload: "服务器启动时加载"
+w-hidden: "在选择器中隐藏"
+w-permission: "进入权限"
+w-permission-on: "<green>开启</green> <gray>- 需要 {node}\n<yellow>点击关闭"
+w-remember: "返回玩家离开的位置"
+w-game-mode: "进入时的游戏模式"
+w-difficulty: "难度"
+w-time-lock: "锁定时间"
+w-weather-lock: "锁定天气"
+w-price-mode: "入场费：一次性或每次进入"
+w-display-name: "显示名称"
+w-description: "描述"
+w-icon: "图标"
+w-icon-lore: "<gray>当前：<white>{value}\n<yellow>手持新的图标物品点击（空手：默认）"
+w-price: "入场费"
+w-player-limit: "玩家上限（0 = 无）"
+w-group: "物品栏组"
+w-respawn-world: "重生世界"
+w-nether: "关联的下界"
+w-end: "关联的末地"
+w-set-spawn: "<yellow>将出生点设在此处"
+w-set-spawn-lore: "<gray>你的位置将成为此世界的出生点"
+w-teleport: "<yellow>前往"
+w-load: "<green>加载世界"
+w-unload: "<red>保存并卸载世界"
+w-dialog: "<yellow>以对话框显示所有设置"
+w-dialog-lore: "<gray>在 Vystorm 设置对话框中显示相同的设置"
+w-regenerate: "<red>重新生成"
+w-regenerate-lore: "<gray>生成新地形，所有建筑都会被替换\n<gray>输入世界名称以确认"
+w-delete: "<red>删除世界"
+w-delete-lore: "<gray>卸载并移除该世界\n<gray>输入世界名称以确认"
+w-clone: "复制世界"
+w-clone-lore: "<gray>以新名称复制该世界"
+prompt-display-name: "{world} 的显示名称（允许 MiniMessage 颜色，留空 = 世界名称）："
+prompt-description: "在选择器中为 {world} 显示的一行文字："
+prompt-price: "{world} 的入场费（0 = 免费）："
+prompt-player-limit: "{world} 同时容纳的最多玩家数（0 = 无上限）："
+prompt-group: "{world} 的物品栏组（同组世界共享物品栏、经验、生命值……）："
+prompt-respawn-world: "在 {world} 中死亡的玩家在哪里重生（世界名称，none = 此世界或其主世界，vanilla = 服务器默认）："
+prompt-nether: "关联到 {world} 的下界世界（none = 不关联）："
+prompt-end: "关联到 {world} 的末地世界（none = 不关联）："
+
+create-title: "创建世界"
+create-help: "选择名称和类型。种子、生成器和自定义建筑高度均为可选；留空则使用原版设置。使用自定义建筑高度时，需要重启服务器后世界才会存在。"
+create-name: "名称（a-z、0-9、_ 和 -）"
+create-type: "类型"
+create-generator: "生成器"
+create-generator-id: "生成器 id 或参数（可选，也可填写 Plugin:id）"
+create-seed: "种子（留空 = 随机）"
+create-structures: "结构（村庄、神殿……）"
+create-nether: "创建关联的下界"
+create-end: "创建关联的末地"
+create-group: "物品栏组"
+create-min-y: "最低建筑层，例如 -128（留空 = 原版）"
+create-height: "建筑高度（方块数），例如 512（留空 = 原版）"
+create-button: "创建"
+kind-normal: "默认"
+kind-nether: "下界"
+kind-end: "末地"
+kind-flat: "超平坦"
+kind-void: "虚空"
+kind-amplified: "放大化"
+kind-large-biomes: "巨型生物群系"
+
+section-title: "世界设置"
+section-desc: "通过 /worlds edit 或世界菜单所选世界的属性（否则为你所在的世界）。"
+section-editing: "<gray>正在编辑 <yellow>{world} <gray>的世界设置"
+section-saved: "<green>{world} 的设置已保存。"
+section-no-world: "未选择世界"
+
+admin-module: "世界"
+admin-action-list: "列出世界"
+admin-action-info: "世界详情"
+admin-action-create: "创建世界"
+admin-action-import: "导入文件夹"
+admin-action-load: "加载世界"
+admin-action-unload: "卸载世界"
+admin-action-groups: "世界组"
+admin-action-reload: "重新加载"
+height-seed: "<red>使用自定义建筑高度的世界会使用服务器主种子，请勿指定种子。"
+regenerated-restart: "<green>{world} 的旧区块已被移走。<yellow>请重启服务器</yellow>以使用全新地形重新加载它（使用自定义建筑高度的世界由服务器创建）。"
+
+# 通过 Vystorm Core 提供的 /worlds：每位玩家看到自己语言的说明、帮助和 Tab 补全。commands.worlds 下的 "aliases" 是额外的
+# 主命令（全服生效，由管理员在 Core 配置 commands.localized-aliases 中选择语言）；子命令的 "name" 和 "aliases"
+# 在所有语言中都可使用，英文始终有效。"values" 是 link、regen 和 clone 的关键词。
+commands:
+  worlds:
+    description: "多世界：世界选择、传送和世界管理"
+    aliases: [世界]
+    usage: "[世界]"
+    sub:
+      menu:
+        name: 菜单
+        aliases: []
+        description: "打开世界选择器"
+      tp:
+        name: 传送
+        aliases: []
+        description: "前往一个世界（管理员：把玩家送过去）"
+        usage: "世界 [玩家]"
+      spawn:
+        name: 出生点
+        aliases: []
+        description: "前往你所在世界的出生点"
+      arrival:
+        name: 抵达
+        aliases: []
+        description: "选择世界旅行时前往出生点或上次位置"
+        usage: "出生点|上次"
+      favorite:
+        name: 收藏
+        aliases: []
+        description: "添加或移除可见世界的收藏"
+        usage: "[WORLD]"
+      favorites:
+        name: 收藏夹
+        aliases: []
+        description: "打开收藏的世界"
+      admin:
+        name: 管理
+        aliases: []
+        description: "打开世界管理菜单"
+      list:
+        name: 列表
+        aliases: []
+        description: "所有世界及其状态、玩家和 TPS"
+      info:
+        name: 信息
+        aliases: []
+        description: "一个世界的设置和状态"
+        usage: "[世界]"
+      groups:
+        name: 分组
+        aliases: []
+        description: "世界分组及其分开保存的内容"
+      create:
+        name: 创建
+        aliases: []
+        description: "创建世界（不填名称：打开创建对话框）"
+        usage: "[名称] [类型] [seed:种子] [generator:插件:ID] [group:分组] [with-nether] [with-end] ..."
+      import:
+        name: 导入
+        aliases: []
+        description: "导入世界文件夹（不填名称：列出文件夹）"
+        usage: "[文件夹] [类型] [seed:种子] [generator:插件:ID] [group:分组] ..."
+      load:
+        name: 加载
+        aliases: []
+        description: "加载已登记的世界"
+        usage: "世界"
+      unload:
+        name: 卸载
+        aliases: []
+        description: "卸载一个世界"
+        usage: "世界"
+      delete:
+        name: 删除
+        aliases: []
+        description: "删除世界（会备份，需要输入名称确认）"
+        usage: "世界"
+      regen:
+        name: 重新生成
+        aliases: []
+        description: "用相同、随机或新的种子重新生成世界"
+        usage: "世界 [相同|随机|种子]"
+      clone:
+        name: 复制
+        aliases: []
+        description: "以新名称复制一个世界"
+        usage: "世界 新名称 [确认]"
+      set:
+        name: 属性
+        aliases: []
+        description: "修改一个世界属性"
+        usage: "世界 属性 值"
+      edit:
+        name: 编辑
+        aliases: []
+        description: "打开世界菜单"
+        usage: "[世界]"
+      settings:
+        name: 设置
+        aliases: []
+        description: "打开世界的设置对话框"
+        usage: "[世界]"
+      setspawn:
+        name: 设出生点
+        aliases: []
+        description: "把世界出生点设在你站的位置"
+      link:
+        name: 链接
+        aliases: []
+        description: "把世界的下界或末地传送门连接到另一个世界"
+        usage: "世界 下界|末地 目标|无"
+      generators:
+        name: 生成器
+        aliases: []
+        description: "已安装的世界生成器和预设"
+      template:
+        name: 模板
+        aliases: []
+        description: "管理可重复使用的访问世界模板"
+      visit:
+        name: 访问
+        aliases: []
+        description: "访问模板世界或列出可用模板"
+      leave:
+        name: 离开
+        aliases: []
+        description: "安全结束模板世界访问"
+      reload:
+        name: 重载
+        aliases: []
+        description: "重新加载配置、worlds.yml 和语言文件"
+    values:
+      spawn: 出生点
+      last: 上次
+      confirm: 确认
+      nether: 下界
+      end: 末地
+      same: 相同
+      random: 随机
+      none: 无
+
+favorite-add: "<yellow>Shift + 右键：添加到收藏"
+favorite-remove: "<gold>已收藏 <gray>· Shift + 右键：取消收藏"
+favorite-added: "<green>已将 {world} 添加到你的收藏。"
+favorite-removed: "<yellow>已将 {world} 从你的收藏中移除。"
+favorites-show-only: "<gold>仅显示收藏的世界"
+favorites-show-all: "<yellow>显示所有世界"
+favorites-filter-lore: "<gray>收藏的世界优先显示。隐藏或未加载的世界仍不显示。"
+favorites-empty: "<gray>没有可见的收藏。切换到所有世界以添加收藏。"
+
+clone-live-unsupported: "<red>此服务器不支持在线克隆。请克隆已卸载或可以卸载的受管理世界。"
+
+usage-favorite: "<yellow>用法：/worlds favorite [世界]"
+w-reset: "自动重置（off、daily 04:00、weekly mon 04:00、every 3 days 04:00）"
+w-reset-seed: "自动重置后的种子（same 或 random）"
+reset-warning: "<gold>⚠ {world} 将在 {minutes} 分钟后重置。请带走你的物品！"
+reset-done: "<green>{world} 已按计划重置。"
+bad-reset: "<red>请使用 off、daily HH:MM、weekly 星期 HH:MM 或 every N days HH:MM（N 为 2–90）。"
+w-border: "世界边界大小（off = 不改动）"
+w-border-center: "世界边界中心（spawn 或 X Z）"
+w-border-event: "边界收缩事件（off、daily 20:00 …）"
+w-border-start: "立即开始边界事件"
+w-border-start-lore: "立即收缩边界，保持一段时间后恢复"
+prompt-border: "{world} 的边界大小（格，至少 16；off = 不改动）："
+prompt-border-center: "{world} 边界的中心：spawn 或 X Z："
+prompt-border-event: "{world} 的边界何时收缩：off、daily HH:MM、weekly 星期 HH:MM 或 every N days HH:MM："
+border-warning: "<gold>⚠ {world} 的边界将在 {minutes} 分钟后收缩到 {size} 格！"
+border-shrinking: "<red>⚠ {world} 的边界正在 {minutes} 分钟内收缩到 {size} 格 —— 快去中心！"
+border-restored: "<green>{world} 的边界恢复到 {size} 格。"
+border-no-size: "<red>请先为 {world} 设置边界大小并加载世界。"
+# Core panels
+panel-exact-price: "精确入场费（任意金额）"
+panel-search: "搜索世界"
+panel-players: "玩家"
+panel-state: "状态"
+panel-chunks: "已加载区块"
+panel-entities: "实体"
+panel-favorite: "收藏"
+panel-favorites: "收藏列表"
+panel-all: "所有世界"
+panel-here: "你在这里"
+panel-spawn: "前往出生点"
+panel-rules: "世界规则"
+panel-entry: "传送与外观"
+panel-borders: "边界与重置"
+panel-operations: "世界操作"
+panel-unload-confirm: "保存并卸载 {world}？玩家将被移至主世界。"
+panel-option-none: "默认"
+panel-option-off: "关闭"
+panel-option-peaceful: "和平"
+panel-option-easy: "简单"
+panel-option-normal: "普通"
+panel-option-hard: "困难"
+panel-option-day: "白天"
+panel-option-noon: "正午"
+panel-option-sunset: "日落"
+panel-option-night: "夜晚"
+panel-option-midnight: "午夜"
+panel-option-clear: "晴天"
+panel-option-rain: "雨天"
+panel-option-thunder: "雷暴"
+panel-option-once: "仅一次"
+panel-option-every-visit: "每次访问"
+panel-option-same: "相同种子"
+panel-option-random: "随机种子"

@@ -1,0 +1,198 @@
+{
+  "version": 1,
+  "intro": {
+    "en": "A few quick choices for Vystorm Worlds. Everything else stays on its defaults.",
+    "de": "Ein paar schnelle Entscheidungen für Vystorm Worlds. Alles andere bleibt auf Standard.",
+    "fr": "Quelques choix rapides pour Vystorm Worlds. Le reste garde ses valeurs par défaut.",
+    "it": "Alcune scelte rapide per Vystorm Worlds. Il resto resta predefinito.",
+    "pt_br": "Algumas escolhas rápidas para Vystorm Worlds. O resto fica no padrão.",
+    "ru": "Несколько быстрых решений для Vystorm Worlds. Остальное останется по умолчанию.",
+    "zh_cn": "Vystorm Worlds 的几个快速选项，其余保持默认。"
+  },
+  "questions": [
+    {
+      "id": "groups",
+      "text": {
+        "en": "Enable world groups?",
+        "de": "Weltgruppen aktivieren?",
+        "fr": "Activer les groupes de mondes ?",
+        "it": "Attivare i gruppi di mondi?",
+        "pt_br": "Ativar grupos de mundos?",
+        "ru": "Включить группы миров?",
+        "zh_cn": "启用世界组？"
+      },
+      "type": "choice",
+      "recommended": "on",
+      "options": [
+        {
+          "id": "on",
+          "label": {
+            "en": "On",
+            "de": "An",
+            "fr": "Activé",
+            "it": "Attivo",
+            "pt_br": "Ligado",
+            "ru": "Вкл.",
+            "zh_cn": "开启"
+          },
+          "set": {
+            "config.yml:groups.enabled": true
+          }
+        },
+        {
+          "id": "off",
+          "label": {
+            "en": "Off",
+            "de": "Aus",
+            "fr": "Désactivé",
+            "it": "Disattivo",
+            "pt_br": "Desligado",
+            "ru": "Выкл.",
+            "zh_cn": "关闭"
+          },
+          "set": {
+            "config.yml:groups.enabled": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "last",
+      "text": {
+        "en": "Return players to their last position in a world?",
+        "de": "Spieler an ihre letzte Position in einer Welt zurückbringen?",
+        "fr": "Ramener les joueurs à leur dernière position ?",
+        "it": "Riportare i giocatori all’ultima posizione?",
+        "pt_br": "Voltar à última posição no mundo?",
+        "ru": "Возвращать на последнюю позицию в мире?",
+        "zh_cn": "返回玩家在世界中的上次位置？"
+      },
+      "type": "choice",
+      "recommended": "on",
+      "options": [
+        {
+          "id": "on",
+          "label": {
+            "en": "On",
+            "de": "An",
+            "fr": "Activé",
+            "it": "Attivo",
+            "pt_br": "Ligado",
+            "ru": "Вкл.",
+            "zh_cn": "开启"
+          },
+          "set": {
+            "config.yml:teleport.return-to-last-position": true
+          }
+        },
+        {
+          "id": "off",
+          "label": {
+            "en": "Off",
+            "de": "Aus",
+            "fr": "Désactivé",
+            "it": "Disattivo",
+            "pt_br": "Desligado",
+            "ru": "Выкл.",
+            "zh_cn": "关闭"
+          },
+          "set": {
+            "config.yml:teleport.return-to-last-position": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "respawn",
+      "text": {
+        "en": "Respawn players in the world they died in?",
+        "de": "Spieler in der Welt respawnen, in der sie gestorben sind?",
+        "fr": "Réapparaître dans le monde de la mort ?",
+        "it": "Rinascere nel mondo della morte?",
+        "pt_br": "Renascer no mundo onde morreu?",
+        "ru": "Возрождать в мире смерти?",
+        "zh_cn": "在死亡的世界重生？"
+      },
+      "type": "choice",
+      "recommended": "on",
+      "options": [
+        {
+          "id": "on",
+          "label": {
+            "en": "On",
+            "de": "An",
+            "fr": "Activé",
+            "it": "Attivo",
+            "pt_br": "Ligado",
+            "ru": "Вкл.",
+            "zh_cn": "开启"
+          },
+          "set": {
+            "config.yml:respawn.same-world": true
+          }
+        },
+        {
+          "id": "off",
+          "label": {
+            "en": "Off",
+            "de": "Aus",
+            "fr": "Désactivé",
+            "it": "Disattivo",
+            "pt_br": "Desligado",
+            "ru": "Выкл.",
+            "zh_cn": "关闭"
+          },
+          "set": {
+            "config.yml:respawn.same-world": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "backup",
+      "text": {
+        "en": "Back up worlds before deleting them?",
+        "de": "Welten vor dem Löschen sichern?",
+        "fr": "Sauvegarder les mondes avant suppression ?",
+        "it": "Fare un backup dei mondi prima di eliminarli?",
+        "pt_br": "Fazer backup antes de excluir?",
+        "ru": "Делать копию перед удалением?",
+        "zh_cn": "删除世界前备份？"
+      },
+      "type": "choice",
+      "recommended": "on",
+      "options": [
+        {
+          "id": "on",
+          "label": {
+            "en": "On",
+            "de": "An",
+            "fr": "Activé",
+            "it": "Attivo",
+            "pt_br": "Ligado",
+            "ru": "Вкл.",
+            "zh_cn": "开启"
+          },
+          "set": {
+            "config.yml:delete.backup": true
+          }
+        },
+        {
+          "id": "off",
+          "label": {
+            "en": "Off",
+            "de": "Aus",
+            "fr": "Désactivé",
+            "it": "Disattivo",
+            "pt_br": "Desligado",
+            "ru": "Выкл.",
+            "zh_cn": "关闭"
+          },
+          "set": {
+            "config.yml:delete.backup": false
+          }
+        }
+      ]
+    }
+  ]
+}

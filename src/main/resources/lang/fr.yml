@@ -1,0 +1,545 @@
+template-exists: "<yellow>Ce modèle existe déjà. Fermez-le ou ouvrez-le sans remplacer son monde sauvegardé."
+template-saved: "<yellow>Modèle de visite {template} enregistré."
+template-missing: "<yellow>Ce modèle est absent ou fermé."
+template-opened: "<yellow>Le modèle {template} est ouvert."
+template-closed: "<yellow>Le modèle {template} est fermé ; son monde sauvegardé est conservé."
+template-usage: "<yellow>/worlds template create NOM flat|island SECONDES locked|kit | list | close NOM | open NOM"
+template-none: "<yellow>Aucun modèle de visite pour l’instant. Créer : /worlds template create NAME flat|island SECONDS locked|kit"
+template-failed: "<yellow>Échec de l’opération. Les données existantes sont conservées ; consultez le journal du serveur."
+template-busy: "<yellow>Terminez d’abord votre visite ou la restauration de votre inventaire."
+template-preparing: "<yellow>Préparation de la visite de {template}…"
+template-entry-failed: "<yellow>Entrée refusée. Votre état initial est conservé. Descendez de votre véhicule et réessayez après toute restauration en attente."
+template-arrived: "<yellow>Bienvenue dans {template} : {seconds}s. /worlds leave vous ramène avec votre inventaire initial."
+template-not-visiting: "<yellow>Vous ne visitez pas un modèle Worlds."
+template-exit-pending: "<yellow>Le retour est encore en attente. Votre inventaire sauvegardé est conservé."
+template-timeout: "<yellow>Durée de visite écoulée. Retour à votre position initiale."
+template-info: "<yellow>{template} — {terrain}, {seconds}s, {inventory}, {state}"
+template-terrain-flat: "terrain plat"
+template-terrain-island: "île"
+template-inventory-locked: "inventaire vide et verrouillé"
+template-inventory-kit: "équipement d’exploration temporaire"
+template-state-open: "ouvert"
+template-state-closed: "fermé"
+# Français — UTF-8. Keep keys, placeholders and formatting tokens unchanged.
+usage-arrival: '<yellow>Utilisation: /{label} arrivée fraie'
+arrival-spawn: <green>Le voyage dans le monde vous emmène à la fraye. Vos positions sont conservées.
+arrival-last: <green>World Travel utilise maintenant votre dernière position où le serveur et le monde le permettent.
+denied: <red>Vous n'avez pas la permission pour ça.
+player-only: <red>Lancez ça en jeu.
+feature-off: <red>Cette fonctionnalité est désactivée sur ce serveur.
+unknown-world: <red>Aucun monde ne s'appelle {world}.
+player-offline: <red>{player} n'est pas en ligne.
+cancelled: <gray>Annulé.
+'yes': oui
+'no': non
+page-back: <yellow>Retour
+page-next: <yellow>Page suivante
+toggle-on: <green>Activé <gray>- cliquez pour désactiver
+toggle-off: <red>Désactivé <gray>- cliquez pour activer
+value-lore: |-
+  <gray>Maintenant : <white>{value}
+  <yellow>Cliquez pour changer
+cycle-lore: |-
+  <gray>Maintenant : <white>{value}
+  <yellow>clic gauche : suivant, clic droit : précédent
+help-player: <gold>Mondes</gold> <gray>/{label} - sélecteur de monde{label} tp WORLD | /{label} Fraie /{label} arrivée apparition
+help-admin: '<gray>Admin: {label} administrateur , liste , info WORLD , créer , importer , charger WORLD , décharger WORLD
+  , supprimer WORLD , regen WORLD , clone WORLD NEW , ensemble WORLD PROPERTY VALUE , éditer WORLD , lien WORLD, fin TARGET
+  , groupes , recharger'
+usage-info: <gray>/{label} info WORLD
+usage-create: <gray>/{label} création NAME [normal|nether|end|flat|void|amplified|large-biomes] [seed:SEED] [generator:Plugin:id]
+  [biomes:Plugin:id] [structures:false] [with-nether] [with-end] [group:GROUP] [min-y:-128 height:512]
+usage-world: <gray>/{label} {sub} WORLD
+usage-clone: <gray>{label} clone WORLD NEW-NAME [confirm]
+usage-set: <gray>Ensemble {label} WORLD PROPERTY VALUE
+usage-link: <gray>/{label} lien WORLD fin TARGET-WORLD (ou aucun)
+usage-tp: <gray>/worlds tp WORLD
+usage-delete: <gray>{label} supprimer WORLD
+usage-regen: <gray>{label} régen WORLD [same|random|SEED]
+properties-list: '<gray>Propriétés & #160;: <white>{keys}'
+bad-name: <red>Les noms du monde utilisent a-z, 0-9, _ et - (au plus 32 caractères, minuscule).
+exists: <red>Un monde appelé {world} existe déjà.
+folder-exists: <red>A dossier pour {world} Il existe déjà. Utilisation /worlds import pour le charger.
+not-loaded: <red>{world} n'est pas chargé.
+world-changed: <red>{world} a été changé ou enlevé entre-temps (/worlds reload). Veuillez à nouveau ouvrir le menu.
+spawn-searching: <gray>Recherche d'un apparition sec en {world} en arrière-plan ; le serveur continue à fonctionner. Tu peux
+  déjà y aller.
+spawn-search-progress: <gray>Toujours à la recherche d'un apparition dans {world} ({count} zones vérifiées) ...
+spawn-found: <green>Évasé de {world}, fixé à {x} {y} {z}.
+already-loaded: <yellow>{world} est déjà chargé.
+server-world: <red>{world} est un monde serveur (monde principal, son dernier ou fin) et ne peut être déchargé, supprimé ou
+  régénéré.
+unload-failed: <red>{world} n'a pas pu être déchargé.
+busy: <red>{world} est occupé avec une autre opération, essayez à nouveau dans un moment.
+refused: <red>Le dossier de {world} est protégé (hors dossier mondial, un monde serveur ou un monde de plugins Core Vystorm).
+  Rien n'a changé.
+delete-failed: <red>Les fichiers de {world} n'ont pu être déplacés ou supprimés; voir la console. L'entrée dans le monde a
+  été gardée.
+generator-missing: <red>Le générateur de {world} est manquant, donc il ne peut pas être régénéré. Installez le plugin générateur
+  d'abord.
+load-failed: <red>{world} ne pouvait plus être chargé; voir la console.
+clone-failed: <red>Copier {world} a échoué; voir la console. Rien n'a été créé.
+clone-confirm-evacuate: '<yellow>Les joueurs sont en {world}. Pour une copie propre, il est déchargé pendant qu''il est copié
+  : ils sont déplacés vers le frayer principal. Cours <white>/{label} clone {world} {target} confirmer</white> Pour continuer.'
+clone-confirm-live: '<yellow>Les joueurs sont en {world}, et il reste chargé pendant qu''il est copié (monde serveur, hauteur
+  de construction personnalisée ou un monde d''un autre plugin): les modifications apportées pendant la copie sont manquantes.
+  Cours <white>/{label} clone {world} {target} confirmer</white> pour continuer, ou copier quand personne n''est là.'
+bad-value: <red>{value} n'est pas une valeur valide pour {key}.
+unknown-property: "<red>Bien inconnu {key}. <gray>Appuyez sur Tab pour voir les valeurs possibles."
+bad-group: <red>Les noms de groupe utilisent a-z, 0-9, _ et - (au plus 32 caractères).
+bad-option: '<red>Option inconnue ou invalide : {token}'
+height-both: <red>Une hauteur de construction personnalisée nécessite à la fois min-y et la hauteur.
+height-multiple: <red>min-y et la hauteur doit être multiple de 16 ({token}).
+height-range: '<red>Hauteur de construction hors de portée ({token}): min-y au moins -2032, hauteur 16 à 4064, haut (min-y
+  + hauteur) au plus 2032.'
+height-terrain: '<red>Le terrain de vanille ne s''intègre pas dans {token}: les types du monde entier ont besoin au plus -64
+  à au moins 320, nether et fin 0 à 128.'
+height-generator: <red>Avec une hauteur de construction personnalisée, seuls les types de vanille ou un plugin générateur
+  (Plugin:id, chargé au démarrage du serveur) fonctionnent; presets et fournisseurs de biome séparés ne le font pas.
+links-overworld: <red>Seuls les types du monde entier peuvent obtenir un lien entre eux et la fin.
+registry-broken: <red>worlds.yml n'a pas pu être lu ({error}). Correction du fichier et exécution /worlds reload; jusqu'à
+  ce que rien ne soit changé.
+fixed-at-creation: <red>{key} est choisi lorsqu'un monde est créé et ne peut pas être changé par la suite (il mélangerait
+  vieux et nouveau terrain).
+confirm-mismatch: '<red>Non confirmé : vous n''avez pas tapé {world}. Rien n''a changé.'
+confirm-console-delete: '<yellow>Pour supprimer {world}, tapez à nouveau le nom: /{label} supprimer {world} {world}'
+confirm-console-regen: '<yellow>Pour régénérer {world}, tapez à nouveau le nom : /{label} regen {world} {seed} {world}'
+stand-in-world: <red>Tenez-vous en {world} pour fixer son apparition.
+no-entry: <red>Vous ne pouvez pas entrer {world}.
+world-full: <red>{world} est plein ({limit} joueurs).
+too-poor: <red>Inscrire les frais {world} {price}.
+paid: <green>Vous avez payé {price} pour entrer {world}.
+arrival-title: <gold>{world}
+pay-title: Taxe d'entrée
+pay-question: Inscrire les frais {world} {price}. Payer et voyager ?
+no-safe-spot: <red>Aucun endroit sûr trouvé en {world} près de la cible. Demandez à un administrateur de définir un frayeur.
+teleported: <green>Bienvenue à {world}
+evacuated: <yellow>{world} a été fermé, vous avez été déplacé dans le monde principal.
+portal-unlinked: <red>Ce monde n'a aucune dimension liée pour ce portail.
+sent: <green>{player} est en route pour {world}.
+group-switched: '<gray>Groupe d''inventaire : <yellow>{group}'
+group-failed: <red>Votre inventaire ne pouvait pas être changé pour ce groupe mondial, donc rien n'a changé. S'il vous plaît,
+  dites à un administrateur.
+group-file-broken: <red>Votre inventaire enregistré {group} n'a pas pu être lu et a été mis de côté pour un administrateur;
+  vous commencez à vider ici.
+groups-header: '<gold>Groupes mondiaux</gold> <gray>(séparé par groupe : {separate})'
+groups-header-off: <gold>Groupes mondiaux</gold> <red>(supprimé en config.yml, tous les mondes partagent tout)
+groups-entry: '<yellow>{group}</yellow><gray>: {worlds}'
+creating: <gray>Création de {world} ...
+created: '<green>Monde <yellow>{world}</yellow> création ({type}, graine {seed}, liée: {extra}).'
+created-restart: '<green>{world} est préparé avec la hauteur de construction {min} à {max}. <yellow>Redémarrer le serveur</yellow>
+  pour le créer : le serveur lit le nouveau type de dimension seulement lors du démarrage.'
+create-failed: '<red>{world} ne pouvait pas être chargé: {error}'
+loaded: <green>{world} chargés.
+unloaded: <green>{world} sauvé et déchargé.
+deleting: <gray>Suppression de {world} ...
+deleted: <green>{world} supprimé.
+deleted-backup: <green>{world} supprimé. Son dossier a été déplacé vers les plugins/VystormWorlds/backups.
+regenerating: <gray>Régénérant {world} ...
+regenerated: <green>{world} régénérés.
+cloning: <gray>Copie de {world} à {target} ...
+cloned: <green>{target} créé à titre de copie de {world}.
+importing: <gray>Importation de {world} ...
+imported: <green>{world} importés et chargés.
+import-none: <gray>Aucun dossier n'a été trouvé.
+import-header: '<gold>Dossiers mondiaux pouvant être importés ({count}):'
+import-entry: <gray>- <yellow>{world}</yellow> ({type})
+import-entry-legacy: '<gray>- <yellow>{world}</yellow> ({type}, ancien dossier 1.21 dans le dossier serveur : le serveur le
+  déplace dans le dossier mondial lors de l''importation)'
+import-unknown: <red>Aucun dossier importable appelé {world}. /worlds import les énumère.
+import-bukkit-generator: '<gray>Groupe électrogène à partir de bukkit.yml adopté: <white>{generator}'
+spawn-set: <green>Évasé de {world}, fixé à {x} {y} {z}.
+property-set: '<green>{world}: {key} = <white>{value}'
+reloaded: <green>Vystorm Mondes rechargés ({count} mondes).
+delete-title: Supprimer {world}
+delete-question: Ceci supprime {world} avec toutes ses constructions. Saisissez le nom du monde à confirmer.
+regen-title: Régénérer {world}
+regen-question: Cela remplace tout terrain et les constructions de {world} par un terrain frais. Saisissez le nom du monde
+  à confirmer.
+clone-question: 'Nom de la copie de {world}:'
+list-header: '<gold>Mondes ({count})</gold> <gray>Serveur : {tps}'
+list-entry-loaded: <green>●</green> <yellow>{world}</yellow> <gray>{type}, groupe {group}, {players} joueurs, {chunks} morceaux,
+  {entities} entités
+list-entry-unloaded: <gray>○ {world} {type}, groupe {group}, non chargé
+list-entry-busy: <gold>◌</gold> <gray>{world} occupés
+list-entry-error: '<red>✖</red> <gray>{world}: <red>{error}'
+info-header: <gold>Monde {world}</gold> <gray>-</gray> {title}
+info-state: <gray>{state}, type {type}, semences {seed}, générateur {generator}, groupe {group}, hauteur de construction {height}
+info-load: '<gray>{players} joueurs, {chunks} morceaux, {entities} entités, {tiles} entités de bloc. Serveur : {tps}'
+info-error: '<red>Non chargé: {error}'
+info-properties: <gray>{properties}
+state-loaded: chargé
+state-unloaded: non chargé
+button-tp: '[Go]'
+button-tp-hover: Téléportez là-bas
+button-edit: '[Edit]'
+button-edit-hover: Ouvrez les paramètres du monde
+button-info: '[Info]'
+button-info-hover: Afficher les détails
+button-load: '[Load]'
+button-load-hover: Chargez ce monde
+button-unload: '[Unload]'
+button-unload-hover: Sauvez et déchargez ce monde
+button-create: '[Create world]'
+button-create-hover: Ouvrir la boîte de dialogue Créer
+button-import: '[Import folder]'
+button-import-hover: Liste des dossiers mondiaux qui peuvent être importés
+button-import-one: '[Import]'
+button-import-one-hover: Importer et charger ce dossier
+generators-header: <gold>Groupes électrogènes ({count})</gold> <gray>utilisation comme générateur:VALUE
+generators-none: <gray>Aucun plugin générateur ou préréglage n'est installé.
+generators-preset: <gray>- <yellow>{value}</yellow> ({name})
+generators-plugin: <gray>- <yellow>{value}</yellow> <gray>(plugin; ajouter :id si elle en a besoin)
+generator-none: Vanille (par type de monde)
+generator-preset: 'Préréglage: {name}'
+generator-plugin: 'Greffon: {name}'
+vmenu-worlds: Mondes
+vmenu-worlds-desc: Voyage dans les autres mondes du serveur
+vmenu-admin: Gestion mondiale
+vmenu-admin-desc: Créer, importer et configurer des mondes
+selector-title: Mondes ({count})
+selector-players: '<gray>Joueurs & #160;: <white>{players}{limit}'
+selector-mode: '<gray>Mode jeu & #160;: <white>{mode}'
+selector-price-once: '<gold>Entrée: {price} (une fois)'
+selector-price-every-visit: '<gold>Entrée : {price} par visite'
+selector-unlocked: <green>Déverrouillé
+selector-locked: '<red>Verrouillé : vous n''avez pas la permission'
+selector-full: <red>Plein
+selector-too-poor: <red>Vous ne pouvez pas payer les frais d'entrée
+selector-here: |-
+  <green>Vous êtes ici
+  <yellow>Faites un clic droit : allez au apparition
+selector-click: |-
+  <yellow>Cliquez à gauche : voyage (votre préférence d'arrivée)
+  <yellow>Faites un clic droit : voyagez jusqu'au apparition
+selector-admin: '<dark_gray>Maj-gauche-clic : paramètres du monde'
+selector-none: <gray>Aucun autre monde
+selector-spawn: <yellow>Spawn de ce monde
+selector-spawn-lore: <gray>Téléportez à la frénésie du monde dans lequel vous êtes
+selector-to-admin: <gold>Gestion mondiale
+mode-survival: Survie
+mode-creative: Créatif
+mode-adventure: Aventure
+mode-spectator: Spectateur
+admin-title: Gestion mondiale ({count}) - {tps}
+admin-world-name: <yellow>{world}
+admin-world-loaded: |-
+  <green>Charges</green> <gray>- {type}, groupe {group}
+  <gray>{players} joueurs, {chunks} morceaux, {entities} entités
+  <gray>Caché dans le sélecteur: {hidden}
+  <yellow>Cliquez sur : paramètres
+admin-world-unloaded: |-
+  <gray>Non chargé - {type}, groupe {group}
+  <yellow>Cliquez sur : paramètres
+admin-world-error: |-
+  <red>Non chargé: {error}
+  <gray>{type}, groupe {group}
+  <yellow>Cliquez sur : paramètres
+admin-create: <green>Créer un monde
+admin-create-lore: <gray>Type, graine, générateur, branchement et fin
+admin-import: <yellow>Importer le dossier
+admin-import-lore: <gray>Liste les dossiers du monde qui ne sont pas encore chargés
+admin-list: <yellow>Liste dans le chat
+admin-list-lore: <gray>Tous les mondes avec des boutons cliquables
+admin-selector: <yellow>Sélecteur mondial
+admin-config: <yellow>Paramètres du plugin
+admin-config-lore: <gray>config.yml dans l'éditeur de configuration Core
+world-title: Monde {world}
+w-pvp: PvP
+w-monsters: Les monstres frayent
+w-animals: Animaux reproducteurs
+w-hunger: Faim
+w-fly: Vol autorisé
+w-keep-spawn: Garder le apparition chargé
+w-autoload: Charger au démarrage du serveur
+w-hidden: Caché dans le sélecteur
+w-permission: Autorisation d'entrée
+w-permission-on: |-
+  <green>Activé</green> <gray>- besoins {node}
+  <yellow>Cliquez pour désactiver
+w-remember: Retourner où les joueurs sont partis
+w-game-mode: Mode jeu à l'entrée
+w-difficulty: Difficulté
+w-time-lock: Verrouillage
+w-weather-lock: Verrouillage météorologique
+w-price-mode: 'Frais d''entrée: une ou chaque visite'
+w-display-name: Afficher le nom
+w-description: Désignation des marchandises
+w-icon: Icône
+w-icon-lore: |-
+  <gray>Maintenant : <white>{value}
+  <yellow>Cliquez avec la nouvelle icône dans votre main (main vide: par défaut)
+w-price: Taxe d'entrée
+w-player-limit: Limite du joueur (0 = aucun)
+w-group: Groupe d ' inventaire
+w-respawn-world: Le monde de la relève
+w-nether: Entier lié
+w-end: Fin liée
+w-set-spawn: <yellow>Faites apparition ici
+w-set-spawn-lore: <gray>Votre position devient le frayeur de ce monde
+w-teleport: <yellow>Allez-y
+w-load: <green>Charger le monde
+w-unload: <red>Enregistrer et décharger le monde
+w-dialog: <yellow>Tous les paramètres comme boîte de dialogue
+w-dialog-lore: <gray>Mêmes réglages dans la boîte de dialogue Vystorm
+w-regenerate: <red>Régénérer
+w-regenerate-lore: |-
+  <gray>Nouveau terrain, toutes les constructions sont remplacées
+  <gray>Vous confirmez en tapant le nom du monde
+w-delete: <red>Supprimer le monde
+w-delete-lore: |-
+  <gray>Décharge et enlève le monde
+  <gray>Vous confirmez en tapant le nom du monde
+w-clone: Copier le monde
+w-clone-lore: <gray>Copie le monde sous un nouveau nom
+prompt-display-name: 'Affichage du nom de {world} (couleurs MiniMessage autorisées, vide = nom du monde):'
+prompt-description: 'Une ligne dans le sélecteur pour {world}:'
+prompt-price: 'Frais d''entrée pour {world} (0 = gratuit):'
+prompt-player-limit: 'La plupart des joueurs à la fois dans {world} (0 = aucune limite):'
+prompt-group: 'Groupe d''inventaire de {world} (monde en un seul groupe, XP, santé ...):'
+prompt-respawn-world: 'Où les joueurs qui meurent en {world} respawn (nom du monde, aucun = ce monde ou son monde, vanille
+  = serveur par défaut):'
+prompt-nether: 'Pays-Bas liés à {world} (aucune = aucun lien):'
+prompt-end: 'Monde final lié à {world} (aucune = aucun lien):'
+create-title: Créer un monde
+create-help: Choisissez un nom et tapez. La graine, le générateur et la hauteur de construction personnalisée sont facultatifs;
+  laisser les champs vides pour la vanille. Une hauteur de construction personnalisée nécessite un redémarrage du serveur
+  avant que le monde n'existe.
+create-name: Nom (a-z, 0-9, _ et -)
+create-type: Type
+create-generator: Groupe électrogène
+create-generator-id: id ou paramètres du générateur (optionnel, Plugin:id fonctionne également ici)
+create-seed: Semences (vide = aléatoire)
+create-structures: Structures (villages, temples...)
+create-nether: Créer un lien entre eux
+create-end: Créer une fin liée
+create-group: Groupe d ' inventaire
+create-min-y: Niveau de construction le plus bas, e.g. -128 (vide = vanille)
+create-height: Construisez la hauteur en blocs, e.g. 512 (vide = vanille)
+create-button: Créer
+kind-normal: Normal
+kind-nether: Nether
+kind-end: Fin
+kind-flat: Plat
+kind-void: Void
+kind-amplified: Amplifié
+kind-large-biomes: Grands biomes
+section-title: Cadres mondiaux
+section-desc: Propriétés du monde choisi avec /worlds edit ou le menu du monde (else the one you stand in).
+section-editing: <gray>Modifier les paramètres mondiaux de <yellow>{world}
+section-saved: <green>Paramètres de {world} enregistrés.
+section-no-world: Aucun monde sélectionné
+admin-module: Mondes
+admin-action-list: Liste des mondes
+admin-action-info: Détails du monde
+admin-action-create: Créer un monde
+admin-action-import: Importer le dossier
+admin-action-load: Charger le monde
+admin-action-unload: Décharger le monde
+admin-action-groups: Groupes mondiaux
+admin-action-reload: Recharger
+height-seed: <red>Les mondes avec une hauteur de construction personnalisée utilisent la graine principale du serveur; laissez
+  la graine dehors.
+regenerated-restart: <green>Les vieux morceaux de {world} ont été déplacés. <yellow>Redémarrer le serveur</yellow> pour le
+  charger à nouveau avec un terrain frais (les mondes avec une hauteur de construction personnalisée sont créés par le serveur).
+commands:
+  worlds:
+    description: 'Multimonde : sélecteur mondial, téléportations et gestion mondiale'
+    aliases: []
+    usage: '[WORLD]'
+    sub:
+      menu:
+        name: menu
+        aliases: []
+        description: Ouvrez le sélecteur du monde
+      tp:
+        name: tp
+        aliases: []
+        description: 'Voyagez dans un monde (administrateurs : envoyez un joueur là-bas)'
+        usage: WORLD [PLAYER]
+      spawn:
+        name: spawn
+        aliases: []
+        description: Va au frayeur du monde dans lequel tu es
+      arrival:
+        name: arrival
+        aliases: []
+        description: Choisissez frayer ou dernière position pour le voyage mondial
+        usage: Fraie
+      favorite:
+        name: favorite
+        aliases: []
+        description: Frappez un signet pour un monde visible
+        usage: '[WORLD]'
+      favorites:
+        name: favorites
+        aliases: []
+        description: Ouvrez vos mondes préférés
+      admin:
+        name: admin
+        aliases: []
+        description: Ouvrir le menu mondial admin
+      list:
+        name: list
+        aliases: []
+        description: Tous les mondes avec état, joueurs et TPS
+      info:
+        name: info
+        aliases: []
+        description: Paramètres et état du monde
+        usage: '[WORLD]'
+      groups:
+        name: groups
+        aliases: []
+        description: Groupes mondiaux et ce qu'ils gardent séparés
+      create:
+        name: create
+        aliases: []
+        description: 'Créer un monde (pas de nom : ouvrez la boîte de dialogue Créer)'
+        usage: '[NAME] [TYPE] [seed:SEED] [generator:PLUGIN:ID] [group:GROUP] [with-nether] [with-end] ...'
+      import:
+        name: import
+        aliases: []
+        description: 'Importer un dossier mondial (sans nom : lister les dossiers)'
+        usage: '[FOLDER] [TYPE] [seed:SEED] [generator:PLUGIN:ID] [group:GROUP] ...'
+      load:
+        name: load
+        aliases: []
+        description: Charger un monde enregistré
+        usage: WORLD
+      unload:
+        name: unload
+        aliases: []
+        description: Décharge un monde
+        usage: WORLD
+      delete:
+        name: delete
+        aliases: []
+        description: Supprimer un monde (avec sauvegarde, demande le nom)
+        usage: WORLD
+      regen:
+        name: regen
+        aliases: []
+        description: Régénérer un monde avec la même, un hasard ou une nouvelle graine
+        usage: WORLD [same|random|SEED]
+      clone:
+        name: clone
+        aliases: []
+        description: Copier un monde sous un nouveau nom
+        usage: WORLD NEW-NAME [confirm]
+      set:
+        name: set
+        aliases: []
+        description: Changer une propriété mondiale
+        usage: WORLD PROPERTY VALUE
+      edit:
+        name: edit
+        aliases: []
+        description: Ouvrir le menu du monde
+        usage: '[WORLD]'
+      settings:
+        name: settings
+        aliases: []
+        description: Ouvrir la boîte de dialogue des paramètres d'un monde
+        usage: '[WORLD]'
+      setspawn:
+        name: setspawn
+        aliases: []
+        description: Réglez le monde où vous êtes
+      link:
+        name: link
+        aliases: []
+        description: Relier les portails d'un monde à un autre monde
+        usage: WORLD fin TARGET$none
+      generators:
+        name: generators
+        aliases: []
+        description: Générateurs et préréglages mondiaux installés
+      template:
+        name: template
+        aliases: []
+        description: "Gérer les modèles de mondes à visiter"
+      visit:
+        name: visit
+        aliases: []
+        description: "Visiter un modèle ou afficher les modèles disponibles"
+      leave:
+        name: leave
+        aliases: []
+        description: "Quitter la visite en toute sécurité"
+      reload:
+        name: reload
+        aliases: []
+        description: Recharger la configuration, worlds.yml et fichiers linguistiques
+    values:
+      spawn: apparition
+      last: dernier
+      confirm: confirmer
+      nether: et moi
+      end: fin
+      same: même
+      random: aléatoire
+      none: aucun
+favorite-add: '<yellow>Maj-droit-clic : ajouter aux favoris'
+favorite-remove: '<gold>Favori <gray>· Maj-droit-clic : supprimer'
+favorite-added: <green>{world} ajouté à vos favoris.
+favorite-removed: <yellow>{world} retiré de vos favoris.
+favorites-show-only: <gold>Afficher les favoris seulement
+favorites-show-all: <yellow>Montrer tous les mondes
+favorites-filter-lore: <gray>Les favoris apparaissent en premier. Les mondes cachés ou déchargés restent cachés.
+favorites-empty: <gray>Pas de favoris visibles. Passez à tous les mondes pour en ajouter.
+clone-live-unsupported: <red>Le clonage en direct n'est pas disponible sur ce serveur. Clone un monde déchargé ou un monde
+  géré qui peut être déchargé.
+usage-favorite: '<yellow>Utilisation: /worlds favorite [WORLD]'
+w-reset: "Réinitialisation auto (off, daily 04:00, weekly mon 04:00, every 3 days 04:00)"
+w-reset-seed: "Graine après réinitialisation (same ou random)"
+reset-warning: "<gold>⚠ {world} sera réinitialisé dans {minutes} minute(s). Emporte tes affaires !"
+reset-done: "<green>{world} a été réinitialisé comme prévu."
+bad-reset: "<red>Utilise off, daily HH:MM, weekly JOUR HH:MM ou every N days HH:MM (N 2-90)."
+w-border: "Taille de la bordure (off = inchangée)"
+w-border-center: "Centre de la bordure (spawn ou X Z)"
+w-border-event: "Bordure qui rétrécit (off, daily 20:00, …)"
+w-border-start: "Lancer l’événement maintenant"
+w-border-start-lore: "Rétrécit la bordure maintenant, la maintient puis l’agrandit à nouveau"
+prompt-border: "Taille de la bordure de {world} en blocs (16 ou plus ; off = ne pas toucher) :"
+prompt-border-center: "Centre de la bordure de {world} : spawn ou X Z :"
+prompt-border-event: "Quand la bordure de {world} rétrécit : off, daily HH:MM, weekly JOUR HH:MM ou every N days HH:MM :"
+border-warning: "<gold>⚠ La bordure de {world} rétrécit à {size} blocs dans {minutes} minute(s) !"
+border-shrinking: "<red>⚠ La bordure de {world} rétrécit à {size} blocs en {minutes} minute(s) – va vers le centre !"
+border-restored: "<green>La bordure de {world} revient à {size} blocs."
+border-no-size: "<red>Définis d’abord une taille de bordure pour {world} et charge le monde."
+# Core panels
+panel-exact-price: "Prix d’entrée exact (tout montant)"
+panel-search: "Rechercher un monde"
+panel-players: "Joueurs"
+panel-state: "État"
+panel-chunks: "Chunks chargés"
+panel-entities: "Entités"
+panel-favorite: "Favori"
+panel-favorites: "Favoris"
+panel-all: "Tous les mondes"
+panel-here: "Vous êtes ici"
+panel-spawn: "Aller au point d’apparition"
+panel-rules: "Règles du monde"
+panel-entry: "Voyage et apparence"
+panel-borders: "Bordures et réinitialisations"
+panel-operations: "Actions sur le monde"
+panel-unload-confirm: "Enregistrer et décharger {world} ? Les joueurs seront déplacés vers le monde principal."
+panel-option-none: "Par défaut"
+panel-option-off: "Désactivé"
+panel-option-peaceful: "Paisible"
+panel-option-easy: "Facile"
+panel-option-normal: "Normale"
+panel-option-hard: "Difficile"
+panel-option-day: "Jour"
+panel-option-noon: "Midi"
+panel-option-sunset: "Coucher du soleil"
+panel-option-night: "Nuit"
+panel-option-midnight: "Minuit"
+panel-option-clear: "Dégagé"
+panel-option-rain: "Pluie"
+panel-option-thunder: "Orage"
+panel-option-once: "Une seule fois"
+panel-option-every-visit: "À chaque visite"
+panel-option-same: "Même graine"
+panel-option-random: "Graine aléatoire"

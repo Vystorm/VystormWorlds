@@ -1,0 +1,9 @@
+title: 'Worlds'
+pages:
+  - title: 'Travel between worlds'
+    text: |
+      /worlds opens the world selector. Pick a world to travel there safely; /worlds spawn takes you to the spawn of your world.
+  - title: 'Favorites and arrival'
+    text: |
+      Bookmark worlds you visit often, and choose whether you arrive at the spawn or your last position.
+      Type /worlds help to see every command.

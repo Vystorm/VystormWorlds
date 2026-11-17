@@ -1,0 +1,9 @@
+title: 'Welten'
+pages:
+  - title: 'Zwischen Welten reisen'
+    text: |
+      /worlds öffnet die Weltenauswahl. Wähle eine Welt, um sicher dorthin zu reisen; /worlds spawn bringt dich zum Spawn deiner Welt.
+  - title: 'Favoriten und Ankunft'
+    text: |
+      Merke dir Welten, die du oft besuchst, und wähle, ob du am Spawn oder an deiner letzten Position ankommst.
+      Mit /worlds help siehst du alle Befehle.

@@ -1,0 +1,9 @@
+title: 'Mundos'
+pages:
+  - title: 'Viajar entre mundos'
+    text: |
+      /worlds abre o seletor de mundos. Escolha um mundo para ir até lá; /worlds spawn leva ao spawn.
+  - title: 'Favoritos e chegada'
+    text: |
+      Salve mundos favoritos e escolha chegar no spawn ou na última posição.
+      Digite /worlds help para ver todos os comandos.

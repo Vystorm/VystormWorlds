@@ -1,0 +1,9 @@
+title: 'Mondi'
+pages:
+  - title: 'Viaggiare tra i mondi'
+    text: |
+      /worlds apre il selettore dei mondi. Scegli un mondo per andarci; /worlds spawn ti porta allo spawn.
+  - title: 'Preferiti e arrivo'
+    text: |
+      Salva i mondi preferiti e scegli se arrivare allo spawn o all’ultima posizione.
+      Scrivi /worlds help per vedere tutti i comandi.

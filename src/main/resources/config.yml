@@ -1,0 +1,84 @@
+# Vystorm Worlds - multiworld management on top of Vystorm Core.
+# The worlds themselves (type, seed, generator, rules, groups, links) are stored in worlds.yml.
+# Edit them in game: /worlds admin, /worlds edit WORLD or /worlds set WORLD PROPERTY VALUE.
+
+# Load worlds marked "autoload" when the server starts (one tick after all plugins are enabled, so generator plugins are ready).
+autoload: true
+
+# Add already loaded worlds that are missing in worlds.yml (server worlds, worlds of other plugins).
+# Worlds of other plugins are added hidden and without autoload, so their plugin keeps loading them itself.
+adopt-loaded-worlds: true
+
+# Title with the world's display name (and its description as subtitle) when a player arrives in another world.
+arrival-title: true
+
+# Group for worlds without one. Worlds in the same group share what is listed in groups.separate.
+default-group: default
+
+groups:
+  # Separate inventories per world group. false: everything is shared between all worlds (vanilla behaviour).
+  enabled: true
+  # What every group keeps for itself: inventory, ender-chest, experience, health, hunger, effects
+  separate: [inventory, ender-chest, experience, health, hunger, effects]
+  # Short action bar note when a player's inventory was switched to another group.
+  notify: true
+
+teleport:
+  # Search radius in blocks for a safe spot around the target (0-32).
+  safe-radius: 8
+  # Left-click in the selector returns players to where they left a world; right-click always goes to the spawn.
+  return-to-last-position: true
+
+portals:
+  # Nether/end portals in a managed world without a linked nether/end: vanilla (server's main nether/end) or block.
+  unlinked: vanilla
+  # Tell VystormPortals (if installed) which worlds belong together, so its portal previews show the right world.
+  sync-vystorm-portals: true
+
+respawn:
+  # Players without bed or respawn anchor respawn at the spawn of the world they died in (nether/end: the linked overworld)
+  # instead of the server's main world. The world property respawn-world overrides this per world.
+  same-world: true
+
+delete:
+  # Deleted worlds and the old chunks of regenerated worlds are moved to plugins/VystormWorlds/backups instead of being erased.
+  backup: true
+
+selector:
+  # Show worlds the player may not enter (with bars and a note) instead of hiding them.
+  show-locked: true
+
+border-events:
+  # World border editor: per world set the border size (/worlds set WORLD border 2000, "off" = untouched), its centre
+  # (border-center: spawn or "X Z") and a shrinking event schedule (border-event: "daily 20:00", "weekly sat 18:00",
+  # "every 3 days 20:00" or "off") – also in the world menu. During an event the border shrinks to this share of its
+  # size, stays there and then grows back within a minute. Players in the world are warned 5 and 1 minutes before.
+  # Shrinking border events. false: no event starts (by schedule or from the menu) and border-event cannot be changed;
+  # border sizes and saved schedules stay, a running event still grows back.
+  enabled: true
+  # How small the border gets (1-99 percent of its size).
+  shrink-to-percent: 25
+  # How long the shrinking takes (1-240 minutes).
+  minutes: 10
+  # How long it stays small before growing back (0-1440 minutes).
+  hold-minutes: 10
+
+reset:
+  # Scheduled world resets: set a schedule per world with /worlds set WORLD reset "daily 04:00" (also
+  # "weekly mon 04:00", "every 3 days 04:00" or "off") and the seed with /worlds set WORLD reset-seed same|random.
+  # Players in the world are warned 10 minutes and 1 minute before; then the world is regenerated like /worlds regen
+  # (the old terrain goes to backups when delete.backup is on). Server worlds are never reset.
+  # false: no world is reset on schedule and reset/reset-seed cannot be changed; saved schedules and backups stay.
+  enabled: true
+  # How many reset backups to keep per world (0-100); older ones are deleted after each scheduled reset.
+  keep-backups: 3
+
+templates:
+  # Visit-world templates (/worlds template, /worlds visit). false: both commands are refused; saved templates and
+  # their worlds stay, and players already on a visit can still leave or are returned when their time is up.
+  enabled: true
+
+build-height:
+  # Custom build height for new worlds (min-y/height in /worlds create and the create dialog). false: such worlds
+  # cannot be created; existing worlds with a custom height keep loading.
+  enabled: true

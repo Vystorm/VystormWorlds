@@ -1,0 +1,55 @@
+plugins { id 'java' }
+group = 'at.esoren'
+version = '1.16.0'
+repositories {
+    mavenCentral()
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+}
+java { toolchain.languageVersion = JavaLanguageVersion.of(25) }
+def coreJar = providers.gradleProperty('vystormCoreJar').getOrElse(file('libs/Vystorm_Core.jar').exists() ? 'libs/Vystorm_Core.jar' : '../Vystorm_Core/build/libs/Vystorm_Core-0.64.0-Vystorm-Core-26.2.jar')
+dependencies {
+    compileOnly files(coreJar)
+    testImplementation files(coreJar)
+    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    testImplementation 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    testImplementation 'org.junit.jupiter:junit-jupiter:6.0.1'
+    testImplementation 'org.mockito:mockito-core:5.20.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:6.0.1'
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8'; options.release = 21 }
+test { useJUnitPlatform() }
+processResources { inputs.property('version', project.version); filesMatching('plugin.yml') { expand(version: project.version) } }
+jar { archiveFileName = "VystormWorlds-${project.version}.jar"; from('LICENSE'); from('PROVENANCE.md') }
+
+def paper1206Libraries = fileTree(providers.gradleProperty('paper1206Libraries').getOrElse((System.getProperty('user.home') + '/source/tools/smoke-1206/libraries'))) { include '**/*.jar' }
+tasks.register('compat1206', JavaCompile) {
+    description = 'Compiles main sources against the offline Paper 1.20.6 libraries.'
+    group = 'verification'
+    source = sourceSets.main.java
+    classpath = files(coreJar) + paper1206Libraries
+    destinationDirectory = layout.buildDirectory.dir('classes/compat1206')
+    javaCompiler = javaToolchains.compilerFor { languageVersion = JavaLanguageVersion.of(25) }
+    doFirst {
+        if (!paper1206Libraries.files.any { it.name.startsWith('paper-api-1.20.6-') }) {
+            throw new GradleException('Paper 1.20.6 libraries missing; set -Ppaper1206Libraries=<libraries directory>')
+        }
+    }
+}
+check.dependsOn tasks.named('compat1206')
+sourceSets {
+    modern {
+        compileClasspath += sourceSets.main.output + configurations.compileClasspath
+    }
+}
+jar { from sourceSets.modern.output }
+test { classpath += sourceSets.modern.output }
+tasks.register('test1206', Test) {
+    description = 'Runs tests with the shipped main bytecode and the Paper 1.20.6 runtime API.'
+    group = 'verification'
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.output + sourceSets.main.output + files(coreJar) + paper1206Libraries +
+            configurations.testRuntimeClasspath.filter { !it.path.contains('io.papermc.paper') && !it.path.contains('net.kyori') }
+    systemProperty 'paper1206', 'true'
+}
+check.dependsOn tasks.named('test1206')

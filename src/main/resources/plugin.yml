@@ -1,0 +1,27 @@
+name: VystormWorlds
+version: '${version}'
+main: at.esoren.vystormworlds.WorldsPlugin
+api-version: '1.20.6'
+author: Esoren
+depend: [vystorm_core]
+softdepend: [Vault, VaultUnlocked, VystormPortals]
+website: https://vystorm.net
+description: Multiworld management - create, import, link and switch worlds with separate inventories, all from menus.
+permissions:
+  vystormworlds.use:
+    description: World selector, /worlds tp, /worlds spawn and /worlds arrival.
+    default: true
+  vystormworlds.admin:
+    description: Create, import, load, unload, delete, regenerate, clone and configure worlds.
+    default: op
+    children:
+      vystormworlds.use: true
+  vystormworlds.bypass:
+    description: Enter every world regardless of entry permission, player limit and price.
+    default: op
+  vystormworlds.bypass.gamemode:
+    description: Keep your game mode when entering a world with a fixed game mode.
+    default: op
+  vystormworlds.enter.*:
+    description: Enter every world that requires an entry permission (vystormworlds.enter.WORLD).
+    default: op

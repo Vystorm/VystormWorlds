@@ -1,0 +1,514 @@
+template-exists: "<yellow>That template already exists. Close/open it without replacing its saved world."
+template-saved: "<yellow>Saved visit template {template}."
+template-missing: "<yellow>That template is missing or closed."
+template-opened: "<yellow>Template {template} is open."
+template-closed: "<yellow>Template {template} is closed; its saved world is retained."
+template-usage: "<yellow>/worlds template create NAME flat|island SECONDS locked|kit | list | close NAME | open NAME"
+template-none: "<yellow>No visit templates yet. Create one: /worlds template create NAME flat|island SECONDS locked|kit"
+template-failed: "<yellow>The template operation failed. Existing data is preserved; check the server log."
+template-busy: "<yellow>Finish your current visit or inventory recovery first."
+template-preparing: "<yellow>Preparing visit to {template}…"
+template-entry-failed: "<yellow>Visit entry was refused. Your original state is kept. Dismount and retry after any pending recovery."
+template-arrived: "<yellow>Welcome to {template}: {seconds}s. Use /worlds leave to return with your original inventory."
+template-not-visiting: "<yellow>You are not visiting a Worlds template."
+template-exit-pending: "<yellow>Return is still pending. Your saved inventory is retained."
+template-timeout: "<yellow>Visit time is up. Returning you to your original location."
+template-info: "<yellow>{template} — {terrain}, {seconds}s, {inventory}, {state}"
+template-terrain-flat: "flat landscape"
+template-terrain-island: "island"
+template-inventory-locked: "locked, empty inventory"
+template-inventory-kit: "temporary exploration kit"
+template-state-open: "open"
+template-state-closed: "closed"
+usage-arrival: "<yellow>Usage: /{label} arrival spawn|last"
+arrival-spawn: "<green>World travel now takes you to the spawn. Your saved positions are kept."
+arrival-last: "<green>World travel now uses your last position where the server and world allow it."
+# Vystorm Worlds - English texts (MiniMessage). Placeholders in {braces}.
+denied: "<red>You lack permission for this."
+player-only: "<red>Run this in game."
+feature-off: "<red>This feature is turned off on this server."
+unknown-world: "<red>No world called {world}."
+player-offline: "<red>{player} is not online."
+cancelled: "<gray>Cancelled."
+"yes": "yes"
+"no": "no"
+page-back: "<yellow>Back"
+page-next: "<yellow>Next page"
+toggle-on: "<green>On <gray>- click to switch off"
+toggle-off: "<red>Off <gray>- click to switch on"
+value-lore: "<gray>Now: <white>{value}\n<yellow>Click to change"
+cycle-lore: "<gray>Now: <white>{value}\n<yellow>Left-click: next, right-click: previous"
+
+help-player: "<gold>Worlds</gold> <gray>/{label} - world selector | /{label} tp WORLD | /{label} spawn | /{label} arrival spawn|last"
+help-admin: "<gray>Admin: /{label} admin | list | info WORLD | create | import | load WORLD | unload WORLD | delete WORLD | regen WORLD | clone WORLD NEW | set WORLD PROPERTY VALUE | edit WORLD | link WORLD nether|end TARGET | groups | generators | reload"
+usage-info: "<gray>/{label} info WORLD"
+usage-create: "<gray>/{label} create NAME [normal|nether|end|flat|void|amplified|large-biomes] [seed:SEED] [generator:Plugin:id] [biomes:Plugin:id] [structures:false] [with-nether] [with-end] [group:GROUP] [min-y:-128 height:512]"
+usage-world: "<gray>/{label} {sub} WORLD"
+usage-clone: "<gray>/{label} clone WORLD NEW-NAME [confirm]"
+usage-set: "<gray>/{label} set WORLD PROPERTY VALUE"
+usage-link: "<gray>/{label} link WORLD nether|end TARGET-WORLD (or none)"
+usage-tp: "<gray>/worlds tp WORLD"
+usage-delete: "<gray>/{label} delete WORLD"
+usage-regen: "<gray>/{label} regen WORLD [same|random|SEED]"
+properties-list: "<gray>Properties: <white>{keys}"
+
+bad-name: "<red>World names use a-z, 0-9, _ and - (at most 32 characters, lower case)."
+exists: "<red>A world called {world} already exists."
+folder-exists: "<red>A folder for {world} already exists. Use /worlds import to load it."
+not-loaded: "<red>{world} is not loaded."
+world-changed: "<red>{world} was changed or removed in the meantime (/worlds reload). Please open the menu again."
+spawn-searching: "<gray>Looking for a dry spawn in {world} in the background; the server keeps running. You can already go there."
+spawn-search-progress: "<gray>Still looking for a spawn in {world} ({count} areas checked) ..."
+spawn-found: "<green>Spawn of {world} set to {x} {y} {z}."
+already-loaded: "<yellow>{world} is already loaded."
+server-world: "<red>{world} is a server world (main world, its nether or end) and cannot be unloaded, deleted or regenerated."
+unload-failed: "<red>{world} could not be unloaded."
+busy: "<red>{world} is busy with another operation, try again in a moment."
+refused: "<red>The folder of {world} is protected (outside the world folder, a server world or a Vystorm Core plugin world). Nothing was changed."
+delete-failed: "<red>The files of {world} could not be moved or deleted; see the console. The world entry was kept."
+generator-missing: "<red>The generator of {world} is missing, so it cannot be regenerated. Install the generator plugin first."
+load-failed: "<red>{world} could not be loaded again; see the console."
+clone-failed: "<red>Copying {world} failed; see the console. Nothing was created."
+clone-confirm-evacuate: "<yellow>Players are in {world}. For a clean copy it is unloaded while it is copied: they are moved to the main spawn. Run <white>/{label} clone {world} {target} confirm</white> to go on."
+clone-confirm-live: "<yellow>Players are in {world}, and it stays loaded while it is copied (server world, custom build height or a world of another plugin): changes made during the copy are missing in it. Run <white>/{label} clone {world} {target} confirm</white> to go on, or copy it when nobody is there."
+bad-value: "<red>{value} is not a valid value for {key}."
+unknown-property: "<red>Unknown property {key}. <gray>Press Tab to see valid values."
+bad-group: "<red>Group names use a-z, 0-9, _ and - (at most 32 characters)."
+bad-option: "<red>Unknown or invalid option: {token}"
+height-both: "<red>A custom build height needs both min-y and height."
+height-multiple: "<red>min-y and height must be multiples of 16 ({token})."
+height-range: "<red>Build height out of range ({token}): min-y at least -2032, height 16 to 4064, top (min-y + height) at most 2032."
+height-terrain: "<red>The vanilla terrain does not fit into {token}: overworld types need at most -64 to at least 320, nether and end 0 to 128."
+height-generator: "<red>With a custom build height only vanilla types or a generator plugin (Plugin:id, loaded at server start) work; presets and separate biome providers do not."
+links-overworld: "<red>Only overworld types can get a linked nether and end."
+registry-broken: "<red>worlds.yml could not be read ({error}). Fix the file and run /worlds reload; until then nothing is changed."
+fixed-at-creation: "<red>{key} is chosen when a world is created and cannot be changed afterwards (it would mix old and new terrain)."
+confirm-mismatch: "<red>Not confirmed: you did not type {world}. Nothing was changed."
+confirm-console-delete: "<yellow>To delete {world}, type the name again: /{label} delete {world} {world}"
+confirm-console-regen: "<yellow>To regenerate {world}, type the name again: /{label} regen {world} {seed} {world}"
+stand-in-world: "<red>Stand in {world} to set its spawn."
+
+no-entry: "<red>You may not enter {world}."
+world-full: "<red>{world} is full ({limit} players)."
+too-poor: "<red>Entering {world} costs {price}."
+paid: "<green>You paid {price} to enter {world}."
+arrival-title: "<gold>{world}"
+pay-title: "Entry fee"
+pay-question: "Entering {world} costs {price}. Pay and travel?"
+no-safe-spot: "<red>No safe spot found in {world} near the target. Ask an admin to set a spawn."
+teleported: "<green>Welcome to {world}"
+evacuated: "<yellow>{world} was closed, you were moved to the main world."
+portal-unlinked: "<red>This world has no linked dimension for this portal."
+sent: "<green>{player} is on the way to {world}."
+
+group-switched: "<gray>Inventory group: <yellow>{group}"
+group-failed: "<red>Your inventory could not be switched to this world's group, so nothing was changed. Please tell an admin."
+group-file-broken: "<red>Your saved {group} inventory could not be read and was set aside for an admin; you start empty here."
+groups-header: "<gold>World groups</gold> <gray>(separate per group: {separate})"
+groups-header-off: "<gold>World groups</gold> <red>(switched off in config.yml, all worlds share everything)"
+groups-entry: "<yellow>{group}</yellow><gray>: {worlds}"
+
+creating: "<gray>Creating {world} ..."
+created: "<green>World <yellow>{world}</yellow> created ({type}, seed {seed}, linked: {extra})."
+created-restart: "<green>{world} is prepared with build height {min} to {max}. <yellow>Restart the server</yellow> to create it: the server reads the new dimension type only while starting."
+create-failed: "<red>{world} could not be loaded: {error}"
+loaded: "<green>{world} loaded."
+unloaded: "<green>{world} saved and unloaded."
+deleting: "<gray>Deleting {world} ..."
+deleted: "<green>{world} deleted."
+deleted-backup: "<green>{world} deleted. Its folder was moved to plugins/VystormWorlds/backups."
+regenerating: "<gray>Regenerating {world} ..."
+regenerated: "<green>{world} regenerated."
+cloning: "<gray>Copying {world} to {target} ..."
+cloned: "<green>{target} created as a copy of {world}."
+importing: "<gray>Importing {world} ..."
+imported: "<green>{world} imported and loaded."
+import-none: "<gray>No unloaded world folders found."
+import-header: "<gold>World folders that can be imported ({count}):"
+import-entry: "<gray>- <yellow>{world}</yellow> ({type})"
+import-entry-legacy: "<gray>- <yellow>{world}</yellow> ({type}, old 1.21 folder in the server folder: the server moves it into the world folder when importing)"
+import-unknown: "<red>No importable folder called {world}. /worlds import lists them."
+import-bukkit-generator: "<gray>Generator from bukkit.yml adopted: <white>{generator}"
+spawn-set: "<green>Spawn of {world} set to {x} {y} {z}."
+property-set: "<green>{world}: {key} = <white>{value}"
+reloaded: "<green>Vystorm Worlds reloaded ({count} worlds)."
+
+delete-title: "Delete {world}"
+delete-question: "This deletes {world} with all its builds. Type the world name to confirm."
+regen-title: "Regenerate {world}"
+regen-question: "This replaces all terrain and builds of {world} with fresh terrain. Type the world name to confirm."
+clone-question: "Name of the copy of {world}:"
+
+list-header: "<gold>Worlds ({count})</gold> <gray>Server: {tps}"
+list-entry-loaded: "<green>●</green> <yellow>{world}</yellow> <gray>{type}, group {group}, {players} players, {chunks} chunks, {entities} entities"
+list-entry-unloaded: "<gray>○ {world} {type}, group {group}, not loaded"
+list-entry-busy: "<gold>◌</gold> <gray>{world} busy"
+list-entry-error: "<red>✖</red> <gray>{world}: <red>{error}"
+info-header: "<gold>World {world}</gold> <gray>-</gray> {title}"
+info-state: "<gray>{state}, type {type}, seed {seed}, generator {generator}, group {group}, build height {height}"
+info-load: "<gray>{players} players, {chunks} chunks, {entities} entities, {tiles} block entities. Server: {tps}"
+info-error: "<red>Not loaded: {error}"
+info-properties: "<gray>{properties}"
+state-loaded: "loaded"
+state-unloaded: "not loaded"
+button-tp: "[Go]"
+button-tp-hover: "Teleport there"
+button-edit: "[Edit]"
+button-edit-hover: "Open the world settings"
+button-info: "[Info]"
+button-info-hover: "Show details"
+button-load: "[Load]"
+button-load-hover: "Load this world"
+button-unload: "[Unload]"
+button-unload-hover: "Save and unload this world"
+button-create: "[Create world]"
+button-create-hover: "Open the create dialog"
+button-import: "[Import folder]"
+button-import-hover: "List world folders that can be imported"
+button-import-one: "[Import]"
+button-import-one-hover: "Import and load this folder"
+
+generators-header: "<gold>Generators ({count})</gold> <gray>use as generator:VALUE"
+generators-none: "<gray>No generator plugin or preset is installed."
+generators-preset: "<gray>- <yellow>{value}</yellow> ({name})"
+generators-plugin: "<gray>- <yellow>{value}</yellow> <gray>(plugin; add :id if it needs one)"
+generator-none: "Vanilla (by world type)"
+generator-preset: "Preset: {name}"
+generator-plugin: "Plugin: {name}"
+
+vmenu-worlds: "Worlds"
+vmenu-worlds-desc: "Travel to the other worlds of the server"
+vmenu-admin: "World management"
+vmenu-admin-desc: "Create, import and configure worlds"
+selector-title: "Worlds ({count})"
+selector-players: "<gray>Players: <white>{players}{limit}"
+selector-mode: "<gray>Game mode: <white>{mode}"
+selector-price-once: "<gold>Entry: {price} (once)"
+selector-price-every-visit: "<gold>Entry: {price} per visit"
+selector-unlocked: "<green>Unlocked"
+selector-locked: "<red>Locked: you lack the permission"
+selector-full: "<red>Full"
+selector-too-poor: "<red>You cannot pay the entry fee"
+selector-here: "<green>You are here\n<yellow>Right-click: go to the spawn"
+selector-click: "<yellow>Left-click: travel (your arrival preference)\n<yellow>Right-click: travel to the spawn"
+selector-admin: "<dark_gray>Shift-left-click: world settings"
+selector-none: "<gray>No other worlds"
+selector-spawn: "<yellow>Spawn of this world"
+selector-spawn-lore: "<gray>Teleport to the spawn of the world you are in"
+selector-to-admin: "<gold>World management"
+mode-survival: "Survival"
+mode-creative: "Creative"
+mode-adventure: "Adventure"
+mode-spectator: "Spectator"
+
+admin-title: "World management ({count}) - {tps}"
+admin-world-name: "<yellow>{world}"
+admin-world-loaded: "<green>Loaded</green> <gray>- {type}, group {group}\n<gray>{players} players, {chunks} chunks, {entities} entities\n<gray>Hidden in selector: {hidden}\n<yellow>Click: settings"
+admin-world-unloaded: "<gray>Not loaded - {type}, group {group}\n<yellow>Click: settings"
+admin-world-error: "<red>Not loaded: {error}\n<gray>{type}, group {group}\n<yellow>Click: settings"
+admin-create: "<green>Create world"
+admin-create-lore: "<gray>Type, seed, generator, linked nether and end"
+admin-import: "<yellow>Import folder"
+admin-import-lore: "<gray>Lists world folders that are not loaded yet"
+admin-list: "<yellow>List in chat"
+admin-list-lore: "<gray>All worlds with clickable buttons"
+admin-selector: "<yellow>World selector"
+admin-config: "<yellow>Plugin settings"
+admin-config-lore: "<gray>config.yml in the Core config editor"
+
+world-title: "World {world}"
+w-pvp: "PvP"
+w-monsters: "Monsters spawn"
+w-animals: "Animals spawn"
+w-hunger: "Hunger"
+w-fly: "Flying allowed"
+w-keep-spawn: "Keep spawn loaded"
+w-autoload: "Load on server start"
+w-hidden: "Hidden in the selector"
+w-permission: "Entry permission"
+w-permission-on: "<green>On</green> <gray>- needs {node}\n<yellow>Click to switch off"
+w-remember: "Return where players left"
+w-game-mode: "Game mode on entry"
+w-difficulty: "Difficulty"
+w-time-lock: "Time lock"
+w-weather-lock: "Weather lock"
+w-price-mode: "Entry fee: once or every visit"
+w-display-name: "Display name"
+w-description: "Description"
+w-icon: "Icon"
+w-icon-lore: "<gray>Now: <white>{value}\n<yellow>Click with the new icon item in your hand (empty hand: default)"
+w-price: "Entry fee"
+w-player-limit: "Player limit (0 = none)"
+w-group: "Inventory group"
+w-respawn-world: "Respawn world"
+w-nether: "Linked nether"
+w-end: "Linked end"
+w-set-spawn: "<yellow>Set spawn here"
+w-set-spawn-lore: "<gray>Your position becomes the spawn of this world"
+w-teleport: "<yellow>Go there"
+w-load: "<green>Load world"
+w-unload: "<red>Save and unload world"
+w-dialog: "<yellow>All settings as dialog"
+w-dialog-lore: "<gray>Same settings in the Vystorm settings dialog"
+w-regenerate: "<red>Regenerate"
+w-regenerate-lore: "<gray>New terrain, all builds are replaced\n<gray>You confirm by typing the world name"
+w-delete: "<red>Delete world"
+w-delete-lore: "<gray>Unloads and removes the world\n<gray>You confirm by typing the world name"
+w-clone: "Copy world"
+w-clone-lore: "<gray>Copies the world under a new name"
+prompt-display-name: "Display name of {world} (MiniMessage colours allowed, empty = world name):"
+prompt-description: "One line shown in the selector for {world}:"
+prompt-price: "Entry fee for {world} (0 = free):"
+prompt-player-limit: "Most players at once in {world} (0 = no limit):"
+prompt-group: "Inventory group of {world} (worlds in one group share inventory, XP, health ...):"
+prompt-respawn-world: "Where players who die in {world} respawn (world name, none = this world or its overworld, vanilla = server default):"
+prompt-nether: "Nether world linked to {world} (none = no link):"
+prompt-end: "End world linked to {world} (none = no link):"
+
+create-title: "Create world"
+create-help: "Choose a name and type. Seed, generator and the custom build height are optional; leave fields empty for vanilla. A custom build height needs a server restart before the world exists."
+create-name: "Name (a-z, 0-9, _ and -)"
+create-type: "Type"
+create-generator: "Generator"
+create-generator-id: "Generator id or parameters (optional, Plugin:id also works here)"
+create-seed: "Seed (empty = random)"
+create-structures: "Structures (villages, temples ...)"
+create-nether: "Create a linked nether"
+create-end: "Create a linked end"
+create-group: "Inventory group"
+create-min-y: "Lowest build level, e.g. -128 (empty = vanilla)"
+create-height: "Build height in blocks, e.g. 512 (empty = vanilla)"
+create-button: "Create"
+kind-normal: "Normal"
+kind-nether: "Nether"
+kind-end: "End"
+kind-flat: "Flat"
+kind-void: "Void"
+kind-amplified: "Amplified"
+kind-large-biomes: "Large biomes"
+
+section-title: "World settings"
+section-desc: "Properties of the world chosen with /worlds edit or the world menu (else the one you stand in)."
+section-editing: "<gray>Editing world settings of <yellow>{world}"
+section-saved: "<green>Settings of {world} saved."
+section-no-world: "No world selected"
+
+admin-module: "Worlds"
+admin-action-list: "List worlds"
+admin-action-info: "World details"
+admin-action-create: "Create world"
+admin-action-import: "Import folder"
+admin-action-load: "Load world"
+admin-action-unload: "Unload world"
+admin-action-groups: "World groups"
+admin-action-reload: "Reload"
+height-seed: "<red>Worlds with a custom build height use the server's main seed; leave the seed out."
+regenerated-restart: "<green>The old chunks of {world} were moved away. <yellow>Restart the server</yellow> to load it again with fresh terrain (worlds with a custom build height are created by the server)."
+
+# /worlds through Vystorm Core: description, help and tab completion per player. "aliases" under commands.worlds are
+# extra root commands (server-wide, the admin chooses which languages: Core config commands.localized-aliases); "name"
+# and "aliases" of a subcommand are accepted in every language, English always works. "values" are the keywords of
+# link, regen and clone.
+commands:
+  worlds:
+    description: "Multiworld: world selector, teleports and world management"
+    aliases: []
+    usage: "[WORLD]"
+    sub:
+      menu:
+        name: menu
+        aliases: []
+        description: "Open the world selector"
+      tp:
+        name: tp
+        aliases: []
+        description: "Travel to a world (admins: send a player there)"
+        usage: "WORLD [PLAYER]"
+      spawn:
+        name: spawn
+        aliases: []
+        description: "Go to the spawn of the world you are in"
+      arrival:
+        name: arrival
+        aliases: []
+        description: "Choose spawn or last position for world travel"
+        usage: "spawn|last"
+      favorite:
+        name: favorite
+        aliases: []
+        description: "Toggle a bookmark for a visible world"
+        usage: "[WORLD]"
+      favorites:
+        name: favorites
+        aliases: []
+        description: "Open your favorite worlds"
+      admin:
+        name: admin
+        aliases: []
+        description: "Open the world admin menu"
+      list:
+        name: list
+        aliases: []
+        description: "All worlds with state, players and TPS"
+      info:
+        name: info
+        aliases: []
+        description: "Settings and state of a world"
+        usage: "[WORLD]"
+      groups:
+        name: groups
+        aliases: []
+        description: "World groups and what they keep separate"
+      create:
+        name: create
+        aliases: []
+        description: "Create a world (no name: open the create dialog)"
+        usage: "[NAME] [TYPE] [seed:SEED] [generator:PLUGIN:ID] [group:GROUP] [with-nether] [with-end] ..."
+      import:
+        name: import
+        aliases: []
+        description: "Import a world folder (no name: list the folders)"
+        usage: "[FOLDER] [TYPE] [seed:SEED] [generator:PLUGIN:ID] [group:GROUP] ..."
+      load:
+        name: load
+        aliases: []
+        description: "Load a registered world"
+        usage: "WORLD"
+      unload:
+        name: unload
+        aliases: []
+        description: "Unload a world"
+        usage: "WORLD"
+      delete:
+        name: delete
+        aliases: []
+        description: "Delete a world (with backup, asks for the name)"
+        usage: "WORLD"
+      regen:
+        name: regen
+        aliases: []
+        description: "Regenerate a world with the same, a random or a new seed"
+        usage: "WORLD [same|random|SEED]"
+      clone:
+        name: clone
+        aliases: []
+        description: "Copy a world under a new name"
+        usage: "WORLD NEW-NAME [confirm]"
+      set:
+        name: set
+        aliases: []
+        description: "Change a world property"
+        usage: "WORLD PROPERTY VALUE"
+      edit:
+        name: edit
+        aliases: []
+        description: "Open the world menu"
+        usage: "[WORLD]"
+      settings:
+        name: settings
+        aliases: []
+        description: "Open the settings dialog of a world"
+        usage: "[WORLD]"
+      setspawn:
+        name: setspawn
+        aliases: []
+        description: "Set the world spawn where you stand"
+      link:
+        name: link
+        aliases: []
+        description: "Link the nether or end portals of a world to another world"
+        usage: "WORLD nether|end TARGET|none"
+      generators:
+        name: generators
+        aliases: []
+        description: "Installed world generators and presets"
+      template:
+        name: template
+        aliases: []
+        description: "Manage reusable visit-world templates"
+      visit:
+        name: visit
+        aliases: []
+        description: "Visit a template world or list available templates"
+      leave:
+        name: leave
+        aliases: []
+        description: "Leave your template visit safely"
+      reload:
+        name: reload
+        aliases: []
+        description: "Reload config, worlds.yml and language files"
+    values:
+      spawn: spawn
+      last: last
+      confirm: confirm
+      nether: nether
+      end: end
+      same: same
+      random: random
+      none: none
+
+favorite-add: "<yellow>Shift-right-click: add to favorites"
+favorite-remove: "<gold>Favorite <gray>· Shift-right-click: remove"
+favorite-added: "<green>{world} added to your favorites."
+favorite-removed: "<yellow>{world} removed from your favorites."
+favorites-show-only: "<gold>Show favorites only"
+favorites-show-all: "<yellow>Show all worlds"
+favorites-filter-lore: "<gray>Favorites appear first. Hidden or unloaded worlds stay hidden."
+favorites-empty: "<gray>No visible favorites. Switch to all worlds to add some."
+
+clone-live-unsupported: "<red>Live cloning is unavailable on this server. Clone an unloaded world or a managed world that can be unloaded."
+
+usage-favorite: "<yellow>Usage: /worlds favorite [WORLD]"
+w-reset: "Automatic reset (off, daily 04:00, weekly mon 04:00, every 3 days 04:00)"
+w-reset-seed: "Seed after an automatic reset (same or random)"
+reset-warning: "<gold>⚠ {world} will be reset in {minutes} minute(s). Take your things with you!"
+reset-done: "<green>{world} was reset on schedule."
+bad-reset: "<red>Use off, daily HH:MM, weekly DAY HH:MM or every N days HH:MM (N 2-90)."
+w-border: "World border size (off = untouched)"
+w-border-center: "World border centre (spawn or X Z)"
+w-border-event: "Shrinking border event (off, daily 20:00, …)"
+w-border-start: "Start border event now"
+w-border-start-lore: "Shrinks the border now, holds it and grows it back"
+prompt-border: "Border size of {world} in blocks (16 or more; off = leave the border alone):"
+prompt-border-center: "Centre of the border of {world}: spawn or X Z:"
+prompt-border-event: "When the border of {world} shrinks: off, daily HH:MM, weekly DAY HH:MM or every N days HH:MM:"
+border-warning: "<gold>⚠ The border of {world} shrinks to {size} blocks in {minutes} minute(s)!"
+border-shrinking: "<red>⚠ The border of {world} is shrinking to {size} blocks over {minutes} minute(s) – move to the centre!"
+border-restored: "<green>The border of {world} grows back to {size} blocks."
+border-no-size: "<red>Set a border size for {world} first and load the world."
+# Core panels
+panel-exact-price: "Exact entry fee (any amount)"
+panel-search: "Search worlds"
+panel-players: "Players"
+panel-state: "State"
+panel-chunks: "Loaded chunks"
+panel-entities: "Entities"
+panel-favorite: "Favorite"
+panel-favorites: "Favorites"
+panel-all: "All worlds"
+panel-here: "You are here"
+panel-spawn: "Travel to spawn"
+panel-rules: "World rules"
+panel-entry: "Travel and appearance"
+panel-borders: "Borders and resets"
+panel-operations: "World operations"
+panel-unload-confirm: "Save and unload {world}? Players will be moved to the main world."
+panel-option-none: "Default"
+panel-option-off: "Off"
+panel-option-peaceful: "Peaceful"
+panel-option-easy: "Easy"
+panel-option-normal: "Normal"
+panel-option-hard: "Hard"
+panel-option-day: "Day"
+panel-option-noon: "Noon"
+panel-option-sunset: "Sunset"
+panel-option-night: "Night"
+panel-option-midnight: "Midnight"
+panel-option-clear: "Clear"
+panel-option-rain: "Rain"
+panel-option-thunder: "Thunderstorm"
+panel-option-once: "Once"
+panel-option-every-visit: "Every visit"
+panel-option-same: "Same seed"
+panel-option-random: "Random seed"

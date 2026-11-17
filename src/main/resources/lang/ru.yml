@@ -1,0 +1,540 @@
+template-exists: "<yellow>Такой шаблон уже есть. Закройте или откройте его без замены сохранённого мира."
+template-saved: "<yellow>Шаблон посещения {template} сохранён."
+template-missing: "<yellow>Шаблон не найден или закрыт."
+template-opened: "<yellow>Шаблон {template} открыт."
+template-closed: "<yellow>Шаблон {template} закрыт; сохранённый мир остаётся."
+template-usage: "<yellow>/worlds template create ИМЯ flat|island СЕКУНДЫ locked|kit | list | close ИМЯ | open ИМЯ"
+template-none: "<yellow>Шаблонов посещения пока нет. Создать: /worlds template create NAME flat|island SECONDS locked|kit"
+template-failed: "<yellow>Операция не удалась. Данные сохранены; проверьте журнал сервера."
+template-busy: "<yellow>Сначала завершите текущее посещение или восстановление инвентаря."
+template-preparing: "<yellow>Подготовка посещения {template}…"
+template-entry-failed: "<yellow>Вход отклонён. Исходное состояние сохранено. Покиньте транспорт и повторите после завершения восстановления."
+template-arrived: "<yellow>Добро пожаловать в {template}: {seconds}с. /worlds leave вернёт вас с исходным инвентарём."
+template-not-visiting: "<yellow>Вы не посещаете шаблон Worlds."
+template-exit-pending: "<yellow>Возвращение ещё ожидается. Сохранённый инвентарь остаётся в безопасности."
+template-timeout: "<yellow>Время посещения истекло. Возвращаем вас на исходное место."
+template-info: "<yellow>{template} — {terrain}, {seconds}с, {inventory}, {state}"
+template-terrain-flat: "ровный ландшафт"
+template-terrain-island: "остров"
+template-inventory-locked: "пустой заблокированный инвентарь"
+template-inventory-kit: "временный набор исследователя"
+template-state-open: "открыт"
+template-state-closed: "закрыт"
+# Русский — UTF-8. Keep keys, placeholders and formatting tokens unchanged.
+usage-arrival: '<yellow>Использование: /{label} прибытия появление'
+arrival-spawn: <green>Путешествие по миру приведет вас к нересту. Ваши сохраненные позиции сохранены.
+arrival-last: <green>World Travel теперь использует вашу последнюю позицию, где сервер и мир позволяют это.
+denied: <red>У вас нет на это разрешения.
+player-only: <red>Запустите это в игре.
+feature-off: <red>Эта функция отключена на этом сервере.
+unknown-world: <red>Ни один мир не называется {world}.
+player-offline: <red>{player} не в сети.
+cancelled: <gray>Отменён.
+'yes': да
+'no': нет
+page-back: <yellow>Назад
+page-next: <yellow>Следующая страница
+toggle-on: <green>Включено <gray>- щелкните, чтобы выключить
+toggle-off: <red>Выключено <gray>- щелкните, чтобы включить
+value-lore: |-
+  <gray>Теперь: <white>{value}
+  <yellow>Нажмите, чтобы изменить
+cycle-lore: |-
+  <gray>Теперь: <white>{value}
+  <yellow>Левый клик: следующий, правый клик: предыдущий
+help-player: <gold>Миры</gold> <gray>/{label} - мировой селектор | /{label} тп WORLD | /{label} появление | /{label} появление
+  прибытия |last
+help-admin: '<gray>Admin: /{label} admin | list | info WORLD | create | import | load WORLD | unload WORLD | delete WORLD
+  | regen WORLD | клон WORLD NEW | set WORLD PROPERTY VALUE | edit WORLD | link WORLD nether |end TARGET | groups | generators
+  | reload'
+usage-info: <gray>/{label} Информация WORLD
+usage-create: <gray>/{label} создавать NAME [normal|nether|end|flat|void|amplified|large-biomes] [seed:SEED] [generator:Plugin:id]
+  [biomes:Plugin:id] [structures:false] [with-nether] [with-end] [group:GROUP] [min-y:-128 height:512]
+usage-world: <gray>/{label} {sub} WORLD
+usage-clone: <gray>/{label} клон WORLD NEW-NAME [confirm]
+usage-set: <gray>/{label} набор WORLD PROPERTY VALUE
+usage-link: <gray>/{label} ссылка WORLD nether |end TARGET-WORLD (или нет)
+usage-tp: <gray>/worlds tp WORLD
+usage-delete: <gray>/{label} удалить WORLD
+usage-regen: <gray>/{label} Реген WORLD [same|random|SEED]
+properties-list: '<gray>Свойства: <white>{keys}'
+bad-name: <red>Мировые имена используют a-z, 0-9, _ и - (в большинстве 32 символов, нижний регистр).
+exists: <red>Мир под названием {world} уже существует.
+folder-exists: <red>A папка для {world} Уже существует. Использовать /worlds import загружать его.
+not-loaded: <red>{world} не загружается.
+world-changed: <red>{world} были изменены или удалены за это время (/worlds reload). Пожалуйста, откройте меню снова.
+spawn-searching: <gray>В поисках сухого появления в {world} на заднем плане сервер продолжает работать. Ты уже можешь пойти
+  туда.
+spawn-search-progress: <gray>Все еще ищет появление в {world} ({count} проверенных районах).
+spawn-found: <green>Спаун {world} установлен на {x} {y} {z}.
+already-loaded: <yellow>{world} уже загружено.
+server-world: <red>{world} - это серверный мир (основной мир, его нижняя часть или конец) и не может быть выгружен, удален
+  или восстановлен.
+unload-failed: <red>{world} не могут быть выгружены.
+busy: <red>{world} занят другой операцией, попробуйте еще раз через минуту.
+refused: <red>Защищена папка {world} (за пределами мировой папки, мира серверов или мира плагинов Vystorm Core). Ничего не
+  изменилось.
+delete-failed: <red>Файлы {world} не могут быть перемещены или удалены. Мировой вход был сохранен.
+generator-missing: <red>Генератор {world} отсутствует, поэтому его нельзя регенерировать. Сначала установите плагин генератора.
+load-failed: <red>{world} нельзя было загрузить снова; см. Консоль.
+clone-failed: <red>Копирование {world} не удалось; см. Консоль. Ничего не было создано.
+clone-confirm-evacuate: '<yellow>Игроки в {world}. Для чистой копии она разгружается при копировании: их перемещают на основной
+  появление. Беги <white>/{label} клон {world} {target}</white> Продолжать.'
+clone-confirm-live: '<yellow>Игроки находятся в {world}, и он остается загруженным во время копирования (мир сервера, высота
+  сборки или мир другого плагина): изменения, внесенные во время копирования, отсутствуют в нем. Беги <white>/{label} клон
+  {world} {target}</white> Продолжать или копировать, когда никого нет.'
+bad-value: <red>{value} не является действительным значением для {key}.
+unknown-property: "<red>Неизвестное имущество {key}. <gray>Нажмите Tab, чтобы увидеть допустимые значения."
+bad-group: <red>Названия групп используют a-z, 0-9, _ и - (в большинстве 32 символов).
+bad-option: '<red>Неизвестный или недействительный вариант: {token}'
+height-both: <red>Высота сборки требует как мини-, так и высоты.
+height-multiple: <red>Минус и высота должны быть кратны 16 ({token}).
+height-range: '<red>Высота сборки за пределами диапазона ({token}): минимум -2032 мин., высота 16 до 4064, верхняя (минимум
+  + высота) максимум 2032.'
+height-terrain: '<red>Ванильная местность не вписывается в {token}: надземным типам требуется максимум -64, по крайней мере,
+  до 320, нитр и конец от 0 до 128.'
+height-generator: <red>При индивидуальной высоте сборки работают только типы ванили или плагин генератора (Plugin:id, загруженный
+  при запуске сервера); предустановки и отдельные поставщики биомов не работают.
+links-overworld: <red>Только сверхмировые типы могут получить связанный эфир и конец.
+registry-broken: <red>worlds.yml не читается ({error}). Исправьте файл и запустите /worlds reload; До тех пор, пока ничего
+  не изменится.
+fixed-at-creation: <red>{key} выбрано, когда мир создан и не может быть изменен впоследствии (это смешало бы старую и новую
+  местность).
+confirm-mismatch: '<red>Не подтверждено: вы не набрали {world}. Ничего не изменилось.'
+confirm-console-delete: '<yellow>Чтобы удалить {world}, введите имя снова: /{label} удалите {world} {world}'
+confirm-console-regen: '<yellow>Для регенерации {world} введите имя снова: /{label} реген {world} {seed} {world}'
+stand-in-world: <red>Встаньте в {world}, чтобы установить его появление.
+no-entry: <red>Вы не можете ввести {world}.
+world-full: <red>{world} игроков ({limit}).
+too-poor: <red>Вход {world} стоит {price}.
+paid: <green>Вы заплатили {price} за вход {world}.
+arrival-title: <gold>{world}
+pay-title: Входной взнос
+pay-question: Вход {world} стоит {price}. Платить и путешествовать?
+no-safe-spot: <red>Безопасного места в {world} вблизи цели не обнаружено. Попросите администратора установить появление.
+teleported: <green>Добро пожаловать в {world}
+evacuated: <yellow>{world} было закрыто, вас перевезли в главный мир.
+portal-unlinked: <red>Этот мир не имеет никакого связанного измерения для этого портала.
+sent: <green>{player} находится на пути к {world}.
+group-switched: '<gray>Группа инвентаря: <yellow>{group}'
+group-failed: <red>Ваш инвентарь нельзя было переключить на эту мировую группу, так что ничего не изменилось. Пожалуйста,
+  скажите администратору.
+group-file-broken: <red>Ваш сохраненный инвентарь {group} не мог быть прочитан и был отложен для администратора.
+groups-header: '<gold>Мировые группы</gold> <gray>(отдельно на группу: {separate})'
+groups-header-off: <gold>Мировые группы</gold> <red>(Выключено в config.yml, все миры разделяют все)
+groups-entry: '<yellow>{group}</yellow><gray>: {worlds}'
+creating: <gray>Создать {world}...
+created: '<green>Мир <yellow>{world}</yellow> Создано ({type}, семя {seed}, связанное: {extra}).'
+created-restart: '<green>{world} получают с высотой сборки от {min} до {max}. <yellow>Перезагрузить сервер</yellow> Чтобы
+  создать его: сервер считывает новый тип размерности только при запуске.'
+create-failed: '<red>{world} не удалось загрузить: {error}'
+loaded: <green>Загружено {world}.
+unloaded: <green>{world} сохранено и выгружено.
+deleting: <gray>Удаление {world}...
+deleted: <green>{world} удалены.
+deleted-backup: <green>{world} удалены. Его папка была перемещена в плагины / VystormWorlds / резервные копии.
+regenerating: <gray>Восстановление {world}...
+regenerated: <green>Регенерировано {world}.
+cloning: <gray>Копирование от {world} до {target}
+cloned: <green>{target} создан в виде копии {world}.
+importing: <gray>Импорт {world}...
+imported: <green>{world} ввезено и загружено.
+import-none: <gray>Никаких незагруженных мировых папок не найдено.
+import-header: '<gold>Мировые папки, которые можно импортировать ({count}):'
+import-entry: <gray>- <yellow>{world}</yellow> ({type})
+import-entry-legacy: '<gray>- <yellow>{world}</yellow> ({type}, старая папка 1.21 в папке сервера: сервер перемещает ее в
+  папку мира при импорте)'
+import-unknown: <red>Ни одна импортная папка не называется {world}. /worlds import Перечислите их.
+import-bukkit-generator: '<gray>Генератор от bukkit.yml принят: <white>{generator}'
+spawn-set: <green>Спаун {world} установлен на {x} {y} {z}.
+property-set: '<green>{world}: {key} = <white>{value}'
+reloaded: <green>Vystorm перезагруженных миров ({count} миров).
+delete-title: Удалить {world}
+delete-question: Это удаляет {world} со всеми его сборками. Введите название мира для подтверждения.
+regen-title: Регенерировать {world}
+regen-question: Это заменяет всю местность и сборки {world} свежей местностью. Введите название мира для подтверждения.
+clone-question: 'Наименование копии {world}:'
+list-header: '<gold>Миры ({count})</gold> <gray>Сервер: {tps}'
+list-entry-loaded: <green>●</green> <yellow>{world}</yellow> <gray>{type}, группа {group}, {players} игроков, {chunks} чанков,
+  {entities} субъектов
+list-entry-unloaded: <gray>○ {world} {type}, группа {group} не загружена
+list-entry-busy: <gold>◌</gold> <gray>{world} занятых
+list-entry-error: '<red>✖</red> <gray>{world}: <red>{error}'
+info-header: <gold>Мир {world}</gold> <gray>-</gray> {title}
+info-state: <gray>{state}, тип {type}, семя {seed}, генератор {generator}, группа {group}, высота сборки {height}
+info-load: '<gray>{players} игроков, {chunks} чанков, {entities} сущностей, {tiles} блок-сущностей. Сервер: {tps}'
+info-error: '<red>Не загружается: {error}'
+info-properties: <gray>{properties}
+state-loaded: загруженный
+state-unloaded: не загруженный
+button-tp: '[Go]'
+button-tp-hover: Телепортировать туда
+button-edit: '[Edit]'
+button-edit-hover: Откройте мир настроек
+button-info: '[Info]'
+button-info-hover: Показать детали
+button-load: '[Load]'
+button-load-hover: Загрузите этот мир
+button-unload: '[Unload]'
+button-unload-hover: Спасти и разгрузить этот мир
+button-create: '[Create world]'
+button-create-hover: Откройте диалог создания
+button-import: '[Import folder]'
+button-import-hover: Список мировых папок, которые можно импортировать
+button-import-one: '[Import]'
+button-import-one-hover: Импорт и загрузка этой папки
+generators-header: <gold>Генераторы ({count})</gold> <gray>Использование в качестве генератора:VALUE
+generators-none: <gray>Не устанавливается плагин генератора или предустановка.
+generators-preset: <gray>- <yellow>{value}</yellow> ({name})
+generators-plugin: <gray>- <yellow>{value}</yellow> <gray>(плагин; добавьте:id, если он вам нужен)
+generator-none: Ваниль (по мировому типу)
+generator-preset: 'Предустановлено: {name}'
+generator-plugin: 'Плагин: {name}'
+vmenu-worlds: Миры
+vmenu-worlds-desc: Путешествие в другие миры сервера
+vmenu-admin: Мировое управление
+vmenu-admin-desc: Создавать, импортировать и конфигурировать миры
+selector-title: Миры ({count})
+selector-players: '<gray>Игроки: <white>{players}{limit}'
+selector-mode: '<gray>Режим игры: <white>{mode}'
+selector-price-once: '<gold>Вход: {price} (один раз)'
+selector-price-every-visit: '<gold>Вход: {price} за посещение'
+selector-unlocked: <green>Разблокировано
+selector-locked: '<red>Закрыто: вам не хватает разрешения'
+selector-full: <red>Полный
+selector-too-poor: <red>Вы не можете оплатить вступительный взнос
+selector-here: |-
+  <green>Ты здесь
+  <yellow>Оригинальное название: Go to the Spwn
+selector-click: |-
+  <yellow>Левый клик: путешествие (предпочтение прибытия)
+  <yellow>Правильный клик: Путешествие к нересту
+selector-admin: '<dark_gray>Shift-left-click: настройки мира'
+selector-none: <gray>Никаких других миров
+selector-spawn: <yellow>Спаун этого мира
+selector-spawn-lore: <gray>Телепортируйте в появление мира, в котором вы находитесь
+selector-to-admin: <gold>Мировое управление
+mode-survival: выживание
+mode-creative: творческий
+mode-adventure: Приключение
+mode-spectator: Зритель
+admin-title: Мировое управление ({count}) - {tps}
+admin-world-name: <yellow>{world}
+admin-world-loaded: |-
+  <green>загруженный</green> <gray>- {type}, группа {group}
+  <gray>{players} игроков, {chunks} игроков, {entities} игроков
+  <gray>Скрытый в селекторе: {hidden}
+  <yellow>Нажмите: настройки
+admin-world-unloaded: |-
+  <gray>Не загружается - {type}, группа {group}
+  <yellow>Нажмите: настройки
+admin-world-error: |-
+  <red>Не загружается: {error}
+  <gray>{type}, группа {group}
+  <yellow>Нажмите: настройки
+admin-create: <green>Создайте мир
+admin-create-lore: <gray>Тип, семя, генератор, связанный нитер и конец
+admin-import: <yellow>Импортная папка
+admin-import-lore: <gray>Список мировых папок, которые еще не загружены
+admin-list: <yellow>Список в чате
+admin-list-lore: <gray>Все миры с кликабельными кнопками
+admin-selector: <yellow>Мировой селектор
+admin-config: <yellow>Настройки плагина
+admin-config-lore: <gray>config.yml в редакторе конфигурации Core
+world-title: Мир {world}
+w-pvp: PvP
+w-monsters: Монстры нерестятся
+w-animals: Животные нерестятся
+w-hunger: Голод
+w-fly: Полет разрешен
+w-keep-spawn: Держите икру заряженной
+w-autoload: Загрузка на сервере начинается
+w-hidden: Скрытый в селекторе
+w-permission: Разрешение на въезд
+w-permission-on: |-
+  <green>Включено</green> <gray>- требуется {node}
+  <yellow>Нажмите, чтобы выключить
+w-remember: Возвращение игроков
+w-game-mode: Режим игры на входе
+w-difficulty: трудность
+w-time-lock: Замок времени
+w-weather-lock: Погодный замок
+w-price-mode: 'Стоимость входа: один раз или каждый визит'
+w-display-name: Имя дисплея
+w-description: Описание
+w-icon: икона
+w-icon-lore: |-
+  <gray>Теперь: <white>{value}
+  <yellow>Нажмите на новый элемент значка в руке (пустая рука: по умолчанию)
+w-price: Входной взнос
+w-player-limit: Лимит игрока (0 = нет)
+w-group: Инвентарная группа
+w-respawn-world: Возрождение мира
+w-nether: Связанный нитер
+w-end: Связанный конец
+w-set-spawn: <yellow>Посадите здесь появление
+w-set-spawn-lore: <gray>Ваше положение становится нерестом этого мира
+w-teleport: <yellow>Иди туда
+w-load: <green>Грузовой мир
+w-unload: <red>Спасти и разгрузить мир
+w-dialog: <yellow>Все настройки как диалог
+w-dialog-lore: <gray>Те же настройки в диалоге настроек Vystorm
+w-regenerate: <red>восстанавливать
+w-regenerate-lore: |-
+  <gray>Новый ландшафт, все постройки заменены
+  <gray>Вы подтверждаете, набрав имя мира
+w-delete: <red>Удалить мир
+w-delete-lore: |-
+  <gray>Разгружает и удаляет мир
+  <gray>Вы подтверждаете, набрав имя мира
+w-clone: Копировать мир
+w-clone-lore: <gray>Копии мира под новым именем
+prompt-display-name: 'Имя дисплея {world} (разрешены цвета MiniMessage, пустое = имя мира):'
+prompt-description: 'Одна строка, показанная в селекторе для {world}:'
+prompt-price: 'Стоимость входа {world} (0 = бесплатно):'
+prompt-player-limit: 'Большинство игроков сразу в {world} (0 = без ограничений):'
+prompt-group: 'Инвентарная группа {world} (миры в одной группе делят инвентарь, XP, здоровье...):'
+prompt-respawn-world: 'Где игроки, которые умирают в {world} респаунов (мировое имя, ни один = этот мир или его надмир, ваниль
+  = сервер по умолчанию):'
+prompt-nether: 'Нижний мир, связанный с {world} (ни один = никакой связи):'
+prompt-end: 'Конечный мир, связанный с {world} (нет = нет связи):'
+create-title: Создайте мир
+create-help: Выберите имя и тип. Семя, генератор и высота сборки необязательны; оставьте поля пустыми для ванили. Настраиваемая
+  высота сборки требует перезагрузки сервера до того, как мир будет существовать.
+create-name: Имя (a-z, 0-9, _ и -)
+create-type: Тип
+create-generator: генератор
+create-generator-id: Ид генератора или параметры (опционально, Plugin:id также работает здесь)
+create-seed: Семя (пустое = случайное)
+create-structures: Структуры (деревни, храмы...)
+create-nether: Создать связанный Nether
+create-end: Создайте связанный конец
+create-group: Инвентарная группа
+create-min-y: Самый низкий уровень сборки, e.g. -128 (пустая = ваниль)
+create-height: Построить высоту в блоки, e.g. 512 (пустая = ванильная)
+create-button: создавать
+kind-normal: нормальный
+kind-nether: Нить
+kind-end: Конец
+kind-flat: плоский
+kind-void: Пустота
+kind-amplified: усиленный
+kind-large-biomes: Крупные биомы
+section-title: Мировые настройки
+section-desc: Свойства мира, выбранные с /worlds edit Мировое меню (else the one you stand in).
+section-editing: <gray>Редактирование мировых настроек <yellow>{world}
+section-saved: <green>Сохранены настройки {world}.
+section-no-world: Мир не выбран
+admin-module: Миры
+admin-action-list: Список миров
+admin-action-info: Мировые подробности
+admin-action-create: Создайте мир
+admin-action-import: Импортная папка
+admin-action-load: Грузовой мир
+admin-action-unload: Скачать World
+admin-action-groups: Мировые группы
+admin-action-reload: Перезагрузить
+height-seed: <red>Миры с настраиваемой высотой сборки используют основное семя сервера; оставьте семя.
+regenerated-restart: <green>Старые чанки {world} были перенесены. <yellow>Перезагрузить сервер</yellow> Чтобы загрузить его
+  снова со свежей местности (миры с настраиваемой высотой сборки создаются сервером).
+commands:
+  worlds:
+    description: 'Multiworld: мировой селектор, телепорт и управление миром'
+    aliases: []
+    usage: '[WORLD]'
+    sub:
+      menu:
+        name: menu
+        aliases: []
+        description: Открыть мировой селектор
+      tp:
+        name: tp
+        aliases: []
+        description: 'Путешествие в мир (admins: send a player there)'
+        usage: WORLD [PLAYER]
+      spawn:
+        name: spawn
+        aliases: []
+        description: Отправляйтесь в мир, в котором вы находитесь
+      arrival:
+        name: arrival
+        aliases: []
+        description: Выберите появление или последнюю позицию для путешествий по миру
+        usage: появление |last
+      favorite:
+        name: favorite
+        aliases: []
+        description: Переключите закладку для видимого мира
+        usage: '[WORLD]'
+      favorites:
+        name: favorites
+        aliases: []
+        description: Откройте свои любимые миры
+      admin:
+        name: admin
+        aliases: []
+        description: Откройте меню World Admin
+      list:
+        name: list
+        aliases: []
+        description: Все миры с государством, игроками и TPS
+      info:
+        name: info
+        aliases: []
+        description: Положение и состояние мира
+        usage: '[WORLD]'
+      groups:
+        name: groups
+        aliases: []
+        description: Мировые группы и то, что они держат отдельно
+      create:
+        name: create
+        aliases: []
+        description: 'Создайте мир (без названия: откройте диалог создания)'
+        usage: '[NAME] [TYPE] [seed:SEED] [generator:PLUGIN:ID] [group:GROUP] [with-nether] [with-end] ...'
+      import:
+        name: import
+        aliases: []
+        description: 'Импорт мировой папки (без названия: список папок)'
+        usage: '[FOLDER] [TYPE] [seed:SEED] [generator:PLUGIN:ID] [group:GROUP] ...'
+      load:
+        name: load
+        aliases: []
+        description: Загрузить зарегистрированный мир
+        usage: WORLD
+      unload:
+        name: unload
+        aliases: []
+        description: Скачать The World
+        usage: WORLD
+      delete:
+        name: delete
+        aliases: []
+        description: Удалить мир (с резервной копией, просит имя)
+        usage: WORLD
+      regen:
+        name: regen
+        aliases: []
+        description: Восстановление мира с тем же, случайным или новым семенем
+        usage: WORLD [same|random|SEED]
+      clone:
+        name: clone
+        aliases: []
+        description: Копировать мир под новым именем
+        usage: WORLD NEW-NAME [confirm]
+      set:
+        name: set
+        aliases: []
+        description: Изменить мировую собственность
+        usage: WORLD PROPERTY VALUE
+      edit:
+        name: edit
+        aliases: []
+        description: Откройте мировое меню
+        usage: '[WORLD]'
+      settings:
+        name: settings
+        aliases: []
+        description: Откройте диалог настроек мира
+        usage: '[WORLD]'
+      setspawn:
+        name: setspawn
+        aliases: []
+        description: Создайте мир, где вы стоите
+      link:
+        name: link
+        aliases: []
+        description: Связать нижние или конечные порталы мира с другим миром
+        usage: WORLD nether |end TARGET |none
+      generators:
+        name: generators
+        aliases: []
+        description: Установленные мировые генераторы и предустановки
+      template:
+        name: template
+        aliases: []
+        description: "Управление шаблонами миров для посещения"
+      visit:
+        name: visit
+        aliases: []
+        description: "Посетить шаблон или показать доступные шаблоны"
+      leave:
+        name: leave
+        aliases: []
+        description: "Безопасно завершить посещение"
+      reload:
+        name: reload
+        aliases: []
+        description: Перезагрузка конфигураций, worlds.yml и языковых файлов
+    values:
+      spawn: появление
+      last: последний
+      confirm: подтвердить
+      nether: нить
+      end: конец
+      same: то же самое
+      random: случайный
+      none: нет
+favorite-add: '<yellow>Shift-right-click: Добавить в избранное'
+favorite-remove: '<gold>Избранное <gray>• Shift-right-click: удалите'
+favorite-added: <green>{world} к вашим любимым.
+favorite-removed: <yellow>{world} убрали из любимых.
+favorites-show-only: <gold>Показывать только фаворитов
+favorites-show-all: <yellow>Показать все миры
+favorites-filter-lore: <gray>Сначала появляются фавориты. Скрытые или незагруженные миры остаются скрытыми.
+favorites-empty: <gray>Никаких видимых фаворитов. Переключитесь на все миры, чтобы добавить некоторые.
+clone-live-unsupported: <red>Клонирование в реальном времени на этом сервере недоступно. Клонировать незагруженный мир или
+  управляемый мир, который можно разгрузить.
+usage-favorite: '<yellow>использование: /worlds favorite [WORLD]'
+w-reset: "Автосброс (off, daily 04:00, weekly mon 04:00, every 3 days 04:00)"
+w-reset-seed: "Сид после автосброса (same или random)"
+reset-warning: "<gold>⚠ Мир {world} будет сброшен через {minutes} мин. Заберите свои вещи!"
+reset-done: "<green>Мир {world} сброшен по расписанию."
+bad-reset: "<red>Используйте off, daily ЧЧ:ММ, weekly ДЕНЬ ЧЧ:ММ или every N days ЧЧ:ММ (N 2–90)."
+w-border: "Размер границы мира (off = не трогать)"
+w-border-center: "Центр границы (spawn или X Z)"
+w-border-event: "Сжатие границы (off, daily 20:00, …)"
+w-border-start: "Начать событие сейчас"
+w-border-start-lore: "Сжимает границу сейчас, держит и снова расширяет"
+prompt-border: "Размер границы {world} в блоках (от 16; off = не трогать):"
+prompt-border-center: "Центр границы {world}: spawn или X Z:"
+prompt-border-event: "Когда граница {world} сжимается: off, daily ЧЧ:ММ, weekly ДЕНЬ ЧЧ:ММ или every N days ЧЧ:ММ:"
+border-warning: "<gold>⚠ Граница {world} сожмётся до {size} блоков через {minutes} мин!"
+border-shrinking: "<red>⚠ Граница {world} сжимается до {size} блоков за {minutes} мин – идите к центру!"
+border-restored: "<green>Граница {world} снова расширяется до {size} блоков."
+border-no-size: "<red>Сначала задайте размер границы для {world} и загрузите мир."
+# Core panels
+panel-exact-price: "Точная плата за вход (любая сумма)"
+panel-search: "Поиск миров"
+panel-players: "Игроки"
+panel-state: "Состояние"
+panel-chunks: "Загруженные чанки"
+panel-entities: "Сущности"
+panel-favorite: "Избранный"
+panel-favorites: "Избранное"
+panel-all: "Все миры"
+panel-here: "Вы здесь"
+panel-spawn: "К точке появления"
+panel-rules: "Правила мира"
+panel-entry: "Переход и оформление"
+panel-borders: "Границы и сбросы"
+panel-operations: "Действия с миром"
+panel-unload-confirm: "Сохранить и выгрузить {world}? Игроки будут перемещены в основной мир."
+panel-option-none: "По умолчанию"
+panel-option-off: "Выключено"
+panel-option-peaceful: "Мирная"
+panel-option-easy: "Лёгкая"
+panel-option-normal: "Нормальная"
+panel-option-hard: "Сложная"
+panel-option-day: "День"
+panel-option-noon: "Полдень"
+panel-option-sunset: "Закат"
+panel-option-night: "Ночь"
+panel-option-midnight: "Полночь"
+panel-option-clear: "Ясно"
+panel-option-rain: "Дождь"
+panel-option-thunder: "Гроза"
+panel-option-once: "Один раз"
+panel-option-every-visit: "При каждом посещении"
+panel-option-same: "Тот же сид"
+panel-option-random: "Случайный сид"

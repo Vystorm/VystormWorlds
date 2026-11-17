@@ -1,0 +1,9 @@
+title: '世界'
+pages:
+  - title: '在世界间穿梭'
+    text: |
+      /worlds 打开世界选择器，选择一个世界即可安全前往；/worlds spawn 带你回到所在世界的出生点。
+  - title: '收藏与到达'
+    text: |
+      收藏常去的世界，并选择到达出生点还是上次的位置。
+      输入 /worlds help 查看全部命令。
