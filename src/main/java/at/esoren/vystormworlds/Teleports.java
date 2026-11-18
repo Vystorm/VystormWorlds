@@ -69,11 +69,16 @@ final class Teleports {
         int radius = Math.clamp(plugin.getConfig().getInt("teleport.safe-radius", 8), 0, 32);
         plugin.manager().loadAround(world, target.getBlockX(), target.getBlockZ(), radius, () -> {
             if (!player.isOnline() || !world.equals(WorldManager.loaded(world.getName()))) { done.accept(false); return; }
-            Location spot = safe(target, radius);
+            Location spot = landing(target, radius, Features.on(plugin.getConfig(), Features.SAFE_SPOT));
             if (spot == null) { plugin.lang().send(player, "no-safe-spot", "world", world.getName()); done.accept(false); return; }
             plugin.core().compat().platform().teleportAsync(player, spot, PlayerTeleportEvent.TeleportCause.PLUGIN).whenComplete((ok, failure) ->
                     plugin.tasks().now(() -> done.accept(Boolean.TRUE.equals(ok))));
         });
+    }
+
+    /** Where a teleport lands: a safe spot near the target, or (teleport.safe-spot.enabled false, 1.17.0) the target itself. */
+    static Location landing(Location target, int radius, boolean safeSpot) {
+        return safeSpot ? safe(target, radius) : target;
     }
 
     /** A safe location near the target (keeping its exact position and view when it is already safe), or null. */

@@ -13,8 +13,38 @@ final class Features {
     static final String BORDER_EVENTS = "border-events.enabled";
     static final String TEMPLATES = "templates.enabled";
     static final String BUILD_HEIGHT = "build-height.enabled";
+    // 1.17.0
+    /** Creating, importing, loading, unloading, cloning, regenerating and deleting worlds. */
+    static final String MANAGEMENT = "management.enabled";
+    /** World selector and travel commands for players. */
+    static final String SELECTOR = "selector.enabled";
+    static final String FAVORITES = "favorites.enabled";
+    static final String SAFE_SPOT = "teleport.safe-spot.enabled";
+    static final String PORTALS = "portals.enabled";
+    static final String BORDER = "border.enabled";
+    /** Game mode, difficulty, PvP, mobs, hunger, flying, time and weather locks, spawn chunks. */
+    static final String WORLD_RULES = "world-rules.enabled";
+    /** Entry permission, price and player limit. */
+    static final String ENTRY_RULES = "entry-rules.enabled";
+    static final String ADMIN_MENU = "admin-menu.enabled";
+    static final String TUTORIAL = "tutorial.enabled";
     /** Language key of the reply when a switched-off feature is used. */
     static final String OFF = "feature-off";
+
+    /** Every {@code .enabled} switch, in the order of config.yml. */
+    static final java.util.List<String> SWITCHES = java.util.List.of(MANAGEMENT, "groups.enabled", SELECTOR, FAVORITES,
+            SAFE_SPOT, PORTALS, WORLD_RULES, ENTRY_RULES, BORDER, BORDER_EVENTS, RESETS, TEMPLATES, BUILD_HEIGHT, ADMIN_MENU, TUTORIAL);
+    /** Top-level booleans Core lists as switches by itself. */
+    static final java.util.List<String> TOP_LEVEL = java.util.List.of("autoload", "adopt-loaded-worlds", "arrival-title");
+    /** Booleans with another name, declared as switches (their keys stay as they are). */
+    static final java.util.List<String> DECLARED = java.util.List.of("groups.notify", "teleport.return-to-last-position",
+            "portals.sync-vystorm-portals", "respawn.same-world", "delete.backup", "selector.show-locked");
+
+    /** {@code groups.enabled} -> {@code features.groups}: the language key of a switch description. */
+    static String descriptionKey(String path) {
+        String subject = path.endsWith(".enabled") ? path.substring(0, path.length() - ".enabled".length()) : path;
+        return "features." + subject.replace('.', '-');
+    }
 
     private Features() { }
 

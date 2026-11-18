@@ -47,7 +47,8 @@ final class BorderEvents {
 
     /** Applies the configured border (not during an event); size 0 leaves the border alone. */
     void apply(World world, WorldSettings w) {
-        if (w.border <= 0 || active(world.getName())) return;
+        // border.enabled false (1.17.0): the plugin leaves every world border as it is
+        if (w.border <= 0 || active(world.getName()) || !Features.on(plugin.getConfig(), Features.BORDER)) return;
         double[] c = center(w.borderCenter, world.getSpawnLocation());
         if (c == null) return;
         WorldBorder border = world.getWorldBorder();
@@ -61,7 +62,7 @@ final class BorderEvents {
         for (Map.Entry<String, Running> entry : List.copyOf(running.entrySet()))
             if (millis >= entry.getValue().restoreAt()) restore(entry.getKey());
         // switched off: a running event still grows back above, but nothing new is scheduled
-        if (!Features.on(plugin.getConfig(), Features.BORDER_EVENTS)) { next.clear(); seen.clear(); warned.clear(); return; }
+        if (!Features.on(plugin.getConfig(), Features.BORDER_EVENTS) || !Features.on(plugin.getConfig(), Features.BORDER)) { next.clear(); seen.clear(); warned.clear(); return; }
         Set<String> present = new HashSet<>();
         for (WorldSettings w : plugin.registry().all()) {
             String key = WorldRegistry.key(w.name);

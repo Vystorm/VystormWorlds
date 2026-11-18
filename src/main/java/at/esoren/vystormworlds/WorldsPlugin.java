@@ -42,14 +42,14 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        if (!CoreApi.atLeast("0.64.0")) {
-            getLogger().severe("Vystorm Worlds requires Vystorm Core 0.64.0 or newer.");
+        if (!CoreApi.atLeast("0.65.0")) {
+            getLogger().severe("Vystorm Worlds requires Vystorm Core 0.65.0 or newer.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         core = CoreApi.api().orElseThrow();
         saveDefaultConfig();
-        lang = core.lang().register(this); try { core.registerTutorial(this); } catch (RuntimeException noTutorial) { getLogger().fine("Tutorial not registered: " + noTutorial); }
+        lang = core.lang().register(this); try { if (Features.on(getConfig(), Features.TUTORIAL)) core.registerTutorial(this); } catch (RuntimeException noTutorial) { getLogger().fine("Tutorial not registered: " + noTutorial); }
         tasks = core.tasks().of(this, "worlds");
         registry = new WorldRegistry(getDataFolder().toPath().resolve("worlds.yml"), core.data().files());
         loadRegistry();
@@ -99,14 +99,18 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
         var api = core;
         try {
             api.settings().config().register(this, "config.yml", this::reload);
+            describeSwitches(api.settings().config());
         } catch (RuntimeException failure) { getLogger().log(Level.FINE, "No config editor", failure); }
+        try {
+            WorldsPlaceholders.register(api.placeholders(), this, lang, placeholderSource());
+        } catch (RuntimeException failure) { getLogger().warning("Placeholders not registered: " + failure); }
         try {
             if (!menus.registerPanels()) {
                 api.gui().registerMenu(this, "worlds", lang.ref("vmenu-worlds"), Material.FILLED_MAP,
-                        p -> p.hasPermission("vystormworlds.use"), p -> menus.selector(p, 0),
+                        p -> p.hasPermission("vystormworlds.use") && Features.on(getConfig(), Features.SELECTOR), p -> menus.selector(p, 0),
                         Vystorm.vystorm_core._uiMethods.menu.MenuCategory.WORLD.group(), lang.ref("vmenu-worlds-desc"));
                 api.gui().registerMenu(this, "worlds-admin", lang.ref("vmenu-admin"), Material.COMPASS,
-                        p -> p.hasPermission("vystormworlds.admin"), p -> menus.admin(p, 0),
+                        p -> p.hasPermission("vystormworlds.admin") && Features.on(getConfig(), Features.ADMIN_MENU), p -> menus.admin(p, 0),
                         Vystorm.vystorm_core._uiMethods.menu.MenuCategory.ADMIN.group(), lang.ref("vmenu-admin-desc"));
             }
         } catch (RuntimeException failure) { getLogger().log(Level.FINE, "No Core main menu entry", failure); }
@@ -116,6 +120,33 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
         try {
             WorldSection.register(this);
         } catch (RuntimeException failure) { getLogger().log(Level.FINE, "No settings section", failure); }
+    }
+
+    /**
+     * One-line descriptions in the admin's language for every switch in {@code /vadmin features}, and the older
+     * booleans with other names declared as switches (their keys stay as they are).
+     */
+    private void describeSwitches(Vystorm.vystorm_core._uiMethods.settings.ConfigEditorInterface config) {
+        for (String path : Features.SWITCHES) config.label(this, path, null, lang.ref(Features.descriptionKey(path)));
+        for (String path : Features.TOP_LEVEL) config.label(this, path, null, lang.ref(Features.descriptionKey(path)));
+        for (String path : Features.DECLARED) config.feature(this, path, null, lang.ref(Features.descriptionKey(path)));
+        config.activation(this, Features.TUTORIAL, Vystorm.vystorm_core._uiMethods.settings.SettingPolicy.Activation.RESTART);
+    }
+
+    /** What the {@code worlds} placeholders read, looked up at call time. */
+    WorldsPlaceholders.Source placeholderSource() {
+        return new WorldsPlaceholders.Source() {
+            public WorldSettings settings(World world) { return WorldsPlugin.this.settings(world); }
+            public String group(World world) { return rules == null ? defaultGroup() : rules.groupOf(world); }
+            public boolean groupsOn() { return getConfig().getBoolean("groups.enabled", true); }
+            public boolean resetsOn() { return Features.on(getConfig(), Features.RESETS); }
+            public boolean templatesOn() { return Features.on(getConfig(), Features.TEMPLATES); }
+            public boolean entryRulesOn() { return Features.on(getConfig(), Features.ENTRY_RULES); }
+            public java.time.ZonedDateTime nextReset(String world) { return resets == null ? null : resets.nextReset(world); }
+            public java.util.Collection<WorldSettings> all() { return registry == null ? java.util.List.of() : registry.all(); }
+            public World loaded(String name) { return WorldManager.loaded(name); }
+            public boolean inVisit(org.bukkit.entity.Player player) { return rules != null && rules.inVisit(player); }
+        };
     }
 
     /** First tick: adopt loaded worlds, auto-load the rest, apply properties, check online players. */
@@ -170,7 +201,10 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
     }
 
     void reload() {
+        var listed = WorldsCommand.listing(getConfig());
         reloadConfig();
+        // tab completion asks the switches live; a changed switch only needs the players' command lists sent again
+        if (core != null && !listed.equals(WorldsCommand.listing(getConfig()))) core.command().refresh();
         if (lang != null) lang.reload();
         if (!loadRegistry()) return;
         if (!started) return;
@@ -200,6 +234,7 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
     }
 
     private void enforceLocks() {
+        if (!Features.on(getConfig(), Features.WORLD_RULES)) return;
         for (WorldSettings w : registry.all()) {
             if ("off".equals(w.timeLock) && "off".equals(w.weatherLock)) continue;
             World world = WorldManager.loaded(w.name);

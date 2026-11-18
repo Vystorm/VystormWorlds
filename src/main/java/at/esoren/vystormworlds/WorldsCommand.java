@@ -56,6 +56,9 @@ final class WorldsCommand {
             send(sender, "registry-broken", "error", plugin.registry().error());
             return true;
         }
+        for (String key : switchesOf(sub, args)) {
+            if (!Features.on(plugin.getConfig(), key)) { send(sender, Features.OFF); return true; }
+        }
         switch (sub) {
             case "template" -> {
                 if (!Features.on(plugin.getConfig(), Features.TEMPLATES)) send(sender, Features.OFF);
@@ -180,11 +183,51 @@ final class WorldsCommand {
             default -> {
                 // "/worlds <world>" travels there
                 WorldSettings w = plugin.registry().get(args[0]);
-                if (w != null && sender instanceof Player p && sender.hasPermission("vystormworlds.use") && !w.hidden) actions().travel(p, w, true);
+                if (w != null && sender instanceof Player p && sender.hasPermission("vystormworlds.use") && !w.hidden) {
+                    if (!Features.on(plugin.getConfig(), Features.SELECTOR)) send(sender, Features.OFF);
+                    else actions().travel(p, w, true);
+                }
                 else help(sender, label);
             }
         }
         return true;
+    }
+
+    /**
+     * The feature switches a subcommand needs (1.17.0); an empty list for the ones that always work (help, list,
+     * info, groups, generators, reload, set, setspawn, link) and for those with their own check (template, visit).
+     * {@code tp WORLD PLAYER} is an admin tool and needs no switch.
+     */
+    static List<String> switchesOf(String sub, String[] args) {
+        return switch (sub) {
+            case "create", "import", "load", "unload", "delete", "regen", "clone" -> List.of(Features.MANAGEMENT);
+            case "admin", "edit", "settings" -> List.of(Features.ADMIN_MENU);
+            case "menu", "spawn" -> List.of(Features.SELECTOR);
+            case "tp" -> args.length > 2 ? List.of() : List.of(Features.SELECTOR);
+            case "favorite", "favorites" -> List.of(Features.SELECTOR, Features.FAVORITES);
+            case "arrival" -> List.of("teleport.return-to-last-position");
+            default -> List.of();
+        };
+    }
+
+    /** The switches that decide whether a subcommand is listed in tab completion and help. */
+    static List<String> listingSwitches(String sub) {
+        List<String> keys = new ArrayList<>(switchesOf(sub, new String[0]));
+        if (sub.equals("template") || sub.equals("visit")) keys.add(Features.TEMPLATES);
+        return keys;
+    }
+
+    /** Whether a subcommand's feature is switched off NOW (asked by Core at every completion; reload updates the config). */
+    boolean offNow(String sub) {
+        for (String key : listingSwitches(sub)) if (!Features.on(plugin.getConfig(), key)) return true;
+        return false;
+    }
+
+    /** The current state of every switch that decides a listing; a reload that changes it refreshes the command lists. */
+    static java.util.Map<String, Boolean> listing(org.bukkit.configuration.ConfigurationSection config) {
+        java.util.Map<String, Boolean> state = new java.util.TreeMap<>();
+        for (String sub : SUBS) for (String key : listingSwitches(sub)) state.put(key, Features.on(config, key));
+        return state;
     }
 
     private void tp(CommandSender sender, String[] args) {
@@ -336,6 +379,8 @@ final class WorldsCommand {
             root.sub(id, s -> {
                 s.permission(PLAYER.contains(id) ? "vystormworlds.use" : "vystormworlds.admin");
                 if (PLAYER_ONLY.contains(id)) s.playerOnly();
+                // switched off: not in tab completion or help; Core asks at every completion, so a switch applies at once
+                if (c != null) s.visibleWhen(() -> !c.offNow(id));
                 s.usage("");
                 if (!NO_ARGS.contains(id)) {
                     // single words, not one greedy argument: Core completes a greedy argument only at its first word

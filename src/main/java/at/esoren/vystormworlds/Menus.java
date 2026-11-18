@@ -135,6 +135,13 @@ final class Menus implements Listener {
 
     // ------------------------------------------------------------------ selector
 
+    /** Answers with the shared off message when the feature is switched off (1.17.0); true when it is off. */
+    boolean off(org.bukkit.command.CommandSender sender, String feature) {
+        if (Features.on(plugin.getConfig(), feature)) return false;
+        lang().send(sender, Features.OFF);
+        return true;
+    }
+
     /** Worlds a player sees in the selector: loaded, not hidden; locked ones only with selector.show-locked. */
     List<WorldSettings> selectable(Player player) {
         List<WorldSettings> list = new ArrayList<>();
@@ -155,6 +162,7 @@ final class Menus implements Listener {
     /** Command shortcut with the same visibility rules as the selector. */
     void favorite(Player player, String name) {
         if (!player.hasPermission("vystormworlds.use")) { lang().send(player, "denied"); return; }
+        if (off(player, Features.FAVORITES)) return;
         WorldSettings selected = selectable(player).stream().filter(w -> w.name.equalsIgnoreCase(name)).findFirst().orElse(null);
         if (selected == null) { lang().send(player, "unknown-world", "world", name); return; }
         boolean added = favorites.toggle(player, selected.name);
@@ -162,6 +170,7 @@ final class Menus implements Listener {
     }
 
     void selector(Player player, int page, boolean onlyFavorites) {
+        if (off(player, Features.SELECTOR) || onlyFavorites && off(player, Features.FAVORITES)) return;
         if (panels != null && panels.openSelector(player, page, onlyFavorites)) return;
         selectorChest(player, page, onlyFavorites);
     }
@@ -223,6 +232,7 @@ final class Menus implements Listener {
         WorldSettings now = current(player, name);
         if (now == null) return;
         if (click == ClickType.SHIFT_RIGHT) {
+            if (off(player, Features.FAVORITES)) return;
             boolean added = favorites.toggle(player, now.name);
             lang().send(player, added ? "favorite-added" : "favorite-removed", "world", title(now));
             selector(player, page, onlyFavorites);
@@ -237,6 +247,7 @@ final class Menus implements Listener {
     // ------------------------------------------------------------------ admin overview
 
     void admin(Player player, int page) {
+        if (off(player, Features.ADMIN_MENU)) return;
         if (panels != null && panels.openAdmin(player, page)) return;
         adminChest(player, page);
     }
@@ -280,6 +291,7 @@ final class Menus implements Listener {
     }
 
     void world(Player player, String name) {
+        if (off(player, Features.ADMIN_MENU)) return;
         if (panels != null && panels.openWorld(player, name)) return;
         worldChest(player, name);
     }
@@ -344,7 +356,7 @@ final class Menus implements Listener {
         if (world != null && w.border > 0)
             menu.put(53, item(player, Material.TARGET, "w-border-start", "w-border-start-lore"), (v, c) -> {
                 WorldSettings now = current(v, name);
-                if (!Features.on(plugin.getConfig(), Features.BORDER_EVENTS)) lang().send(v, Features.OFF);
+                if (!Features.on(plugin.getConfig(), Features.BORDER_EVENTS) || !Features.on(plugin.getConfig(), Features.BORDER)) lang().send(v, Features.OFF);
                 else if (now == null || !plugin.borders().start(now)) lang().send(v, "border-no-size", "world", name);
                 world(v, name);
             });
@@ -385,6 +397,7 @@ final class Menus implements Listener {
 
     void createDialog(Player player) {
         if (!player.hasPermission("vystormworlds.admin")) { lang().send(player, "denied"); return; }
+        if (off(player, Features.MANAGEMENT)) return;
         List<SingleOptionDialogInput.OptionEntry> kinds = new ArrayList<>();
         for (WorldKind kind : WorldKind.values())
             kinds.add(SingleOptionDialogInput.OptionEntry.create(kind.id(), lang().component(player, "kind-" + kind.id()), kind == WorldKind.NORMAL));

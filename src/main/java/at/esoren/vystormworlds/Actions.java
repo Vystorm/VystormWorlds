@@ -88,6 +88,7 @@ final class Actions {
     // ------------------------------------------------------------------ create
 
     void create(CommandSender sender, CreateRequest request) {
+        if (!Features.on(plugin.getConfig(), Features.MANAGEMENT)) { lang().send(sender, Features.OFF); return; }
         if (request.minY() != null && !Features.on(plugin.getConfig(), Features.BUILD_HEIGHT)) { lang().send(sender, Features.OFF); return; }
         WorldManager manager = plugin.manager();
         String problem = request.name().length() > 32 ? "bad-name" : manager.checkNewName(request.name());
@@ -128,6 +129,7 @@ final class Actions {
     // ------------------------------------------------------------------ destructive
 
     void delete(CommandSender sender, String name) {
+        if (!Features.on(plugin.getConfig(), Features.MANAGEMENT)) { lang().send(sender, Features.OFF); return; }
         lang().send(sender, "deleting", "world", name);
         plugin.manager().delete(name, problem -> {
             if (problem == null) lang().send(sender, plugin.getConfig().getBoolean("delete.backup", true) ? "deleted-backup" : "deleted", "world", name);
@@ -136,6 +138,7 @@ final class Actions {
     }
 
     void regenerate(CommandSender sender, String name, String seedOption) {
+        if (!Features.on(plugin.getConfig(), Features.MANAGEMENT)) { lang().send(sender, Features.OFF); return; }
         Long seed = null;
         if (seedOption != null && !seedOption.isBlank() && !seedOption.equalsIgnoreCase("same")) {
             seed = seedOption.equalsIgnoreCase("random") ? java.util.concurrent.ThreadLocalRandom.current().nextLong() : CreateRequest.seed(seedOption);
@@ -197,6 +200,7 @@ final class Actions {
 
     /** Importable folders as clickable lines. */
     void importList(CommandSender sender) {
+        if (!Features.on(plugin.getConfig(), Features.MANAGEMENT)) { lang().send(sender, Features.OFF); return; }
         List<WorldPaths.Candidate> candidates = plugin.manager().paths().candidates(plugin.usedNames());
         if (candidates.isEmpty()) { lang().send(sender, "import-none"); return; }
         lang().send(sender, "import-header", "count", candidates.size());
@@ -209,6 +213,7 @@ final class Actions {
     }
 
     void importWorld(CommandSender sender, String name, List<String> options) {
+        if (!Features.on(plugin.getConfig(), Features.MANAGEMENT)) { lang().send(sender, Features.OFF); return; }
         WorldPaths.Candidate candidate = null;
         for (WorldPaths.Candidate c : plugin.manager().paths().candidates(plugin.usedNames()))
             if (c.name().equalsIgnoreCase(name)) candidate = c;

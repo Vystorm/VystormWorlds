@@ -1,3 +1,17 @@
+## 1.17.0 — 2026-11-18
+
+- Requires Vystorm Core 0.65.0. Update Core before you update this plugin.
+- Every feature can now be switched on and off. All switches are listed in `/vadmin features` with a one-line description in all seven languages, and a change applies at once (only `tutorial.enabled` needs a restart). Core adds the new switches to your existing `config.yml` with their comments; a missing switch counts as on, so nothing changes until you switch something off.
+- New switches for worlds: `management.enabled` (create, import, load, unload, clone, regen and delete), `border.enabled` (border size and centre; border events need it too).
+- New switches for players: `selector.enabled` (world selector, Core main menu entry, `/worlds tp WORLD`, `/worlds WORLD`, `/worlds spawn`), `favorites.enabled`, `teleport.safe-spot.enabled`, `portals.enabled` (linked nether and end; off means vanilla portals).
+- New switches for rules: `world-rules.enabled` (game mode, difficulty, PvP, mobs, hunger, flying, time and weather lock, spawn chunks), `entry-rules.enabled` (entry permission, price and player limit).
+- New switches for administration: `admin-menu.enabled` (admin menu, world menu and settings dialog; every action stays available as a command), `tutorial.enabled`.
+- Older keys keep their names and now also show in `/vadmin features`: `groups.notify`, `teleport.return-to-last-position`, `portals.sync-vystorm-portals`, `respawn.same-world`, `delete.backup`, `selector.show-locked`.
+- A command of a switched-off feature answers "This feature is switched off on this server." It is also gone from tab completion and help while the switch is off. The menu entries disappear while their switch is off. Saved worlds, favorites, links and per-world values stay.
+- Placeholders: the plugin registers the namespace `worlds` with 10 values (the player's world, its group, kind, players, limit and next reset, the number of worlds, template visits). Examples: `%vystorm_worlds_world%` and `%vystorm_worlds_world_players_lobby%`. They work in Vystorm texts and, through PlaceholderAPI, in other plugins. A value of a switched-off feature is empty.
+- Tab completion and help follow a switch at once, without registering the command again.
+- README: the licence line now says GPL-3.0, the Spigot resource is named, and the compatibility line says what the build checks.
+
 ## 1.16.0 — 2026-11-17
 
 - Requires Vystorm Core 0.64.0 or newer. Update Core before you update this plugin.

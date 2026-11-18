@@ -79,7 +79,8 @@ final class PortalLinks {
     /** Stage ADJUST, registered in {@link #handleSharedEvents}. */
     public void playerPortal(PlayerPortalEvent event) {
         World from = event.getFrom().getWorld();
-        if (from == null || plugin.rules().coreWorld(from) || WorldManager.serverWorld(from)) return;
+        // portals.enabled false (1.17.0): every portal works as in vanilla
+        if (from == null || !Features.on(plugin.getConfig(), Features.PORTALS) || plugin.rules().coreWorld(from) || WorldManager.serverWorld(from)) return;
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) {
             World target = target(from, World.Environment.NETHER);
             if (target == null) { blockIfWanted(event, from); return; }
@@ -94,7 +95,7 @@ final class PortalLinks {
     /** Stage ADJUST, registered in {@link #handleSharedEvents}. */
     public void entityPortal(EntityPortalEvent event) {
         World from = event.getFrom().getWorld();
-        if (from == null || plugin.rules().coreWorld(from) || WorldManager.serverWorld(from) || event.getTo() == null) return;
+        if (from == null || !Features.on(plugin.getConfig(), Features.PORTALS) || plugin.rules().coreWorld(from) || WorldManager.serverWorld(from) || event.getTo() == null) return;
         World.Environment portal = portalKind(event);
         if (portal == null) return;
         World target = target(from, portal);

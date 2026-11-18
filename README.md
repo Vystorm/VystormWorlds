@@ -1,12 +1,26 @@
 # Vystorm Worlds
 
-**Multiworld management that players can actually use.** Create, import, link and manage worlds from menus, give every world its own rules, let groups of worlds keep their own inventories, and send players around with a world selector and safe teleports. One plugin for what usually takes Multiverse-Core, Multiverse-Inventories and Multiverse-NetherPortals together. Free and open source (MIT).
+**Multiworld management that players can actually use.** Create, import, link and manage worlds from menus, give every world its own rules, let groups of worlds keep their own inventories, and send players around with a world selector and safe teleports. One plugin for what usually takes Multiverse-Core, Multiverse-Inventories and Multiverse-NetherPortals together. Free and open source (GPL-3.0).
 
-**Requires [Vystorm Core](https://www.spigotmc.org/resources/139848/) 0.64.0 or newer (free).** Paper/Purpur 1.20.6 – 26.x. Plugin bytecode requires Java 21 or newer; use the Java version required by your server (Java 25 for 26.x). Vault is optional (entry prices).
+**Requires [Vystorm Core](https://www.spigotmc.org/resources/139848/) 0.65.0 or newer (free).** Paper/Purpur 1.20.6 – 26.x. Plugin bytecode requires Java 21 or newer; use the Java version required by your server (Java 25 for 26.x). Vault is optional (entry prices).
+
+## Feature switches (1.17.0)
+
+Every feature has its own on/off switch in `config.yml`, listed with a one-line description in all seven languages in `/vadmin features`. Changes apply at once; only `tutorial.enabled` needs a restart. Core adds new switches to an existing `config.yml` with their comments; a missing switch counts as on.
+
+- New in 1.17.0: `management.enabled` (create, import, load, unload, clone, regen, delete), `selector.enabled` (selector, Core main menu entry, `/worlds tp WORLD`, `/worlds WORLD`, `/worlds spawn`), `favorites.enabled`, `teleport.safe-spot.enabled`, `portals.enabled` (linked nether and end), `world-rules.enabled` (game mode, difficulty, PvP, mobs, hunger, flying, time and weather lock, spawn chunks), `entry-rules.enabled` (entry permission, price, player limit), `border.enabled`, `admin-menu.enabled`, `tutorial.enabled`.
+- Already there: `groups.enabled`, `border-events.enabled`, `reset.enabled`, `templates.enabled`, `build-height.enabled`, and the top-level `autoload`, `adopt-loaded-worlds`, `arrival-title`.
+- Older keys keep their names and now also show in `/vadmin features`: `groups.notify`, `teleport.return-to-last-position`, `portals.sync-vystorm-portals`, `respawn.same-world`, `delete.backup`, `selector.show-locked`.
+
+A command of a switched-off feature answers "This feature is switched off on this server."; it disappears from tab completion and help at once and comes back when the switch is on again. Per-world values in `worlds.yml` are never changed by a switch.
+
+## Placeholders (1.17.0)
+
+With Vystorm Core 0.65.0 the plugin registers the namespace `worlds`: `world`, `world_name`, `world_group`, `world_kind`, `world_players` (with a world name as argument: players in that world), `world_limit`, `world_next_reset`, `worlds_count`, `worlds_loaded`, `in_visit`. Each works as `%vystorm_worlds_<key>%` (also through PlaceholderAPI) and as `{worlds:<key>}` in Vystorm texts; `/vadmin placeholders worlds` lists them. Examples: `%vystorm_worlds_world%` shows the display name of the player's world, `%vystorm_worlds_world_players_lobby%` the players in `lobby`. A value of a switched-off feature is empty. All values answer on the server thread only.
 
 ## Compatibility
 
-Runs on Paper 1.20.6 – 26.x. Core selects native dialogs where available and chat prompts on older servers; chest menus remain available. Custom build heights require the modern level-directory API (26.x). Live cloning of worlds that cannot be unloaded requires the flush-save API; on 1.20.6, clone an unloaded world or an ordinary managed world, which is unloaded and reloaded safely. Servers without the forced-spawn API use their normal initial spawn search. Each unavailable world feature is reported once at startup.
+Built against Paper 26.2; the `compat1206` and `test1206` checks compile the sources and run the tests against Paper 1.20.6. Spigot and CraftBukkit 26.2 and 26.3 were checked with 1.8.0 (see below). Core selects native dialogs where available and chat prompts on older servers; chest menus remain available. Custom build heights require the modern level-directory API (26.x). Live cloning of worlds that cannot be unloaded requires the flush-save API; on 1.20.6, clone an unloaded world or an ordinary managed world, which is unloaded and reloaded safely. Servers without the forced-spawn API use their normal initial spawn search. Each unavailable world feature is reported once at startup.
 
 Existing inventory snapshots from newer Minecraft versions must be restored on a compatible server; this does not convert newer items or world data for a server downgrade.
 
@@ -169,7 +183,7 @@ Presets are stored as `preset:myplugin:islands` and removed automatically when t
 
 ## Release
 
-- TODO: register the Spigot resource and add its ID for the Vystorm Core update check once it exists.
+- Spigot resource: https://www.spigotmc.org/resources/140132/. The plugin does not register a Vystorm Core update check yet.
 
 ## Building
 

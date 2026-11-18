@@ -102,7 +102,9 @@ final class WorldPanelMenus implements WorldsPanel.Actions {
     }
 
     private boolean allowed(Player player, boolean admin) {
-        return plugin.isEnabled() && player.isOnline() && player.hasPermission(admin ? "vystormworlds.admin" : "vystormworlds.use");
+        // selector.enabled / admin-menu.enabled (1.17.0): the panel and its main-menu entry disappear while switched off
+        return plugin.isEnabled() && player.isOnline() && player.hasPermission(admin ? "vystormworlds.admin" : "vystormworlds.use")
+                && Features.on(plugin.getConfig(), admin ? Features.ADMIN_MENU : Features.SELECTOR);
     }
 
     private Result denied(Player player) { return Result.error(plugin.lang().plain(player, "denied")); }
@@ -197,6 +199,7 @@ final class WorldPanelMenus implements WorldsPanel.Actions {
 
     @Override public Result favorite(Player player, String world) {
         if (!allowed(player, false)) return denied(player);
+        if (!Features.on(plugin.getConfig(), Features.FAVORITES)) return Result.error(plugin.lang().plain(player, Features.OFF));
         WorldSettings current = menus.selectable(player).stream().filter(w -> w.name.equals(world)).findFirst().orElse(null);
         if (current == null) return Result.error(plugin.lang().plain(player, "world-changed", "world", world));
         boolean added = favorites.toggle(player, world);
@@ -240,7 +243,7 @@ final class WorldPanelMenus implements WorldsPanel.Actions {
                 if (action.equals("load") || action.equals("unload")) menus.world(player, world);
             }
             case "border-start" -> {
-                if (!Features.on(plugin.getConfig(), Features.BORDER_EVENTS)) plugin.lang().send(player, Features.OFF);
+                if (!Features.on(plugin.getConfig(), Features.BORDER_EVENTS) || !Features.on(plugin.getConfig(), Features.BORDER)) plugin.lang().send(player, Features.OFF);
                 else if (!plugin.borders().start(current)) plugin.lang().send(player, "border-no-size", "world", world);
                 menus.world(player, world);
             }

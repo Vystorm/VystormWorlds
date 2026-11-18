@@ -188,12 +188,14 @@ final class WorldManager {
     /** Applies the stored properties to a loaded world. */
     void apply(World world, WorldSettings w) {
         try {
+            if (plugin.borders() != null) plugin.borders().apply(world, w);
+            // world-rules.enabled false (1.17.0): the world keeps what it has; nothing of worlds.yml is applied to it
+            if (!Features.on(plugin.getConfig(), Features.WORLD_RULES)) return;
             if (!w.difficulty.isEmpty()) world.setDifficulty(Difficulty.valueOf(w.difficulty.toUpperCase(Locale.ROOT)));
             world.setPVP(w.pvp);
             world.setSpawnFlags(w.monsters, w.animals);
             if (w.spawn != null) world.setSpawnLocation(new Location(world, w.spawn.x(), w.spawn.y(), w.spawn.z(), w.spawn.yaw(), w.spawn.pitch()));
             applyLocks(world, w, false);
-            if (plugin.borders() != null) plugin.borders().apply(world, w);
             world.removePluginChunkTickets(plugin);
             if (w.keepSpawnLoaded) {
                 Location spawn = world.getSpawnLocation();

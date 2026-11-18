@@ -80,7 +80,9 @@ final class PlayerRules implements Listener {
 
     Access.Viewer viewer(Player player, WorldSettings world) {
         boolean economy = world.price > 0 && Money.available();
-        return new Access.Viewer(player.hasPermission("vystormworlds.bypass"),
+        // entry-rules.enabled false (1.17.0): nobody is held back by permission, limit or price
+        boolean bypass = player.hasPermission("vystormworlds.bypass") || !Features.on(plugin.getConfig(), Features.ENTRY_RULES);
+        return new Access.Viewer(bypass,
                 player.hasPermission(Access.permission(world.name)) || player.hasPermission("vystormworlds.enter.*"),
                 unlocked(player, world.name), economy, economy && Money.has(player, world.price));
     }
@@ -174,7 +176,7 @@ final class PlayerRules implements Listener {
     public void join(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         WorldSettings settings = plugin.settings(player.getWorld());
-        if (settings != null && settings.permission && !coreWorld(player.getWorld()) && !player.hasPermission("vystormworlds.bypass")
+        if (settings != null && settings.permission && Features.on(plugin.getConfig(), Features.ENTRY_RULES) && !coreWorld(player.getWorld()) && !player.hasPermission("vystormworlds.bypass")
                 && !player.hasPermission(Access.permission(settings.name)) && !player.hasPermission("vystormworlds.enter.*")) {
             plugin.lang().send(player, "no-entry", "world", settings.name);
             player.teleport(WorldManager.fallback());
@@ -243,13 +245,17 @@ final class PlayerRules implements Listener {
         }
     }
 
+    /** world-rules.enabled (1.17.0): off = the plugin applies no game mode, flight, hunger, mob or world rule. */
+    boolean worldRules() { return Features.on(plugin.getConfig(), Features.WORLD_RULES); }
+
     void applyGameMode(Player player, WorldSettings settings) {
-        if (settings == null || settings.gameMode.isEmpty() || player.hasPermission("vystormworlds.bypass.gamemode")) return;
+        if (!worldRules() || settings == null || settings.gameMode.isEmpty() || player.hasPermission("vystormworlds.bypass.gamemode")) return;
         GameMode mode = GameMode.valueOf(settings.gameMode.toUpperCase(Locale.ROOT));
         if (player.getGameMode() != mode) player.setGameMode(mode);
     }
 
     void applyFlight(Player player, WorldSettings settings) {
+        if (!worldRules()) return;
         boolean survivalLike = player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE;
         boolean granted = player.getPersistentDataContainer().has(flyKey, PersistentDataType.BYTE);
         boolean wanted = settings != null && settings.fly && survivalLike;
@@ -300,7 +306,7 @@ final class PlayerRules implements Listener {
     public void hunger(FoodLevelChangeEvent event) {
         if (!(event.getEntity() instanceof Player player) || event.getFoodLevel() >= player.getFoodLevel()) return;
         WorldSettings settings = plugin.settings(player.getWorld());
-        if (settings != null && !settings.hunger) event.setCancelled(true);
+        if (settings != null && !settings.hunger && worldRules()) event.setCancelled(true);
     }
 
     private static final Set<CreatureSpawnEvent.SpawnReason> NATURAL = EnumSet.of(CreatureSpawnEvent.SpawnReason.NATURAL,
@@ -309,7 +315,7 @@ final class PlayerRules implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void spawn(CreatureSpawnEvent event) {
-        if (!NATURAL.contains(event.getSpawnReason())) return;
+        if (!NATURAL.contains(event.getSpawnReason()) || !worldRules()) return;
         WorldSettings settings = plugin.settings(event.getLocation().getWorld());
         if (settings == null) return;
         var entity = event.getEntity();

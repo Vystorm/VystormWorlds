@@ -12,6 +12,12 @@ adopt-loaded-worlds: true
 # Title with the world's display name (and its description as subtitle) when a player arrives in another world.
 arrival-title: true
 
+management:
+  # World management (1.17.0): /worlds create, import, load, unload, clone, regen and delete, and the create and import
+  # buttons of the admin menu. false: these answer "This feature is switched off on this server."; worlds that exist keep
+  # loading (autoload), and scheduled resets have their own switch (reset.enabled).
+  enabled: true
+
 # Group for worlds without one. Worlds in the same group share what is listed in groups.separate.
 default-group: default
 
@@ -24,12 +30,18 @@ groups:
   notify: true
 
 teleport:
+  safe-spot:
+    # Safe teleports (1.17.0): search a safe spot around the target. false: players land exactly on the target.
+    enabled: true
   # Search radius in blocks for a safe spot around the target (0-32).
   safe-radius: 8
   # Left-click in the selector returns players to where they left a world; right-click always goes to the spawn.
   return-to-last-position: true
 
 portals:
+  # Linked nether and end (1.17.0): portals of a managed world lead to its own nether and end. false: every portal
+  # works as in vanilla; the links stay saved.
+  enabled: true
   # Nether/end portals in a managed world without a linked nether/end: vanilla (server's main nether/end) or block.
   unlinked: vanilla
   # Tell VystormPortals (if installed) which worlds belong together, so its portal previews show the right world.
@@ -45,8 +57,33 @@ delete:
   backup: true
 
 selector:
+  # World selector and travel (1.17.0): /worlds, the Core main menu entry, /worlds tp WORLD, /worlds WORLD and
+  # /worlds spawn. false: these answer that the feature is off and the menu entry is gone. /worlds tp WORLD PLAYER
+  # (admins) still works.
+  enabled: true
   # Show worlds the player may not enter (with bars and a note) instead of hiding them.
   show-locked: true
+
+favorites:
+  # Personal favorites (1.17.0): shift-right-click in the selector, /worlds favorites, /worlds favorite. false: they
+  # answer that the feature is off; saved favorites stay. Needs selector.enabled.
+  enabled: true
+
+world-rules:
+  # Rules per world (1.17.0): game mode, difficulty, PvP, monsters, animals, hunger, flying, time and weather lock and
+  # spawn chunks from worlds.yml. false: the plugin applies none of them; worlds keep what they have, the values in
+  # worlds.yml stay.
+  enabled: true
+
+entry-rules:
+  # Entry rules (1.17.0): entry permission, entry price and player limit per world. false: everyone with
+  # vystormworlds.use may enter every loaded world for free. Prices already paid and unlocks stay.
+  enabled: true
+
+border:
+  # World borders (1.17.0): border size and centre per world (/worlds set WORLD border, border-center). false: the
+  # plugin leaves every world border as it is, and no border event starts.
+  enabled: true
 
 border-events:
   # World border editor: per world set the border size (/worlds set WORLD border 2000, "off" = untouched), its centre
@@ -82,3 +119,15 @@ build-height:
   # Custom build height for new worlds (min-y/height in /worlds create and the create dialog). false: such worlds
   # cannot be created; existing worlds with a custom height keep loading.
   enabled: true
+
+admin-menu:
+  # Admin menu, world menu and settings dialog (/worlds admin, /worlds edit, /worlds settings, Core main menu) (1.17.0).
+  # false: they answer that the feature is off; every action stays available as a /worlds command.
+  enabled: true
+
+tutorial:
+  # Worlds tutorial in the Vystorm Core main menu (1.17.0). A change needs a server restart.
+  enabled: true
+
+# Switched-off commands disappear from tab completion and help at once and answer "This feature is switched off on
+# this server."
