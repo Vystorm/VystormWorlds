@@ -149,6 +149,7 @@ info-state: "<gray>{state}, type {type}, seed {seed}, generator {generator}, gro
 info-load: "<gray>{players} players, {chunks} chunks, {entities} entities, {tiles} block entities. Server: {tps}"
 info-error: "<red>Not loaded: {error}"
 info-properties: "<gray>{properties}"
+info-backups: "<gray>Backups: {regenerated} from regenerating (scheduled resets keep the newest {keep}), {deleted} from deleting, {size} in all in plugins/VystormWorlds/backups"
 state-loaded: "loaded"
 state-unloaded: "not loaded"
 button-tp: "[Go]"

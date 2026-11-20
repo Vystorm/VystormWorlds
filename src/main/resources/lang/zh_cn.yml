@@ -149,6 +149,7 @@ info-state: "<gray>{state}，类型 {type}，种子 {seed}，生成器 {generato
 info-load: "<gray>{players} 名玩家，{chunks} 个区块，{entities} 个实体，{tiles} 个方块实体。服务器：{tps}"
 info-error: "<red>未加载：{error}"
 info-properties: "<gray>{properties}"
+info-backups: "<gray>备份：重新生成 {regenerated} 个（计划重置保留最新 {keep} 个），删除 {deleted} 个，共 {size}，位于 plugins/VystormWorlds/backups"
 state-loaded: "已加载"
 state-unloaded: "未加载"
 button-tp: "[前往]"

@@ -165,6 +165,7 @@ info-state: <gray>{state}, тип {type}, семя {seed}, генератор {g
 info-load: '<gray>{players} игроков, {chunks} чанков, {entities} сущностей, {tiles} блок-сущностей. Сервер: {tps}'
 info-error: '<red>Не загружается: {error}'
 info-properties: <gray>{properties}
+info-backups: "<gray>Резервные копии: {regenerated} от пересоздания (плановые сбросы хранят {keep} последних), {deleted} от удаления, всего {size} в plugins/VystormWorlds/backups"
 state-loaded: загруженный
 state-unloaded: не загруженный
 button-tp: '[Go]'

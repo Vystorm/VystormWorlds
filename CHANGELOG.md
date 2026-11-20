@@ -1,3 +1,9 @@
+## 1.18.1 — 2026-11-20
+
+- `/worlds info WORLD` now ends with a line about the world's backups in `plugins/VystormWorlds/backups`: how many come from regenerating, how many from deleting, and how much disk space they take together, in all seven languages. The line appears only when the world has backups.
+- The line also says how many backups scheduled resets keep (`reset.keep-backups`), because only scheduled resets remove old ones. Copies left by `/worlds regen` and `/worlds delete` stay until you remove them yourself.
+- The size is counted in the background, so a large backup does not hold up the server.
+
 ## 1.18.0 — 2026-11-20
 
 - A `config.yml` with a YAML syntax error is never changed: the console names the line and column of the error on start and on `/worlds reload`, the reload answers with the same position and keeps the last working settings instead of falling back to the defaults (`worlds.yml` is still reloaded).

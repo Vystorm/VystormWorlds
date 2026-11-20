@@ -170,6 +170,7 @@ info-state: <gray>{state}, tipo {type}, seme {seed}, generatore {generator}, gru
 info-load: '<gray>{players} giocatori, {chunks} pezzi, {entities} entità, {tiles} entità blocco. Server: {tps}'
 info-error: '<red>Non caricato: {error}'
 info-properties: <gray>{properties}
+info-backups: "<gray>Backup: {regenerated} da rigenerazioni (i reset programmati tengono i {keep} più recenti), {deleted} da eliminazioni, {size} in totale in plugins/VystormWorlds/backups"
 state-loaded: caricato
 state-unloaded: non caricato
 button-tp: '[Go]'

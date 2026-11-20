@@ -1,6 +1,6 @@
 plugins { id 'java' }
 group = 'at.esoren'
-version = '1.18.0'
+version = '1.18.1'
 repositories {
     mavenCentral()
     maven { url = 'https://repo.papermc.io/repository/maven-public/' }

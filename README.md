@@ -54,7 +54,7 @@ Existing inventory snapshots from newer Minecraft versions must be restored on a
 
 **Admins**
 - `/worlds admin`: every world as an icon with state, players, chunks and entities; click for the world menu with toggles, cycles and prompts for every property, load/unload, set spawn, go there, clone, regenerate and delete.
-- `/worlds list`: clickable chat list with [Go] [Edit] [Info] [Load]/[Unload] buttons and a TPS/MSPT hint; `/worlds info` shows chunks, entities, block entities and all properties.
+- `/worlds list`: clickable chat list with [Go] [Edit] [Info] [Load]/[Unload] buttons and a TPS/MSPT hint; `/worlds info` shows chunks, entities, block entities and all properties, and how many backups of the world are kept and how much space they take.
 - All properties also as a native settings dialog (`/worlds settings <world>`), the plugin config in `/vadmin config VystormWorlds`, and a module in the `/vadmin` dashboard.
 - Texts in seven languages (English, German, French, Italian, Brazilian Portuguese, Russian and Simplified Chinese) through the Vystorm Core language system (each player sees their language).
 

@@ -149,6 +149,7 @@ info-state: "<gray>{state}, Typ {type}, Seed {seed}, Generator {generator}, Grup
 info-load: "<gray>{players} Spieler, {chunks} Chunks, {entities} Entities, {tiles} Block-Entities. Server: {tps}"
 info-error: "<red>Nicht geladen: {error}"
 info-properties: "<gray>{properties}"
+info-backups: "<gray>Sicherungen: {regenerated} vom Neuerzeugen (geplante Resets behalten die neuesten {keep}), {deleted} vom Löschen, zusammen {size} in plugins/VystormWorlds/backups"
 state-loaded: "geladen"
 state-unloaded: "nicht geladen"
 button-tp: "[Hin]"

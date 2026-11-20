@@ -196,6 +196,18 @@ final class Actions {
         StringBuilder props = new StringBuilder();
         for (String key : Properties.KEYS) props.append(props.isEmpty() ? "" : ", ").append(key).append('=').append(Properties.get(w, key));
         lang().send(sender, "info-properties", "properties", props.toString());
+        // backups: counted off the server thread (a world copy can be thousands of files), answered on it
+        java.nio.file.Path folder = plugin.getDataFolder().toPath().resolve("backups");
+        int keep = Math.clamp(plugin.getConfig().getInt("reset.keep-backups", 3), 0, 100);
+        plugin.tasks().async(() -> {
+            WorldResets.Backups backups = WorldResets.backups(folder, w.name);
+            if (backups.count() == 0) return;
+            plugin.tasks().now(() -> {
+                if (sender instanceof Player p && !p.isOnline()) return;
+                lang().send(sender, "info-backups", "regenerated", backups.regenerated(), "deleted", backups.deleted(),
+                        "keep", keep, "size", backups.size());
+            });
+        });
     }
 
     /** Importable folders as clickable lines. */

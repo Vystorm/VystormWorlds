@@ -76,6 +76,41 @@ final class WorldResets {
         });
     }
 
+    /** What the backups folder holds for one world: copies left by regenerating and by deleting, and their size on disk. */
+    record Backups(int regenerated, int deleted, long bytes) {
+        int count() { return regenerated + deleted; }
+
+        /** "512 KB", "3.4 MB", "14.2 GB". */
+        String size() {
+            if (bytes < 1024L * 1024) return Math.max(0, (bytes + 1023) / 1024) + " KB";
+            if (bytes < 1024L * 1024 * 1024) return String.format(Locale.ROOT, "%.1f MB", bytes / (1024.0 * 1024));
+            return String.format(Locale.ROOT, "%.1f GB", bytes / (1024.0 * 1024 * 1024));
+        }
+    }
+
+    /** Counts a world's backup folders and adds up their size; reads the disk, so call it off the server thread. */
+    static Backups backups(Path backups, String world) {
+        if (!Files.isDirectory(backups)) return new Backups(0, 0, 0);
+        int regenerated = 0, deleted = 0;
+        long bytes = 0;
+        List<Path> mine = new ArrayList<>();
+        try (Stream<Path> list = Files.list(backups)) {
+            list.filter(Files::isDirectory).forEach(mine::add);
+        } catch (IOException failure) { return new Backups(0, 0, 0); }
+        for (Path folder : mine) {
+            String name = folder.getFileName().toString();
+            if (name.startsWith(world + "-regenerated-")) regenerated++;
+            else if (name.startsWith(world + "-deleted-")) deleted++;
+            else continue;
+            try (Stream<Path> files = Files.walk(folder)) {
+                bytes += files.filter(Files::isRegularFile).mapToLong(file -> {
+                    try { return Files.size(file); } catch (IOException gone) { return 0; }
+                }).sum();
+            } catch (IOException | java.io.UncheckedIOException unreadable) { /* count the folder, size unknown */ }
+        }
+        return new Backups(regenerated, deleted, bytes);
+    }
+
     /** Deletes all but the newest {@code keep} "regenerated" backups of a world (folder names sort by time). */
     static int pruneBackups(Path backups, String world, int keep) {
         if (!Files.isDirectory(backups)) return 0;
