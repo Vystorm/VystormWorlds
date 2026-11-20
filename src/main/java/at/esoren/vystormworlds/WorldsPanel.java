@@ -128,32 +128,36 @@ final class WorldsPanel {
 
     static Panel editor(PanelContext ctx, Editor e, Actions actions) {
         Row row = e.world();
-        Ui.Box rules = Ui.col().gap(6), entry = Ui.col().gap(6), borders = Ui.col().gap(6);
+        // the world's settings: one row each on Vystorm Screens (Core 0.66.0 list layout), name left, value right
+        Ui.Section rules = Ui.section(ctx.text("panel-rules")).list(), entry = Ui.section(ctx.text("panel-entry")).list(),
+                borders = Ui.section(ctx.text("panel-borders")).list();
         for (String key : Properties.KEYS) {
             String value = e.values().getOrDefault(key, "");
-            String label = ctx.text("w-" + switch (key) { case "keep-spawn-loaded" -> "keep-spawn"; case "remember-position" -> "remember"; default -> key; });
+            String name = "w-" + switch (key) { case "keep-spawn-loaded" -> "keep-spawn"; case "remember-position" -> "remember"; default -> key; };
+            String label = ctx.text(name), description = ctx.text(name + "-desc");
             Ui.Element<?> control;
-            if (TOGGLES.contains(key)) control = Ui.toggle("set-" + key, label).value(Boolean.parseBoolean(value))
+            if (TOGGLES.contains(key)) control = Ui.toggle("set-" + key, label).value(Boolean.parseBoolean(value)).description(description)
                     .onChange((a, v) -> refresh(a, actions.set(a.player(), row.name(), key, v.toString())));
             else if (CHOICES.containsKey(key)) {
                 Ui.Select select = Ui.select("set-" + key, label);
                 for (String option : CHOICES.get(key)) select.option(option, ctx.text(optionKey(option)));
                 if (!CHOICES.get(key).contains(value) && !value.isEmpty()) select.option(value, value);
-                control = select.value(value.isEmpty() ? "none" : value)
+                control = select.value(value.isEmpty() ? "none" : value).tooltip(description)
                         .onChange((a, v) -> refresh(a, actions.set(a.player(), row.name(), key, v)));
             } else if (key.equals("price") || key.equals("player-limit")) {
                 // Core permits at most 100,000 steps. Exact prices of any size also have a text field below.
                 double max = key.equals("price") ? Math.max(1000, Double.parseDouble(value)) : 10000;
                 control = Ui.number("set-" + key, label).range(0, max, key.equals("price") ? Math.max(0.01, Math.ceil(max / 1000) / 100) : 1)
-                        .decimals(key.equals("price") ? 2 : 0).value(Double.parseDouble(value))
+                        .decimals(key.equals("price") ? 2 : 0).value(Double.parseDouble(value)).tooltip(description)
                         .onChange((a, v) -> refresh(a, actions.set(a.player(), row.name(), key, key.equals("price") ? v.toString() : Long.toString(v.longValue()))));
             } else control = Ui.input("set-" + key, label).value(value).maxLength(key.equals("description") ? 120 : 64).submitOnEnter()
-                    .onChange((a, v) -> refresh(a, actions.set(a.player(), row.name(), key, v)));
+                    .tooltip(description).onChange((a, v) -> refresh(a, actions.set(a.player(), row.name(), key, v)));
             if (key.startsWith("border") || key.startsWith("reset")) borders.child(control);
             else if (TOGGLES.contains(key) || key.endsWith("-lock") || key.equals("difficulty")) rules.child(control);
             else entry.child(control);
         }
         entry.child(Ui.input("exact-price", ctx.text("panel-exact-price")).value(e.values().get("price")).maxLength(32).submitOnEnter()
+                .tooltip(ctx.text("panel-exact-price-desc"))
                 .onChange((a, value) -> refresh(a, actions.set(a.player(), row.name(), "price", value))));
         Ui.Box operations = Ui.col().gap(6);
         if (row.loaded()) {
@@ -163,7 +167,7 @@ final class WorldsPanel {
                     .confirm(ctx.text("w-unload"), ctx.text("panel-unload-confirm", "world", row.title())));
             if (Integer.parseInt(e.values().getOrDefault("border", "0").replace("off", "0")) > 0)
                 borders.child(leave(ctx, actions, "border-start", "w-border-start", Material.TARGET, row.name())
-                        .confirm(ctx.text("w-border-start"), ctx.text("w-border-start-lore")));
+                        .tooltip(ctx.text("w-border-start-lore")).confirm(ctx.text("w-border-start"), ctx.text("w-border-start-lore")));
         } else operations.child(leave(ctx, actions, "load", "w-load", Material.LIME_CONCRETE, row.name()).primary());
         if (!row.protectedWorld()) {
             operations.children(leave(ctx, actions, "regen", "w-regenerate", Material.TNT, row.name()).danger()

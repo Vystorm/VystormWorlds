@@ -30,6 +30,8 @@ final class Features {
     static final String TUTORIAL = "tutorial.enabled";
     /** Language key of the reply when a switched-off feature is used. */
     static final String OFF = "feature-off";
+    /** Language key of the reply when a feature needs another switch that is off ({switch} = its key). */
+    static final String NEEDS = "feature-needs";
 
     /** Every {@code .enabled} switch, in the order of config.yml. */
     static final java.util.List<String> SWITCHES = java.util.List.of(MANAGEMENT, "groups.enabled", SELECTOR, FAVORITES,
@@ -44,6 +46,11 @@ final class Features {
     static String descriptionKey(String path) {
         String subject = path.endsWith(".enabled") ? path.substring(0, path.length() - ".enabled".length()) : path;
         return "features." + subject.replace('.', '-');
+    }
+
+    /** {@code groups.enabled} -> {@code feature-names.groups}: the language key of a switch's readable name. */
+    static String labelKey(String path) {
+        return "feature-names." + descriptionKey(path).substring("features.".length());
     }
 
     private Features() { }

@@ -88,6 +88,29 @@ class WorldPanelMenusTest {
         verify(player, never()).performCommand(anyString());
     }
 
+    @Test void givenBorderOffAndBorderEventsOn_whenABorderEventIsStarted_thenTheAnswerNamesTheSwitchItNeeds() {
+        when(registry.get("farm")).thenReturn(new WorldSettings("farm"));
+        org.bukkit.configuration.file.YamlConfiguration config = new org.bukkit.configuration.file.YamlConfiguration();
+        config.set(Features.BORDER, false);
+        when(plugin.getConfig()).thenReturn(config);
+        when(plugin.lang().plain(player, Features.labelKey(Features.BORDER))).thenReturn("World border");
+        bridge.go(player, "border-start", "farm");
+        verify(plugin.lang()).send(player, Features.NEEDS, "switch", "border.enabled", "name", "World border");
+        verify(plugin, never()).borders();
+
+        config.set(Features.BORDER, true);
+        config.set(Features.BORDER_EVENTS, false);
+        bridge.go(player, "border-start", "farm");
+        verify(plugin.lang()).send(player, Features.OFF);
+        verify(plugin, never()).borders();
+    }
+
+    @Test void givenEveryLanguage_whenRead_thenTheNeedsMessageNamesTheSwitch() {
+        for (String code : List.of("en", "de", "fr", "it", "pt_br", "ru", "zh_cn"))
+            assertTrue(org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(new java.io.File("src/main/resources/lang/" + code + ".yml"))
+                    .getString(Features.NEEDS, "").matches(".*\\{name}.*\\{switch}.*"), code);
+    }
+
     @Test void givenReloadedOrDeletedWorld_whenSettingChanges_thenOnlyCurrentRegistryEntryIsUsed() {
         WorldSettings replacement = new WorldSettings("farm");
         when(registry.get("farm")).thenReturn(replacement);

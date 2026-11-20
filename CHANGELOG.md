@@ -1,3 +1,12 @@
+## 1.18.0 — 2026-11-20
+
+- A `config.yml` with a YAML syntax error is never changed: the console names the line and column of the error on start and on `/worlds reload`, the reload answers with the same position and keeps the last working settings instead of falling back to the defaults (`worlds.yml` is still reloaded).
+- `/vadmin features` shows every switch of the plugin with a readable name in the admin's language, for example "Return to the last position" instead of "Teleport › Return to last position".
+- "Start border event now" in the world menu with `border.enabled` off now answers "This needs “World border” (border.enabled), which is switched off on this server." instead of "This feature is switched off on this server.", because the border events switch itself is on.
+- The world menu shows a world's settings as lists on Vystorm Screens: the tabs "World rules", "Travel and appearance" and "Borders and resets" have one row per setting with its name on the left, the current value on the right and a one-line description below, in all seven languages. Before, they were small tiles with cut names. The same descriptions now appear in the world's page of `/vsettings`. Players without screens see the menus as before.
+- The plugin now registers Vystorm Core's update check for its SpigotMC page, like the other Vystorm plugins, so admins hear about a newer version. The README names the platforms it was tested on (Paper and Purpur 26.2, Paper 1.20.6, Spigot 26.2).
+- Requires Vystorm Core 0.66.0 or newer. Update Core before you update this plugin.
+
 ## 1.17.0 — 2026-11-18
 
 - Requires Vystorm Core 0.65.0. Update Core before you update this plugin.

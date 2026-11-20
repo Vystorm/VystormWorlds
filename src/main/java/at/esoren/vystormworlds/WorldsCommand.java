@@ -177,8 +177,9 @@ final class WorldsCommand {
             case "generators" -> generators(sender);
             case "reload" -> {
                 plugin.reload();
+                if (plugin.configProblem() != null) send(sender, "config-broken", "file", "config.yml", "problem", plugin.configProblem());
                 if (plugin.registry().error() != null) send(sender, "registry-broken", "error", plugin.registry().error());
-                else send(sender, "reloaded", "count", plugin.registry().all().size());
+                else if (plugin.configProblem() == null) send(sender, "reloaded", "count", plugin.registry().all().size());
             }
             default -> {
                 // "/worlds <world>" travels there

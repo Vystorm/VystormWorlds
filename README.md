@@ -2,7 +2,7 @@
 
 **Multiworld management that players can actually use.** Create, import, link and manage worlds from menus, give every world its own rules, let groups of worlds keep their own inventories, and send players around with a world selector and safe teleports. One plugin for what usually takes Multiverse-Core, Multiverse-Inventories and Multiverse-NetherPortals together. Free and open source (GPL-3.0).
 
-**Requires [Vystorm Core](https://www.spigotmc.org/resources/139848/) 0.65.0 or newer (free).** Paper/Purpur 1.20.6 – 26.x. Plugin bytecode requires Java 21 or newer; use the Java version required by your server (Java 25 for 26.x). Vault is optional (entry prices).
+**Requires [Vystorm Core](https://www.spigotmc.org/resources/139848/) 0.66.0 or newer (free).** Paper/Purpur 1.20.6 – 26.x; tested on Paper and Purpur 26.2, Paper 1.20.6 and Spigot 26.2. Plugin bytecode requires Java 21 or newer; use the Java version required by your server (Java 25 for 26.x). Vault is optional (entry prices).
 
 ## Feature switches (1.17.0)
 
@@ -183,7 +183,7 @@ Presets are stored as `preset:myplugin:islands` and removed automatically when t
 
 ## Release
 
-- Spigot resource: https://www.spigotmc.org/resources/140132/. The plugin does not register a Vystorm Core update check yet.
+- Spigot resource: https://www.spigotmc.org/resources/140132/. Vystorm Core's update check tells admins when a newer version is available.
 
 ## Building
 

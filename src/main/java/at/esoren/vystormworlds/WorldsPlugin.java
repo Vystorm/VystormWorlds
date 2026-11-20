@@ -42,13 +42,15 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        if (!CoreApi.atLeast("0.65.0")) {
-            getLogger().severe("Vystorm Worlds requires Vystorm Core 0.65.0 or newer.");
+        if (!CoreApi.atLeast("0.66.0")) {
+            getLogger().severe("Vystorm Worlds requires Vystorm Core 0.66.0 or newer.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         core = CoreApi.api().orElseThrow();
+        registerUpdateCheck(this, core);
         saveDefaultConfig();
+        readConfig(); // a broken config.yml is named with line and column and never written
         lang = core.lang().register(this); try { if (Features.on(getConfig(), Features.TUTORIAL)) core.registerTutorial(this); } catch (RuntimeException noTutorial) { getLogger().fine("Tutorial not registered: " + noTutorial); }
         tasks = core.tasks().of(this, "worlds");
         registry = new WorldRegistry(getDataFolder().toPath().resolve("worlds.yml"), core.data().files());
@@ -99,7 +101,7 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
         var api = core;
         try {
             api.settings().config().register(this, "config.yml", this::reload);
-            describeSwitches(api.settings().config());
+            describeSwitches(api.settings().config(), this, lang);
         } catch (RuntimeException failure) { getLogger().log(Level.FINE, "No config editor", failure); }
         try {
             WorldsPlaceholders.register(api.placeholders(), this, lang, placeholderSource());
@@ -126,11 +128,18 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
      * One-line descriptions in the admin's language for every switch in {@code /vadmin features}, and the older
      * booleans with other names declared as switches (their keys stay as they are).
      */
-    private void describeSwitches(Vystorm.vystorm_core._uiMethods.settings.ConfigEditorInterface config) {
-        for (String path : Features.SWITCHES) config.label(this, path, null, lang.ref(Features.descriptionKey(path)));
-        for (String path : Features.TOP_LEVEL) config.label(this, path, null, lang.ref(Features.descriptionKey(path)));
-        for (String path : Features.DECLARED) config.feature(this, path, null, lang.ref(Features.descriptionKey(path)));
-        config.activation(this, Features.TUTORIAL, Vystorm.vystorm_core._uiMethods.settings.SettingPolicy.Activation.RESTART);
+    /** SpigotMC resource of this plugin; Core's update check tells admins about a newer version, as for the other plugins. */
+    static final int SPIGOT_RESOURCE = 140132;
+
+    static void registerUpdateCheck(org.bukkit.plugin.Plugin plugin, Vystorm.vystorm_core.API core) {
+        core.admin().updates().spigot(plugin, SPIGOT_RESOURCE);
+    }
+
+    static void describeSwitches(Vystorm.vystorm_core._uiMethods.settings.ConfigEditorInterface config, org.bukkit.plugin.Plugin plugin, Lang lang) {
+        for (String path : Features.SWITCHES) config.label(plugin, path, lang.ref(Features.labelKey(path)), lang.ref(Features.descriptionKey(path)));
+        for (String path : Features.TOP_LEVEL) config.label(plugin, path, lang.ref(Features.labelKey(path)), lang.ref(Features.descriptionKey(path)));
+        for (String path : Features.DECLARED) config.feature(plugin, path, lang.ref(Features.labelKey(path)), lang.ref(Features.descriptionKey(path)));
+        config.activation(plugin, Features.TUTORIAL, Vystorm.vystorm_core._uiMethods.settings.SettingPolicy.Activation.RESTART);
     }
 
     /** What the {@code worlds} placeholders read, looked up at call time. */
@@ -200,11 +209,30 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
         }
     }
 
+    /** The YAML error of config.yml found by the last read ("line L, column C: ..."), null when it parsed. */
+    private String configProblem;
+
+    String configProblem() { return configProblem; }
+
+    /**
+     * Reads config.yml at start and on reload. A file with a YAML error is left byte-identical and the error logged
+     * once; false is returned and getConfig() keeps what it had (the last good settings, at start the jar defaults).
+     */
+    boolean readConfig() {
+        configProblem = YamlCheck.problem(new java.io.File(getDataFolder(), "config.yml"));
+        if (configProblem != null) {
+            getLogger().severe("config.yml has a YAML error at " + configProblem + ". The file was left unchanged and the settings read before stay in use; fix it and run /worlds reload.");
+            return false;
+        }
+        reloadConfig();
+        return true;
+    }
+
     void reload() {
         var listed = WorldsCommand.listing(getConfig());
-        reloadConfig();
+        boolean read = readConfig();
         // tab completion asks the switches live; a changed switch only needs the players' command lists sent again
-        if (core != null && !listed.equals(WorldsCommand.listing(getConfig()))) core.command().refresh();
+        if (read && core != null && !listed.equals(WorldsCommand.listing(getConfig()))) core.command().refresh();
         if (lang != null) lang.reload();
         if (!loadRegistry()) return;
         if (!started) return;

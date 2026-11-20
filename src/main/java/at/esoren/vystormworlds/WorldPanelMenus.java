@@ -243,7 +243,8 @@ final class WorldPanelMenus implements WorldsPanel.Actions {
                 if (action.equals("load") || action.equals("unload")) menus.world(player, world);
             }
             case "border-start" -> {
-                if (!Features.on(plugin.getConfig(), Features.BORDER_EVENTS) || !Features.on(plugin.getConfig(), Features.BORDER)) plugin.lang().send(player, Features.OFF);
+                if (!Features.on(plugin.getConfig(), Features.BORDER_EVENTS)) plugin.lang().send(player, Features.OFF);
+                else if (!Features.on(plugin.getConfig(), Features.BORDER)) plugin.lang().send(player, "feature-needs", "switch", Features.BORDER, "name", plugin.lang().plain(player, Features.labelKey(Features.BORDER)));
                 else if (!plugin.borders().start(current)) plugin.lang().send(player, "border-no-size", "world", world);
                 menus.world(player, world);
             }

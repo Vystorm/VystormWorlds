@@ -37,22 +37,23 @@ final class WorldSection {
         var lang = plugin.lang();
         List<Setting> settings = new ArrayList<>();
         for (String key : Properties.KEYS) {
-            String label = lang.ref("w-" + (key.equals("keep-spawn-loaded") ? "keep-spawn" : key.equals("remember-position") ? "remember" : key));
+            String name = "w-" + (key.equals("keep-spawn-loaded") ? "keep-spawn" : key.equals("remember-position") ? "remember" : key);
+            String label = lang.ref(name), description = lang.ref(name + "-desc");
             if (TOGGLES.contains(key)) {
-                settings.add(Setting.toggle(key, label, "", p -> {
+                settings.add(Setting.toggle(key, label, description, p -> {
                     WorldSettings w = selected(plugin, p);
                     return w != null && Boolean.parseBoolean(Properties.get(w, key));
                 }, (p, value) -> apply(plugin, p, key, Boolean.toString(value))));
             } else if (CHOICES.containsKey(key)) {
                 LinkedHashMap<String, String> options = new LinkedHashMap<>();
                 for (String option : CHOICES.get(key)) options.put(option, option);
-                settings.add(Setting.choice(key, label, "", options, p -> {
+                settings.add(Setting.choice(key, label, description, options, p -> {
                     WorldSettings w = selected(plugin, p);
                     String value = w == null ? CHOICES.get(key).getFirst() : Properties.get(w, key);
                     return options.containsKey(value) ? value : CHOICES.get(key).getFirst();
                 }, (p, value) -> apply(plugin, p, key, value)));
             } else {
-                settings.add(Setting.text(key, label, "", key.equals("description") ? 120 : 64, p -> {
+                settings.add(Setting.text(key, label, description, key.equals("description") ? 120 : 64, p -> {
                     WorldSettings w = selected(plugin, p);
                     String value = w == null ? "" : Properties.get(w, key);
                     return value.equals("none") ? "" : value;

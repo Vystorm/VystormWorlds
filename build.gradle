@@ -1,12 +1,12 @@
 plugins { id 'java' }
 group = 'at.esoren'
-version = '1.17.0'
+version = '1.18.0'
 repositories {
     mavenCentral()
     maven { url = 'https://repo.papermc.io/repository/maven-public/' }
 }
 java { toolchain.languageVersion = JavaLanguageVersion.of(25) }
-def coreJar = providers.gradleProperty('vystormCoreJar').getOrElse(file('libs/Vystorm_Core.jar').exists() ? 'libs/Vystorm_Core.jar' : '../Vystorm_Core/build/libs/Vystorm_Core-0.65.0-Vystorm-Core-26.2.jar')
+def coreJar = providers.gradleProperty('vystormCoreJar').getOrElse(file('libs/Vystorm_Core.jar').exists() ? 'libs/Vystorm_Core.jar' : '../Vystorm_Core/build/libs/Vystorm_Core-0.66.0-Vystorm-Core-26.2.jar')
 dependencies {
     compileOnly files(coreJar)
     testImplementation files(coreJar)

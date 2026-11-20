@@ -356,7 +356,8 @@ final class Menus implements Listener {
         if (world != null && w.border > 0)
             menu.put(53, item(player, Material.TARGET, "w-border-start", "w-border-start-lore"), (v, c) -> {
                 WorldSettings now = current(v, name);
-                if (!Features.on(plugin.getConfig(), Features.BORDER_EVENTS) || !Features.on(plugin.getConfig(), Features.BORDER)) lang().send(v, Features.OFF);
+                if (!Features.on(plugin.getConfig(), Features.BORDER_EVENTS)) lang().send(v, Features.OFF);
+                else if (!Features.on(plugin.getConfig(), Features.BORDER)) lang().send(v, "feature-needs", "switch", Features.BORDER, "name", lang().plain(v, Features.labelKey(Features.BORDER)));
                 else if (now == null || !plugin.borders().start(now)) lang().send(v, "border-no-size", "world", name);
                 world(v, name);
             });

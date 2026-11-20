@@ -121,6 +121,24 @@ class WorldsPanelTest {
         }
     }
 
+    @Test void givenWorldEditor_whenRendered_thenTheSettingsAreListsWithANameAndADescriptionPerRowInEveryLanguage() throws Exception {
+        for (String code : List.of("en", "de", "fr", "it", "pt_br", "ru", "zh_cn")) {
+            var doc = PanelTesting.render(WorldsPanel.editor(context(code), editor(true, false), actions));
+            long lists = java.util.regex.Pattern.compile("\"layout\":\"list\"").matcher(doc.toString()).results().count();
+            assertEquals(3, lists, code + ": rules, entry and borders are lists");
+            List<String> ids = new java.util.ArrayList<>();
+            for (String key : Properties.KEYS) ids.add("set-" + key);
+            ids.add("exact-price");
+            for (String id : ids) {
+                JsonObject row = PanelTesting.find(doc, id);
+                assertFalse(PanelTesting.plain(row.get("label")).isBlank(), code + " " + id);
+                String description = row.has("description") ? PanelTesting.plain(row.get("description"))
+                        : PanelTesting.plain(row.getAsJsonArray("tooltip").get(0));
+                assertFalse(description.isBlank() || description.endsWith("-desc"), code + " " + id + ": " + description);
+            }
+        }
+    }
+
     @Test void givenAllSevenLanguages_whenPanelsRender_thenLabelsAndOptionsAreTranslated() throws Exception {
         Lang lang = lang();
         for (String code : List.of("en", "de", "fr", "it", "pt_br", "ru", "zh_cn")) {
