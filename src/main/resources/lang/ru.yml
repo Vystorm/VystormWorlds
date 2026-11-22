@@ -564,6 +564,7 @@ features:
   respawn-same-world: "Возрождение в мире смерти"
   delete-backup: "Хранить копию удалённых и пересозданных миров"
   selector-show-locked: "Показывать закрытые миры в выборе"
+  rankings: "Рейтинг миров, которые исследовал каждый игрок, для Vystorm Boards (Core 0.67.0 или новее)"
 placeholder:
   world: "Отображаемое название мира игрока"
   world_name: "Название мира игрока"
@@ -630,5 +631,10 @@ feature-names:
   respawn-same-world: "Возрождение в мире смерти"
   delete-backup: "Резервные копии при удалении и пересоздании"
   selector-show-locked: "Показывать закрытые миры"
+  rankings: "Рейтинги"
 feature-needs: "<red>Для этого нужна функция «{name}» ({switch}), а она отключена на этом сервере."
 config-broken: "<red>{file} не перезагружен: ошибка YAML в {problem}. Файл не изменён; действуют последние рабочие настройки."
+rankings:
+  explored:
+    label: "Исследовано миров"
+    description: "Разные миры, в которых побывал игрок"

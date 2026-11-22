@@ -538,6 +538,7 @@ features:
   respawn-same-world: "Respawn in the world of death"
   delete-backup: "Keep a backup of deleted and regenerated worlds"
   selector-show-locked: "Show locked worlds in the selector"
+  rankings: "Ranking of the worlds each player explored, for Vystorm Boards (Core 0.67.0 or newer)"
 placeholder:
   world: "Display name of the player's world"
   world_name: "Name of the player's world"
@@ -604,5 +605,10 @@ feature-names:
   respawn-same-world: "Respawn in the world of death"
   delete-backup: "Backups on delete and regenerate"
   selector-show-locked: "Show locked worlds"
+  rankings: "Rankings"
 feature-needs: "<red>This needs “{name}” ({switch}), which is switched off on this server."
 config-broken: "<red>{file} was not reloaded: YAML error at {problem}. The file was left unchanged; the last working settings stay in use."
+rankings:
+  explored:
+    label: "Worlds explored"
+    description: "Different worlds the player has entered"

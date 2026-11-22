@@ -571,6 +571,7 @@ features:
   respawn-same-world: "Rinascere nel mondo della morte"
   delete-backup: "Tenere un backup dei mondi eliminati e rigenerati"
   selector-show-locked: "Mostrare i mondi bloccati nel selettore"
+  rankings: "Classifica dei mondi esplorati da ogni giocatore, per Vystorm Boards (Core 0.67.0 o più recente)"
 placeholder:
   world: "Nome visualizzato del mondo del giocatore"
   world_name: "Nome del mondo del giocatore"
@@ -637,5 +638,10 @@ feature-names:
   respawn-same-world: "Rinascita nel mondo della morte"
   delete-backup: "Backup a eliminazione e rigenerazione"
   selector-show-locked: "Mostra i mondi bloccati"
+  rankings: "Classifiche"
 feature-needs: "<red>Questo richiede «{name}» ({switch}), che è disattivato su questo server."
 config-broken: "<red>{file} non è stato ricaricato: errore YAML in {problem}. Il file non è stato modificato; restano attive le ultime impostazioni valide."
+rankings:
+  explored:
+    label: "Mondi esplorati"
+    description: "Mondi diversi in cui il giocatore è entrato"

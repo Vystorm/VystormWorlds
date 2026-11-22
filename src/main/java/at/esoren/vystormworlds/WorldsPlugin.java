@@ -55,6 +55,8 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
         tasks = core.tasks().of(this, "worlds");
         registry = new WorldRegistry(getDataFolder().toPath().resolve("worlds.yml"), core.data().files());
         loadRegistry();
+        explored = new ExploredWorlds(getDataFolder().toPath().resolve("explored.yml"), core.data().files());
+        if (explored.problem() != null) getLogger().severe(explored.problem());
         manager = new WorldManager(this, WorldPaths.detect(getServer()), new Generators(getServer().getPluginManager(), this));
         if (!manager.paths().customHeights()) getLogger().info("Custom build heights unavailable: this server has no supported custom-dimension loader.");
         if (!WorldCompat.INSTANCE.canFlush()) getLogger().info("Live world cloning unavailable: this server has no flush-save API; own worlds can still be unloaded and cloned.");
@@ -83,6 +85,45 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
         tasks.timer(400L, 400L, borders::tick);
         for (WorldSettings w : registry().all()) { org.bukkit.World loaded = WorldManager.loaded(w.name); if (loaded != null) borders.apply(loaded, w); }
         if (templates != null) tasks.timer(20L, 20L, templates::tick);
+        tasks.timer(1200L, 1200L, this::saveExplored);
+    }
+
+    // ------------------------------------------------------------------ ranking worlds:explored (1.19.0)
+
+    private ExploredWorlds explored;
+
+    /** Counts the player's current world for worlds:explored: worlds of worlds.yml that are not hidden, no visit worlds. */
+    void explored(org.bukkit.entity.Player player) {
+        if (explored == null || player == null || !Features.on(getConfig(), Features.RANKINGS)) return;
+        WorldSettings w = settings(player.getWorld());
+        if (w == null || w.hidden || rules == null || rules.coreWorld(player.getWorld()) || rules.inVisit(player)) return;
+        explored.record(player.getUniqueId(), player.getName(), w.name);
+    }
+
+    /** At most once a minute: writes explored.yml off the server thread when a count changed. */
+    private void saveExplored() {
+        ExploredWorlds store = explored;
+        ExploredWorlds.Snapshot changes = store == null ? null : store.takeChanges();
+        if (changes == null) return;
+        tasks.async(() -> {
+            try { store.write(changes); }
+            catch (IOException failure) {
+                getLogger().warning("Could not save explored.yml: " + failure.getMessage());
+                tasks.later(1L, store::failed);
+            }
+        });
+    }
+
+    /**
+     * {@code worlds:explored} for Vystorm Boards and placeholders, only on a Core with the capability
+     * {@code placeholder-rankings} (0.67.0); on an older Core nothing happens. At start and after every reload, so
+     * {@code rankings.enabled} applies without a restart.
+     */
+    private void applyRankings() {
+        if (core == null) return;
+        boolean has;
+        try { has = CoreApi.has("placeholder-rankings"); } catch (RuntimeException | LinkageError old) { has = false; }
+        WorldsPlaceholders.rankings(core.placeholders(), this, has, Features.on(getConfig(), Features.RANKINGS), explored, lang, getLogger());
     }
 
     /** The Core hub for the classes of this plugin (they get the plugin in their constructor). */
@@ -94,6 +135,10 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
         if (borders != null) borders.close();
         VystormWorldsApi.detach();
         if (tasks != null) tasks.close();
+        if (explored != null) {
+            try { explored.write(explored.takeChanges()); }
+            catch (IOException failure) { getLogger().warning("Could not save explored.yml: " + failure.getMessage()); }
+        }
         for (World world : getServer().getWorlds()) world.removePluginChunkTickets(this);
     }
 
@@ -106,6 +151,7 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
         try {
             WorldsPlaceholders.register(api.placeholders(), this, lang, placeholderSource());
         } catch (RuntimeException failure) { getLogger().warning("Placeholders not registered: " + failure); }
+        applyRankings();
         try {
             if (!menus.registerPanels()) {
                 api.gui().registerMenu(this, "worlds", lang.ref("vmenu-worlds"), Material.FILLED_MAP,
@@ -185,6 +231,7 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
         saveRegistry();
         links.sync();
         rules.recheckAll();
+        for (org.bukkit.entity.Player online : getServer().getOnlinePlayers()) explored(online);
     }
 
     /** Adds loaded worlds missing in worlds.yml: server worlds visible, worlds of other plugins hidden and not auto-loaded. */
@@ -234,6 +281,7 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
         // tab completion asks the switches live; a changed switch only needs the players' command lists sent again
         if (read && core != null && !listed.equals(WorldsCommand.listing(getConfig()))) core.command().refresh();
         if (lang != null) lang.reload();
+        applyRankings();
         if (!loadRegistry()) return;
         if (!started) return;
         for (WorldSettings w : registry.all()) {

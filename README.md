@@ -9,6 +9,7 @@
 Every feature has its own on/off switch in `config.yml`, listed with a one-line description in all seven languages in `/vadmin features`. Changes apply at once; only `tutorial.enabled` needs a restart. Core adds new switches to an existing `config.yml` with their comments; a missing switch counts as on.
 
 - New in 1.17.0: `management.enabled` (create, import, load, unload, clone, regen, delete), `selector.enabled` (selector, Core main menu entry, `/worlds tp WORLD`, `/worlds WORLD`, `/worlds spawn`), `favorites.enabled`, `teleport.safe-spot.enabled`, `portals.enabled` (linked nether and end), `world-rules.enabled` (game mode, difficulty, PvP, mobs, hunger, flying, time and weather lock, spawn chunks), `entry-rules.enabled` (entry permission, price, player limit), `border.enabled`, `admin-menu.enabled`, `tutorial.enabled`.
+- New in 1.19.0: `rankings.enabled` (the ranking `worlds:explored` and the counting for it, see below).
 - Already there: `groups.enabled`, `border-events.enabled`, `reset.enabled`, `templates.enabled`, `build-height.enabled`, and the top-level `autoload`, `adopt-loaded-worlds`, `arrival-title`.
 - Older keys keep their names and now also show in `/vadmin features`: `groups.notify`, `teleport.return-to-last-position`, `portals.sync-vystorm-portals`, `respawn.same-world`, `delete.backup`, `selector.show-locked`.
 
@@ -17,6 +18,20 @@ A command of a switched-off feature answers "This feature is switched off on thi
 ## Placeholders (1.17.0)
 
 With Vystorm Core 0.65.0 the plugin registers the namespace `worlds`: `world`, `world_name`, `world_group`, `world_kind`, `world_players` (with a world name as argument: players in that world), `world_limit`, `world_next_reset`, `worlds_count`, `worlds_loaded`, `in_visit`. Each works as `%vystorm_worlds_<key>%` (also through PlaceholderAPI) and as `{worlds:<key>}` in Vystorm texts; `/vadmin placeholders worlds` lists them. Examples: `%vystorm_worlds_world%` shows the display name of the player's world, `%vystorm_worlds_world_players_lobby%` the players in `lobby`. A value of a switched-off feature is empty. All values answer on the server thread only.
+
+## Ranking: worlds explored (1.19.0)
+
+With Vystorm Core 0.67.0 or newer the plugin offers the ranking `worlds:explored`: how many different worlds each player has entered. Vystorm Boards 1.21.0 or newer can show it on a board, and every text with Vystorm placeholders can use it. It counts the worlds in `worlds.yml` that are not hidden; Core's visit worlds do not count. Counting starts with 1.19.0. The counts are kept in `plugins/VystormWorlds/explored.yml` (player UUID, last known name and the names of the worlds, no positions), so offline players are listed too; the file is written at most once a minute and when the server stops. Older versions of the plugin ignore it.
+
+Placeholders (`<n>` is 1 to 100): `%vystorm_worlds_top_explored_<n>_name%`, `%vystorm_worlds_top_explored_<n>_value%`, `%vystorm_worlds_top_explored_<n>_raw%`, `%vystorm_worlds_top_explored_<n>_uuid%`, and for the viewer `%vystorm_worlds_rank_explored%` and `%vystorm_worlds_value_explored%`. Short form in Vystorm texts: `{worlds:top_explored:1:name}`, `{worlds:rank_explored}`. A board in Vystorm Boards:
+
+```yaml
+elements:
+  - {type: text, text: "<gold>Explorers", x: 16, y: 12, size: 22}
+  - {type: top, source: "worlds:explored", x: 16, y: 48, rows: 10}
+```
+
+`rankings.enabled: false` removes the ranking at the next `/worlds reload` and stops counting; the counts already kept stay. `/vadmin placeholders rankings worlds` lists it. On a Core older than 0.67.0 the plugin runs as before and offers no ranking; it still needs Vystorm Core 0.66.0 or newer.
 
 ## Compatibility
 

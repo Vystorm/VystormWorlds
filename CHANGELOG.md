@@ -1,3 +1,11 @@
+## 1.19.0 — 2026-11-22
+
+- Ranking for boards: with Vystorm Core 0.67.0 or newer and Vystorm Boards 1.21.0 or newer, a board can show the players who have explored the most worlds (`worlds:explored`), for example `{type: top, source: "worlds:explored", rows: 10}` with a `text` element above it as the heading. It counts the different worlds of `worlds.yml` a player has entered; hidden worlds and Core's visit worlds do not count.
+- Counting starts with this update, so the ranking begins empty and fills as players move between worlds. The counts are kept in the new file `explored.yml` (player, last known name and world names, no positions), which lists offline players too and is written at most once a minute and when the server stops. Going back to 1.18.1 is fine: older versions ignore the file.
+- The same ranking works as placeholders in every text that shows Vystorm placeholders: `%vystorm_worlds_top_explored_1_name%`, `%vystorm_worlds_top_explored_1_value%`, `%vystorm_worlds_rank_explored%` and more, listed in the README. `/vadmin placeholders rankings worlds` shows it with its name in seven languages.
+- New switch `rankings.enabled`, on by default and listed in `/vadmin features` in seven languages. Off, the ranking is removed at the next `/worlds reload` and nothing is counted; the counts already kept stay.
+- The plugin still runs with Vystorm Core 0.66.0 or newer. On a Core older than 0.67.0 it offers no ranking and everything else works as before.
+
 ## 1.18.1 — 2026-11-20
 
 - `/worlds info WORLD` now ends with a line about the world's backups in `plugins/VystormWorlds/backups`: how many come from regenerating, how many from deleting, and how much disk space they take together, in all seven languages. The line appears only when the world has backups.

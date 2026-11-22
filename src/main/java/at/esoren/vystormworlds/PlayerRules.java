@@ -154,6 +154,7 @@ final class PlayerRules implements Listener {
     public void changedWorld(PlayerChangedWorldEvent event) {
         arrive(event.getPlayer());
         announce(event.getPlayer());
+        plugin.explored(event.getPlayer());
     }
 
     /** Title with the world's display name and its description when a player arrives in another world (arrival-title). */
@@ -182,6 +183,7 @@ final class PlayerRules implements Listener {
             player.teleport(WorldManager.fallback());
         }
         arrive(player);
+        plugin.explored(player);
     }
 
     /** After a respawn (possibly into another world or group). */

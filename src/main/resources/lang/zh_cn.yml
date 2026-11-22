@@ -537,6 +537,7 @@ features:
   respawn-same-world: "在死亡的世界中重生"
   delete-backup: "保留已删除和重新生成世界的备份"
   selector-show-locked: "在选择器中显示锁定的世界"
+  rankings: "每位玩家探索过的世界排行榜，用于 Vystorm Boards（需要 Core 0.67.0 或更新版本）"
 placeholder:
   world: "玩家所在世界的显示名称"
   world_name: "玩家所在世界的名称"
@@ -603,5 +604,10 @@ feature-names:
   respawn-same-world: "在死亡的世界重生"
   delete-backup: "删除和重建时备份"
   selector-show-locked: "显示锁定的世界"
+  rankings: "排行榜"
 feature-needs: "<red>这需要 “{name}”（{switch}），但它已在本服务器上关闭。"
 config-broken: "<red>{file} 未重新加载：YAML 错误位于 {problem}。文件保持不变，继续使用上次有效的设置。"
+rankings:
+  explored:
+    label: "探索过的世界"
+    description: "玩家进入过的不同世界数量"

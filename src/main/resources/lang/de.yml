@@ -538,6 +538,7 @@ features:
   respawn-same-world: "Wiederbeleben in der Welt des Todes"
   delete-backup: "Sicherung gelöschter und neu erzeugter Welten behalten"
   selector-show-locked: "Gesperrte Welten in der Auswahl zeigen"
+  rankings: "Rangliste der Welten, die jeder Spieler erkundet hat, für Vystorm Boards (Core 0.67.0 oder neuer)"
 placeholder:
   world: "Anzeigename der Welt des Spielers"
   world_name: "Name der Welt des Spielers"
@@ -604,5 +605,10 @@ feature-names:
   respawn-same-world: "Wiedereinstieg in der Welt des Todes"
   delete-backup: "Sicherung beim Löschen und Neuerzeugen"
   selector-show-locked: "Gesperrte Welten zeigen"
+  rankings: "Ranglisten"
 feature-needs: "<red>Dafür braucht es „{name}“ ({switch}), das auf diesem Server ausgeschaltet ist."
 config-broken: "<red>{file} wurde nicht neu geladen: YAML-Fehler bei {problem}. Die Datei bleibt unverändert; die letzten funktionierenden Einstellungen bleiben aktiv."
+rankings:
+  explored:
+    label: "Erkundete Welten"
+    description: "Verschiedene Welten, die der Spieler betreten hat"

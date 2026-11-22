@@ -125,6 +125,12 @@ admin-menu:
   # false: they answer that the feature is off; every action stays available as a /worlds command.
   enabled: true
 
+rankings:
+  # Ranking worlds:explored for Vystorm Boards and placeholders: how many different worlds each player has entered
+  # (1.19.0). Counting starts with 1.19.0 and is kept in explored.yml. Needs Vystorm Core 0.67.0 or newer for the
+  # ranking itself. false: no ranking and no counting; the counts already kept stay.
+  enabled: true
+
 tutorial:
   # Worlds tutorial in the Vystorm Core main menu (1.17.0). A change needs a server restart.
   enabled: true
