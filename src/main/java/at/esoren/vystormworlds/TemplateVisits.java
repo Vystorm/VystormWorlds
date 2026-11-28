@@ -71,6 +71,15 @@ final class TemplateVisits {
         if(visit==null||!registered.contains(visit.worldId())){send(player,"template-not-visiting");return;}
         if(!plugin.core().worldGenerator().worlds().visits().exit(player,ExitReason.COMMAND))send(player,"template-exit-pending");
     }
+    /** Every template, open or closed, for the admin's templates page (1.21.0). */
+    List<WorldTemplate> all(){return List.copyOf(store.all());}
+    /** The open templates, for the visit menu (1.20.0); {@link #visit} checks again when a player picks one. */
+    List<WorldTemplate> open(){List<WorldTemplate> open=new ArrayList<>();for(WorldTemplate template:store.all())if(template.enabled())open.add(template);return open;}
+    /** Whether the player is in a visit of this plugin, i.e. {@link #leave} has something to end (1.20.0). */
+    boolean visiting(Player player){
+        try{Visit visit=plugin.core().worldGenerator().worlds().visits().visit(player.getUniqueId()).orElse(null);return visit!=null&&registered.contains(visit.worldId());}
+        catch(RuntimeException none){return false;}
+    }
     void tick(){
         long now=clock.getAsLong();
         for(WorldTemplate template:store.all()){

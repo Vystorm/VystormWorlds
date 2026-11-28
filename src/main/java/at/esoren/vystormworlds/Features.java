@@ -30,6 +30,8 @@ final class Features {
     static final String TUTORIAL = "tutorial.enabled";
     /** 1.19.0: the ranking worlds:explored (needs Core 0.67.0) and counting the worlds players enter for it. */
     static final String RANKINGS = "rankings.enabled";
+    /** 1.21.0: one line per admin action in plugins/VystormWorlds/log/. */
+    static final String AUDIT = "audit.enabled";
     /** Language key of the reply when a switched-off feature is used. */
     static final String OFF = "feature-off";
     /** Language key of the reply when a feature needs another switch that is off ({switch} = its key). */
@@ -37,7 +39,7 @@ final class Features {
 
     /** Every {@code .enabled} switch, in the order of config.yml. */
     static final java.util.List<String> SWITCHES = java.util.List.of(MANAGEMENT, "groups.enabled", SELECTOR, FAVORITES,
-            SAFE_SPOT, PORTALS, WORLD_RULES, ENTRY_RULES, BORDER, BORDER_EVENTS, RESETS, TEMPLATES, BUILD_HEIGHT, ADMIN_MENU, RANKINGS, TUTORIAL);
+            SAFE_SPOT, PORTALS, WORLD_RULES, ENTRY_RULES, BORDER, BORDER_EVENTS, RESETS, TEMPLATES, BUILD_HEIGHT, ADMIN_MENU, AUDIT, RANKINGS, TUTORIAL);
     /** Top-level booleans Core lists as switches by itself. */
     static final java.util.List<String> TOP_LEVEL = java.util.List.of("autoload", "adopt-loaded-worlds", "arrival-title");
     /** Booleans with another name, declared as switches (their keys stay as they are). */

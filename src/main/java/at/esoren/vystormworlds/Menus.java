@@ -36,13 +36,47 @@ final class Menus implements Listener {
     private final WorldFavorites favorites;
     private WorldPanelMenus panels;
 
+    private final WorldMenu worldMenu;
+    private final PageChests chests;
+    private Picks picks = Picks.NONE;
+
+    /**
+     * Which Core 0.71.0 parts this server has (1.21.0): the player picker, the world pick and chest fallbacks with the
+     * panel's context. Each is used only behind its flag, through {@link WorldsPicks}.
+     */
+    record Picks(boolean players, boolean world, boolean context) {
+        static final Picks NONE = new Picks(false, false, false);
+
+        static Picks detect() {
+            return new Picks(has("player-picker"), has("world-pick"), has("panel-fallback-context"));
+        }
+
+        private static boolean has(String capability) {
+            try { return CoreApi.has(capability); } catch (RuntimeException | LinkageError old) { return false; }
+        }
+    }
+
     Menus(WorldsPlugin plugin) {
         this.plugin = plugin;
         this.actions = new Actions(plugin);
         this.favorites = new WorldFavorites(plugin);
+        this.worldMenu = new WorldMenu(plugin);
+        this.chests = new PageChests(plugin, this, worldMenu);
     }
 
     Actions actions() { return actions; }
+
+    WorldMenu worldMenu() { return worldMenu; }
+
+    PageChests chests() { return chests; }
+
+    /** The Core 0.71.0 parts, asked at start; the pickers' own switch ({@code pickers.enabled}) is asked on use. */
+    Picks picks() {
+        if (picks == Picks.NONE) picks = Picks.detect();
+        boolean on;
+        try { on = (picks.players() || picks.world()) && WorldsPicks.available(plugin); } catch (RuntimeException | LinkageError none) { on = false; }
+        return on ? picks : new Picks(false, false, picks.context());
+    }
 
     boolean registerPanels() {
         try {
@@ -96,13 +130,6 @@ final class Menus implements Listener {
         return w;
     }
 
-    /** Sets a property on the current entry of {@code name} and reopens the world menu. */
-    private void set(Player player, String name, String key, java.util.function.Function<WorldSettings, String> value) {
-        WorldSettings w = current(player, name);
-        if (w == null) return;
-        actions.setProperty(player, w, key, value.apply(w));
-        world(player, name);
-    }
 
     private Menu open(Player player, int size, String titleKey, Object... placeholders) {
         Menu menu = new Menu();
@@ -224,6 +251,71 @@ final class Menus implements Listener {
             plugin.teleports().send(v, Teleports.spawn(world, plugin.settings(world)), ok -> { });
         });
         if (player.hasPermission("vystormworlds.admin")) menu.put(base + 5, item(player, Material.COMPASS, "selector-to-admin", null), (v, c) -> admin(v, 0));
+        String arrival = arrivalChoice(player);
+        if (!arrival.isEmpty()) menu.put(base + 2, item(player, arrival.equals("spawn") ? Material.RED_BED : Material.RECOVERY_COMPASS, "arrival-item",
+                "arrival-item-lore", "choice", lang().plain(player, "arrival-option-" + arrival)), (v, c) -> {
+            command(v, "arrival", arrivalChoice(v).equals("spawn") ? "last" : "spawn");
+            selector(v, current, onlyFavorites);
+        });
+        String trip = trip(player);
+        if (trip.equals("visit")) menu.put(base + 6, item(player, Material.SPYGLASS, "visit-button", "visit-item-lore"), (v, c) -> visits(v));
+        else if (trip.equals("leave")) menu.put(base + 6, item(player, Material.OAK_DOOR, "leave-button", "leave-item-lore"), (v, c) -> {
+            v.closeInventory();
+            command(v, "leave");
+        });
+        player.openInventory(menu.inventory);
+    }
+
+    // ------------------------------------------------------------------ arrival choice and visit worlds (1.20.0)
+
+    /** Runs {@code /worlds <args>} for the player: menu buttons share every check and message with the command. */
+    void command(Player player, String... args) {
+        WorldsCommand commands = plugin.commands();
+        if (commands != null) commands.run(player, "worlds", args);
+    }
+
+    /** The arrival choice the selector shows, {@code "spawn"} or {@code "last"}; empty while the switch is off. */
+    String arrivalChoice(Player player) {
+        if (!Features.on(plugin.getConfig(), "teleport.return-to-last-position")) return "";
+        return plugin.teleports().prefersSpawn(player) ? "spawn" : "last";
+    }
+
+    /** {@code "leave"} while the player is visiting, {@code "visit"} when open visit worlds exist, else empty. */
+    String trip(Player player) {
+        TemplateVisits templates = plugin.templates();
+        if (templates == null) return "";
+        if (templates.visiting(player)) return "leave";
+        return Features.on(plugin.getConfig(), Features.TEMPLATES) && !templates.open().isEmpty() ? "visit" : "";
+    }
+
+    void visits(Player player) {
+        if (panels != null && panels.openVisits(player)) return;
+        visitChest(player);
+    }
+
+    void visitChest(Player player) {
+        if (!player.hasPermission("vystormworlds.use")) { lang().send(player, "denied"); return; }
+        TemplateVisits templates = plugin.templates();
+        List<WorldTemplate> open = templates == null ? List.of() : templates.open();
+        boolean visiting = templates != null && templates.visiting(player);
+        Menu menu = open(player, 18, "visit-title");
+        int slot = 0;
+        if (!visiting) for (WorldTemplate t : open) {
+            String id = t.id();
+            menu.put(slot++, item(player, t.terrain().equals("island") ? Material.SAND : Material.GRASS_BLOCK, "visit-item", "visit-item-template-lore",
+                    "template", id, "terrain", lang().plain(player, "template-terrain-" + t.terrain()), "seconds", t.seconds(),
+                    "inventory", lang().plain(player, "template-inventory-" + t.inventory())), (v, c) -> {
+                v.closeInventory();
+                command(v, "visit", id);
+            });
+        }
+        if (visiting) menu.put(4, item(player, Material.PAPER, "visit-busy", null), null);
+        else if (open.isEmpty()) menu.put(4, item(player, Material.PAPER, "visit-none", null), null);
+        menu.put(9, item(player, Material.ARROW, "page-back", null), (v, c) -> selector(v, 0));
+        if (visiting) menu.put(13, item(player, Material.OAK_DOOR, "leave-button", "leave-item-lore"), (v, c) -> {
+            v.closeInventory();
+            command(v, "leave");
+        });
         player.openInventory(menu.inventory);
     }
 
@@ -264,31 +356,36 @@ final class Menus implements Listener {
             World world = WorldManager.loaded(w.name);
             String error = plugin.manager().loadError(w.name);
             String loreKey = world != null ? "admin-world-loaded" : error != null ? "admin-world-error" : "admin-world-unloaded";
-            ItemStack item = item(player, world == null ? Material.GRAY_DYE : icon(w), "admin-world-name", loreKey, "world", w.name, "title", title(w),
-                    "type", w.kind.id(), "group", w.group, "players", world == null ? 0 : world.getPlayers().size(),
+            Object[] args = {"world", w.name, "title", title(w), "type", w.kind.id(), "group", w.group, "players", world == null ? 0 : world.getPlayers().size(),
                     "chunks", world == null ? 0 : world.getLoadedChunks().length, "entities", world == null ? 0 : world.getEntities().size(),
-                    "error", String.valueOf(error), "hidden", lang().plain(player, w.hidden ? "yes" : "no"));
+                    "error", String.valueOf(error), "hidden", lang().plain(player, w.hidden ? "yes" : "no")};
+            ItemStack item = item(player, world == null ? Material.GRAY_DYE : icon(w), "admin-world-name", loreKey, args);
+            // 1.21.0: the settings Worlds manages for this world, in one line
+            String badges = WorldBadges.summary(w, key -> lang().plain(player, key));
+            if (!badges.isEmpty()) {
+                List<Component> lore = new ArrayList<>(lang().lines(player, loreKey, args));
+                lore.add(Component.text(badges, net.kyori.adventure.text.format.NamedTextColor.AQUA));
+                plugin.core().compat().platform().editMeta(item, meta -> plugin.core().compat().platform().lore(meta, lore.stream().map(Menus::flat).toList()));
+            }
             menu.put(slot++, item, (v, c) -> world(v, w.name));
         }
         if (current > 0) menu.put(45, item(player, Material.ARROW, "page-back", null), (v, c) -> admin(v, current - 1));
         if (current < pages - 1) menu.put(53, item(player, Material.ARROW, "page-next", null), (v, c) -> admin(v, current + 1));
-        menu.put(47, item(player, Material.EMERALD, "admin-create", "admin-create-lore"), (v, c) -> { v.closeInventory(); createDialog(v); });
-        menu.put(48, item(player, Material.CHEST, "admin-import", "admin-import-lore"), (v, c) -> { v.closeInventory(); actions.importList(v); });
-        menu.put(49, item(player, Material.BOOK, "admin-list", "admin-list-lore"), (v, c) -> { v.closeInventory(); actions.list(v); });
-        menu.put(50, item(player, Material.FILLED_MAP, "admin-selector", null), (v, c) -> selector(v, 0));
-        menu.put(51, item(player, Material.COMPARATOR, "admin-config", "admin-config-lore"), (v, c) -> { v.closeInventory(); v.performCommand("vadmin config " + plugin.getName()); });
+        // 1.21.0: every admin task has a button (the list stays as /worlds list)
+        if (worldMenu.may(player, "new-world")) menu.put(46, item(player, Material.EMERALD, "admin-create", "admin-create-lore"), (v, c) -> { v.closeInventory(); newWorld(v); });
+        if (worldMenu.may(player, "import")) menu.put(47, item(player, Material.CHEST, "admin-import", "admin-import-lore"), (v, c) -> imports(v));
+        if (worldMenu.may(player, "templates")) menu.put(48, item(player, Material.SPYGLASS, "admin-templates", "admin-templates-lore"), (v, c) -> templates(v));
+        menu.put(49, item(player, Material.ENDER_CHEST, "admin-groups", "admin-groups-lore"), (v, c) -> groups(v));
+        menu.put(50, item(player, Material.REPEATER, "admin-reload", "admin-reload-lore"), (v, c) -> {
+            v.closeInventory();
+            worldMenu.reload(v);
+        });
+        menu.put(51, item(player, Material.FILLED_MAP, "admin-selector", null), (v, c) -> selector(v, 0));
+        menu.put(52, item(player, Material.COMPARATOR, "admin-config", "admin-config-lore"), (v, c) -> { v.closeInventory(); v.performCommand("vadmin config " + plugin.getName()); });
         player.openInventory(menu.inventory);
     }
 
-    // ------------------------------------------------------------------ world settings
-
-    private ItemStack toggle(Player player, boolean on, String nameKey) {
-        return item(player, on ? Material.LIME_DYE : Material.GRAY_DYE, nameKey, on ? "toggle-on" : "toggle-off");
-    }
-
-    private ItemStack value(Player player, Material material, String nameKey, String value) {
-        return item(player, material, nameKey, "value-lore", "value", value);
-    }
+    // ------------------------------------------------------------------ world page and admin pages (1.21.0)
 
     void world(Player player, String name) {
         if (off(player, Features.ADMIN_MENU)) return;
@@ -296,102 +393,35 @@ final class Menus implements Listener {
         worldChest(player, name);
     }
 
+    /** The world page as a chest, opened on its first tab (a fresh open without a panel context). */
     void worldChest(Player player, String name) {
-        WorldSettings w = plugin.registry().get(name);
-        if (w == null || !player.hasPermission("vystormworlds.admin")) { admin(player, 0); return; }
-        World world = WorldManager.loaded(w.name);
-        Menu menu = open(player, 54, "world-title", "world", w.name);
-        menu.put(4, item(player, icon(w), "admin-world-name", world != null ? "admin-world-loaded" : "admin-world-unloaded", "world", w.name, "title", title(w),
-                "type", w.kind.id(), "group", w.group, "players", world == null ? 0 : world.getPlayers().size(), "chunks", world == null ? 0 : world.getLoadedChunks().length,
-                "entities", world == null ? 0 : world.getEntities().size(), "error", "-", "hidden", lang().plain(player, w.hidden ? "yes" : "no")), null);
-        String[][] toggles = {{"pvp", "w-pvp"}, {"monsters", "w-monsters"}, {"animals", "w-animals"}, {"hunger", "w-hunger"}, {"fly", "w-fly"},
-                {"keep-spawn-loaded", "w-keep-spawn"}, {"autoload", "w-autoload"}};
-        int slot = 10;
-        for (String[] t : toggles) {
-            boolean on = Boolean.parseBoolean(Properties.get(w, t[0]));
-            menu.put(slot++, toggle(player, on, t[1]), (v, c) -> set(v, name, t[0], now -> Boolean.toString(!Boolean.parseBoolean(Properties.get(now, t[0])))));
-        }
-        cycle(menu, player, w, 19, Material.IRON_SWORD, "w-game-mode", "game-mode", List.of("none", "survival", "creative", "adventure", "spectator"));
-        cycle(menu, player, w, 20, Material.ZOMBIE_HEAD, "w-difficulty", "difficulty", List.of("none", "peaceful", "easy", "normal", "hard"));
-        cycle(menu, player, w, 21, Material.CLOCK, "w-time-lock", "time-lock", WorldSettings.TIME_LOCKS);
-        cycle(menu, player, w, 22, Material.WATER_BUCKET, "w-weather-lock", "weather-lock", WorldSettings.WEATHER_LOCKS);
-        cycle(menu, player, w, 23, Material.GOLD_NUGGET, "w-price-mode", "price-mode", WorldSettings.PRICE_MODES);
-        menu.put(24, toggle(player, w.hidden, "w-hidden"), (v, c) -> set(v, name, "hidden", now -> Boolean.toString(!now.hidden)));
-        menu.put(25, item(player, w.permission ? Material.IRON_DOOR : Material.OAK_DOOR, "w-permission", w.permission ? "w-permission-on" : "toggle-off",
-                "node", Access.permission(w.name)), (v, c) -> set(v, name, "permission", now -> Boolean.toString(!now.permission)));
-        prompt(menu, player, w, 28, Material.NAME_TAG, "w-display-name", "display-name");
-        prompt(menu, player, w, 29, Material.WRITABLE_BOOK, "w-description", "description");
-        menu.put(30, item(player, icon(w), "w-icon", "w-icon-lore", "value", w.icon.isBlank() ? "-" : w.icon), (v, c) -> {
-            Material hand = v.getInventory().getItemInMainHand().getType();
-            set(v, name, "icon", now -> hand.isAir() ? "none" : hand.name());
-        });
-        prompt(menu, player, w, 31, Material.GOLD_INGOT, "w-price", "price");
-        prompt(menu, player, w, 32, Material.PLAYER_HEAD, "w-player-limit", "player-limit");
-        prompt(menu, player, w, 33, Material.ENDER_CHEST, "w-group", "group");
-        prompt(menu, player, w, 34, Material.RED_BED, "w-respawn-world", "respawn-world");
-        if (world != null) {
-            menu.put(37, item(player, Material.LODESTONE, "w-set-spawn", "w-set-spawn-lore"), (v, c) -> {
-                if (!v.getWorld().equals(WorldManager.loaded(name))) { lang().send(v, "stand-in-world", "world", name); return; }
-                v.performCommand("worlds setspawn");
-                world(v, name);
-            });
-            menu.put(38, item(player, Material.ENDER_PEARL, "w-teleport", null), (v, c) -> {
-                WorldSettings now = current(v, name);
-                World target = WorldManager.loaded(name);
-                if (now == null) return;
-                v.closeInventory();
-                if (target == null) { lang().send(v, "not-loaded", "world", name); return; }
-                actions.go(v, now, target, false);
-            });
-        }
-        if (world == null) menu.put(39, item(player, Material.LIME_CONCRETE, "w-load", null), (v, c) -> { v.performCommand("worlds load " + name); world(v, name); });
-        else if (!WorldManager.serverWorld(world)) menu.put(39, item(player, Material.RED_CONCRETE, "w-unload", null), (v, c) -> { v.performCommand("worlds unload " + name); world(v, name); });
-        prompt(menu, player, w, 40, Material.OBSIDIAN, "w-nether", "nether");
-        prompt(menu, player, w, 41, Material.END_PORTAL_FRAME, "w-end", "end");
-        menu.put(42, toggle(player, w.rememberPosition, "w-remember"), (v, c) -> set(v, name, "remember-position", now -> Boolean.toString(!now.rememberPosition)));
-        menu.put(43, item(player, Material.COMPARATOR, "w-dialog", "w-dialog-lore"), (v, c) -> { v.closeInventory(); WorldSection.open(plugin, v, name); });
-        prompt(menu, player, w, 50, Material.IRON_BARS, "w-border", "border");
-        prompt(menu, player, w, 51, Material.COMPASS, "w-border-center", "border-center");
-        prompt(menu, player, w, 52, Material.CLOCK, "w-border-event", "border-event");
-        if (world != null && w.border > 0)
-            menu.put(53, item(player, Material.TARGET, "w-border-start", "w-border-start-lore"), (v, c) -> {
-                WorldSettings now = current(v, name);
-                if (!Features.on(plugin.getConfig(), Features.BORDER_EVENTS)) lang().send(v, Features.OFF);
-                else if (!Features.on(plugin.getConfig(), Features.BORDER)) lang().send(v, "feature-needs", "switch", Features.BORDER, "name", lang().plain(v, Features.labelKey(Features.BORDER)));
-                else if (now == null || !plugin.borders().start(now)) lang().send(v, "border-no-size", "world", name);
-                world(v, name);
-            });
-        menu.put(45, item(player, Material.ARROW, "page-back", null), (v, c) -> admin(v, 0));
-        if (!w.serverWorld) {
-            menu.put(47, item(player, Material.TNT, "w-regenerate", "w-regenerate-lore"), (v, c) -> { v.closeInventory(); v.performCommand("worlds regen " + name); });
-            menu.put(48, item(player, Material.LAVA_BUCKET, "w-delete", "w-delete-lore"), (v, c) -> { v.closeInventory(); v.performCommand("worlds delete " + name); });
-        }
-        menu.put(49, item(player, Material.STRUCTURE_VOID, "w-clone", "w-clone-lore"), (v, c) -> {
-            v.closeInventory();
-            plugin.core().dialogs().prompt(plugin, v, lang().plain(v, "w-clone"), lang().plain(v, "clone-question", "world", name), name + "_copy",
-                    target -> v.performCommand("worlds clone " + name + " " + target.strip()), () -> {}, p -> p.hasPermission("vystormworlds.admin"));
-        });
-        player.openInventory(menu.inventory);
+        if (plugin.registry().get(name) == null || !worldMenu.may(player, "world-page")) { admin(player, 0); return; }
+        chests.world(player, name, null, null);
     }
 
-    private void cycle(Menu menu, Player player, WorldSettings w, int slot, Material material, String nameKey, String key, List<String> options) {
-        String current = Properties.get(w, key);
-        String name = w.name;
-        menu.put(slot, item(player, material, nameKey, "cycle-lore", "value", current), (v, c) -> set(v, name, key, now -> {
-            int index = options.indexOf(Properties.get(now, key));
-            return options.get(Math.floorMod(index + (c.isRightClick() ? -1 : 1), options.size()));
-        }));
+    /** "New world": the form page on screens, the create dialog otherwise. */
+    void newWorld(Player player) {
+        if (off(player, Features.ADMIN_MENU) || off(player, Features.MANAGEMENT)) return;
+        if (panels != null && panels.openPage(player, WorldPanelMenus.CREATE)) return;
+        createDialog(player);
     }
 
-    private void prompt(Menu menu, Player player, WorldSettings w, int slot, Material material, String nameKey, String key) {
-        String current = Properties.get(w, key);
-        String name = w.name;
-        menu.put(slot, value(player, material, nameKey, current.isEmpty() ? "-" : current), (v, c) -> {
-            v.closeInventory();
-            plugin.core().dialogs().prompt(plugin, v, lang().plain(v, nameKey), lang().plain(v, "prompt-" + key, "world", w.name),
-                    current.equals("none") ? "" : current, typed -> set(v, name, key, now -> typed),
-                    () -> world(v, name), p -> p.hasPermission("vystormworlds.admin"));
-        });
+    void imports(Player player) {
+        if (off(player, Features.ADMIN_MENU) || off(player, Features.MANAGEMENT)) return;
+        if (panels != null && panels.openPage(player, WorldPanelMenus.IMPORT)) return;
+        chests.imports(player);
+    }
+
+    void templates(Player player) {
+        if (off(player, Features.ADMIN_MENU)) return;
+        if (panels != null && panels.openPage(player, WorldPanelMenus.TEMPLATES)) return;
+        chests.templates(player);
+    }
+
+    void groups(Player player) {
+        if (off(player, Features.ADMIN_MENU)) return;
+        if (panels != null && panels.openPage(player, WorldPanelMenus.GROUPS)) return;
+        chests.groups(player);
     }
 
     // ------------------------------------------------------------------ create dialog
@@ -419,26 +449,17 @@ final class Menus implements Listener {
                 DialogInput.text("min-y", lang().component(player, "create-min-y")).maxLength(6).build(),
                 DialogInput.text("height", lang().component(player, "create-height")).maxLength(6).build());
         DialogButton create = new DialogButton(lang().component(player, "create-button"), (p, response) -> {
-            String name = text(response.getText("name"));
-            List<String> tokens = new ArrayList<>();
-            tokens.add(text(response.getText("type")));
-            String generator = text(response.getText("generator"));
-            String id = text(response.getText("generator-id"));
-            if (!generator.isEmpty() && !generator.equals("none")) tokens.add("generator:" + generator + (id.isEmpty() || generator.startsWith(GeneratorSpec.PRESET_PREFIX) ? "" : ":" + id));
-            else if (!id.isEmpty()) tokens.add("generator:" + id);
-            String seed = text(response.getText("seed"));
-            if (!seed.isEmpty()) tokens.add("seed:" + seed);
-            if (Boolean.FALSE.equals(response.getBoolean("structures"))) tokens.add("structures:false");
-            if (Boolean.TRUE.equals(response.getBoolean("nether"))) tokens.add("with-nether");
-            if (Boolean.TRUE.equals(response.getBoolean("end"))) tokens.add("with-end");
-            String group = text(response.getText("group"));
-            if (!group.isEmpty()) tokens.add("group:" + group);
-            String minY = text(response.getText("min-y")), height = text(response.getText("height"));
-            if (!minY.isEmpty()) tokens.add("min-y:" + minY);
-            if (!height.isEmpty()) tokens.add("height:" + height);
+            // the same option words as /worlds create and the "New world" page (NewWorldForm, 1.21.0)
+            NewWorldForm form = new NewWorldForm(text(response.getText("name")), text(response.getText("type")), text(response.getText("generator")),
+                    text(response.getText("generator-id")), text(response.getText("seed")), !Boolean.FALSE.equals(response.getBoolean("structures")),
+                    Boolean.TRUE.equals(response.getBoolean("nether")), Boolean.TRUE.equals(response.getBoolean("end")), text(response.getText("group")),
+                    text(response.getText("min-y")), text(response.getText("height")));
+            String name = form.name();
             if (name.isEmpty()) { lang().send(p, "bad-name", "world", name); return; }
-            CreateRequest.Parsed parsed = CreateRequest.parse(name.toLowerCase(Locale.ROOT), tokens, plugin.defaultGroup());
+            CreateRequest.Parsed parsed = CreateRequest.parse(name.toLowerCase(Locale.ROOT), form.tokens(), plugin.defaultGroup());
             if (parsed.error() != null) { lang().send(p, parsed.error(), "token", parsed.token()); return; }
+            if (!p.hasPermission(WorldsCommand.ADMIN_NODE) || off(p, Features.MANAGEMENT)) return;
+            plugin.audit(p, parsed.request().name(), form.command());
             actions.create(p, parsed.request());
         });
         plugin.core().dialogs().open(plugin, player, new DialogRequest(lang().component(player, "create-title"),

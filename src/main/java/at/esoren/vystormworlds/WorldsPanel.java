@@ -20,18 +20,37 @@ final class WorldsPanel {
             "time-lock", WorldSettings.TIME_LOCKS, "weather-lock", WorldSettings.WEATHER_LOCKS,
             "price-mode", WorldSettings.PRICE_MODES, "reset-seed", List.of("same", "random"));
 
+    /** @param badges the settings Worlds manages for the world, one line ({@link WorldBadges}, 1.21.0; admin view) */
     record Row(String name, String title, Material icon, String description, String kind, String group,
                boolean loaded, boolean protectedWorld, int players, int limit, int chunks, int entities,
-               String error, String access, boolean favorite, boolean here, String price, boolean charge) {}
+               String error, String access, boolean favorite, boolean here, String price, boolean charge, String badges) {
+        Row(String name, String title, Material icon, String description, String kind, String group,
+            boolean loaded, boolean protectedWorld, int players, int limit, int chunks, int entities,
+            String error, String access, boolean favorite, boolean here, String price, boolean charge) {
+            this(name, title, icon, description, kind, group, loaded, protectedWorld, players, limit, chunks, entities, error, access, favorite, here, price, charge, "");
+        }
+    }
+    /**
+     * @param arrival the player's arrival choice for the selector, {@code "spawn"} or {@code "last"}; empty hides it
+     * @param trip    {@code "visit"} (open visit worlds exist), {@code "leave"} (the player is visiting) or empty (1.20.0)
+     */
     record Overview(List<Row> rows, boolean admin, boolean canAdmin, boolean favorites, String selected,
-                    int page, int pages, String search, Ui.Sort sort, String tps) {}
-    record Editor(Row world, Map<String, String> values) {}
+                    int page, int pages, String search, Ui.Sort sort, String tps, String arrival, String trip) {
+        Overview(List<Row> rows, boolean admin, boolean canAdmin, boolean favorites, String selected,
+                 int page, int pages, String search, Ui.Sort sort, String tps) {
+            this(rows, admin, canAdmin, favorites, selected, page, pages, search, sort, tps, "", "");
+        }
+    }
+    /** An open visit template as the visit menu shows it (1.20.0). */
+    record Trip(String id, String terrain, int seconds, String inventory) {}
 
     interface Actions {
         Result state(Player player, boolean admin, String key, String value);
         Result set(Player player, String world, String key, String value);
         Result favorite(Player player, String world);
         void go(Player player, String action, String world);
+        /** {@code /worlds arrival spawn|last} from the selector (1.20.0). */
+        default Result arrival(Player player, String choice) { return Result.ok(); }
     }
 
     private WorldsPanel() {}
@@ -55,8 +74,10 @@ final class WorldsPanel {
             Ui.Table table = Ui.table("worlds-table").column("name", ctx.text("vmenu-worlds")).sortable()
                     .column("players", ctx.text("panel-players")).sortable()
                     .column("state", ctx.text("panel-state")).sortable()
+                    .column("settings", ctx.text("panel-settings"))
                     .rows(o.rows(), r -> Ui.row(r.name()).cell(r.title()).cell(Integer.toString(r.players()))
-                            .cell(ctx.text(r.loaded() ? "state-loaded" : "state-unloaded")))
+                            .cell(ctx.text(!r.error().isBlank() ? "page-state-error" : r.loaded() ? "state-loaded" : "state-unloaded"))
+                            .cell(r.badges().isEmpty() ? "-" : r.badges()))
                     .empty(empty).selected(chosen == null ? null : chosen.name()).sort(o.sort().column(), o.sort().descending())
                     .paging(o.page(), o.pages(),
                             (a, page) -> refresh(a, actions.state(a.player(), true, "page", page.toString())),
@@ -78,16 +99,26 @@ final class WorldsPanel {
                 .tab("favorites", ctx.text("panel-favorites"), o.favorites() ? body : Ui.col())
                 .select(o.favorites() ? "favorites" : "all")
                 .onTab((a, tab) -> refresh(a, actions.state(a.player(), false, "favorites", Boolean.toString(tab.equals("favorites"))))));
+        if (!o.admin() && !o.arrival().isEmpty())
+            panel.child(Ui.select("arrival", ctx.text("arrival-label"))
+                    .option("last", ctx.text("arrival-option-last")).option("spawn", ctx.text("arrival-option-spawn"))
+                    .value(o.arrival()).tooltip(ctx.text("arrival-desc"))
+                    .onChange((a, value) -> refresh(a, actions.arrival(a.player(), value))));
         if (!o.admin()) {
             panel.footer(Ui.button("previous").label(ctx.text("page-back")).icon(Ui.item(Material.ARROW)).ghost().disabled(o.page() == 0)
                             .onClick(a -> refresh(a, actions.state(a.player(), false, "page", Integer.toString(o.page() - 1)))),
                     Ui.button("next").label(ctx.text("page-next")).icon(Ui.item(Material.ARROW)).ghost().disabled(o.page() + 1 >= o.pages())
                             .onClick(a -> refresh(a, actions.state(a.player(), false, "page", Integer.toString(o.page() + 1)))),
                     leave(ctx, actions, "spawn", "selector-spawn", Material.RED_BED, ""));
+            if (o.trip().equals("visit")) panel.footer(leave(ctx, actions, "visits", "visit-button", Material.SPYGLASS, "").tooltip(ctx.text("visit-desc")));
+            else if (o.trip().equals("leave")) panel.footer(leave(ctx, actions, "leave", "leave-button", Material.OAK_DOOR, "").tooltip(ctx.text("leave-desc")));
             if (o.canAdmin()) panel.footer(leave(ctx, actions, "admin", "selector-to-admin", Material.COMPASS, ""));
         } else {
             panel.footer(leave(ctx, actions, "create", "admin-create", Material.EMERALD, "").primary(),
                     leave(ctx, actions, "import", "admin-import", Material.CHEST, ""),
+                    leave(ctx, actions, "templates", "admin-templates", Material.SPYGLASS, ""),
+                    leave(ctx, actions, "groups", "admin-groups", Material.ENDER_CHEST, ""),
+                    leave(ctx, actions, "reload", "admin-reload", Material.REPEATER, ""),
                     leave(ctx, actions, "list", "admin-list", Material.BOOK, ""),
                     leave(ctx, actions, "selector", "admin-selector", Material.FILLED_MAP, ""),
                     leave(ctx, actions, "config", "admin-config", Material.COMPARATOR, ""));
@@ -126,62 +157,22 @@ final class WorldsPanel {
         return stats;
     }
 
-    static Panel editor(PanelContext ctx, Editor e, Actions actions) {
-        Row row = e.world();
-        // the world's settings: one row each on Vystorm Screens (Core 0.66.0 list layout), name left, value right
-        Ui.Section rules = Ui.section(ctx.text("panel-rules")).list(), entry = Ui.section(ctx.text("panel-entry")).list(),
-                borders = Ui.section(ctx.text("panel-borders")).list();
-        for (String key : Properties.KEYS) {
-            String value = e.values().getOrDefault(key, "");
-            String name = "w-" + switch (key) { case "keep-spawn-loaded" -> "keep-spawn"; case "remember-position" -> "remember"; default -> key; };
-            String label = ctx.text(name), description = ctx.text(name + "-desc");
-            Ui.Element<?> control;
-            if (TOGGLES.contains(key)) control = Ui.toggle("set-" + key, label).value(Boolean.parseBoolean(value)).description(description)
-                    .onChange((a, v) -> refresh(a, actions.set(a.player(), row.name(), key, v.toString())));
-            else if (CHOICES.containsKey(key)) {
-                Ui.Select select = Ui.select("set-" + key, label);
-                for (String option : CHOICES.get(key)) select.option(option, ctx.text(optionKey(option)));
-                if (!CHOICES.get(key).contains(value) && !value.isEmpty()) select.option(value, value);
-                control = select.value(value.isEmpty() ? "none" : value).tooltip(description)
-                        .onChange((a, v) -> refresh(a, actions.set(a.player(), row.name(), key, v)));
-            } else if (key.equals("price") || key.equals("player-limit")) {
-                // Core permits at most 100,000 steps. Exact prices of any size also have a text field below.
-                double max = key.equals("price") ? Math.max(1000, Double.parseDouble(value)) : 10000;
-                control = Ui.number("set-" + key, label).range(0, max, key.equals("price") ? Math.max(0.01, Math.ceil(max / 1000) / 100) : 1)
-                        .decimals(key.equals("price") ? 2 : 0).value(Double.parseDouble(value)).tooltip(description)
-                        .onChange((a, v) -> refresh(a, actions.set(a.player(), row.name(), key, key.equals("price") ? v.toString() : Long.toString(v.longValue()))));
-            } else control = Ui.input("set-" + key, label).value(value).maxLength(key.equals("description") ? 120 : 64).submitOnEnter()
-                    .tooltip(description).onChange((a, v) -> refresh(a, actions.set(a.player(), row.name(), key, v)));
-            if (key.startsWith("border") || key.startsWith("reset")) borders.child(control);
-            else if (TOGGLES.contains(key) || key.endsWith("-lock") || key.equals("difficulty")) rules.child(control);
-            else entry.child(control);
-        }
-        entry.child(Ui.input("exact-price", ctx.text("panel-exact-price")).value(e.values().get("price")).maxLength(32).submitOnEnter()
-                .tooltip(ctx.text("panel-exact-price-desc"))
-                .onChange((a, value) -> refresh(a, actions.set(a.player(), row.name(), "price", value))));
-        Ui.Box operations = Ui.col().gap(6);
-        if (row.loaded()) {
-            operations.children(leave(ctx, actions, "setspawn", "w-set-spawn", Material.LODESTONE, row.name()),
-                    leave(ctx, actions, "admin-travel", "w-teleport", Material.ENDER_PEARL, row.name()));
-            if (!row.protectedWorld()) operations.child(leave(ctx, actions, "unload", "w-unload", Material.RED_CONCRETE, row.name()).danger()
-                    .confirm(ctx.text("w-unload"), ctx.text("panel-unload-confirm", "world", row.title())));
-            if (Integer.parseInt(e.values().getOrDefault("border", "0").replace("off", "0")) > 0)
-                borders.child(leave(ctx, actions, "border-start", "w-border-start", Material.TARGET, row.name())
-                        .tooltip(ctx.text("w-border-start-lore")).confirm(ctx.text("w-border-start"), ctx.text("w-border-start-lore")));
-        } else operations.child(leave(ctx, actions, "load", "w-load", Material.LIME_CONCRETE, row.name()).primary());
-        if (!row.protectedWorld()) {
-            operations.children(leave(ctx, actions, "regen", "w-regenerate", Material.TNT, row.name()).danger()
-                            .confirm(ctx.text("regen-title", "world", row.name()), ctx.text("regen-question", "world", row.name())),
-                    leave(ctx, actions, "delete", "w-delete", Material.LAVA_BUCKET, row.name()).danger()
-                            .confirm(ctx.text("delete-title", "world", row.name()), ctx.text("delete-question", "world", row.name())));
-        }
-        operations.child(leave(ctx, actions, "clone", "w-clone", Material.STRUCTURE_VOID, row.name()));
-        return Panel.page(ctx.text("world-title", "world", row.name())).subtitle(row.title()).icon(Ui.item(row.icon())).size(Panel.Size.LARGE)
-                .children(stats(ctx, row, true), Ui.tabs("settings-tabs")
-                        .tab("rules", ctx.text("panel-rules"), rules).tab("entry", ctx.text("panel-entry"), entry)
-                        .tab("borders", ctx.text("panel-borders"), borders).tab("operations", ctx.text("panel-operations"), operations))
-                .footer(leave(ctx, actions, "admin", "page-back", Material.ARROW, ""),
-                        leave(ctx, actions, "dialog", "w-dialog", Material.COMPARATOR, row.name()).ghost());
+    /** The visit menu (1.20.0): the open templates with a Visit button each, or Leave while the player is visiting. */
+    static Panel visits(PanelContext ctx, List<Trip> trips, boolean visiting, Actions actions) {
+        Panel panel = Panel.page(ctx.text("visit-title")).subtitle(ctx.text("visit-desc"))
+                .icon(Ui.item(Material.SPYGLASS)).size(Panel.Size.MEDIUM);
+        if (visiting) panel.child(Ui.text(ctx.text("visit-busy")).id("visiting"));
+        else panel.child(Ui.table("visit-table").column("name", ctx.text("visit-col-name"))
+                .column("terrain", ctx.text("visit-col-terrain")).column("time", ctx.text("visit-col-time"))
+                .column("go", "")
+                .rows(trips, t -> Ui.row(t.id()).cell(t.id()).cell(ctx.text("template-terrain-" + t.terrain()))
+                        .cell(ctx.text("visit-seconds", "seconds", t.seconds()))
+                        .cell(leave(ctx, actions, "visit", "visit-button", Material.ENDER_PEARL, t.id()).primary())
+                        .tooltip(ctx.text("template-inventory-" + t.inventory())))
+                .empty(ctx.text("visit-none")));
+        panel.footer(leave(ctx, actions, "selector", "page-back", Material.ARROW, ""));
+        if (visiting) panel.footer(leave(ctx, actions, "leave", "leave-button", Material.OAK_DOOR, "").primary());
+        return panel;
     }
 
     static String optionKey(String value) {

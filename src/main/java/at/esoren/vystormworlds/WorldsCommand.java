@@ -20,6 +20,14 @@ final class WorldsCommand {
             "clone", "set", "edit", "settings", "setspawn", "link", "generators", "reload", "template");
     private static final List<String> PLAYER = List.of("menu", "tp", "spawn", "arrival", "favorite", "favorites", "help", "visit", "leave");
 
+    static final String USE_NODE = "vystormworlds.use", ADMIN_NODE = "vystormworlds.admin";
+
+    /** The node {@link #dispatch} checks for a subcommand (1.21.0: the menu asks the same, see {@link MenuAccess}). */
+    static String nodeOf(String sub) { return PLAYER.contains(sub) ? USE_NODE : ADMIN_NODE; }
+
+    /** Subcommands that change worlds or files: each run is written to the audit log (1.21.0). */
+    static final List<String> AUDITED = List.of("setspawn", "reload");
+
     private final WorldsPlugin plugin;
 
     WorldsCommand(WorldsPlugin plugin) { this.plugin = plugin; }
@@ -58,6 +66,10 @@ final class WorldsCommand {
         }
         for (String key : switchesOf(sub, args)) {
             if (!Features.on(plugin.getConfig(), key)) { send(sender, Features.OFF); return true; }
+        }
+        if (audited(sub, args) && (!sub.equals("tp") || sender.hasPermission(ADMIN_NODE))) {
+            String world = sub.equals("setspawn") && sender instanceof Player p ? p.getWorld().getName() : AuditLog.worldOf(sub, args);
+            plugin.audit(sender, world, "/worlds " + String.join(" ", args));
         }
         switch (sub) {
             case "template" -> {
@@ -209,6 +221,19 @@ final class WorldsCommand {
             case "arrival" -> List.of("teleport.return-to-last-position");
             default -> List.of();
         };
+    }
+
+    /**
+     * Whether a run is written to the audit log: commands that change worlds or files, {@code template} only for
+     * create/open/close, {@code tp WORLD PLAYER} (moves someone else); never a bare usage line.
+     */
+    static boolean audited(String sub, String[] args) {
+        if (sub.equals("tp")) return args.length > 2;
+        if (sub.equals("template")) return args.length > 1 && List.of("create", "open", "close").contains(args[1].toLowerCase(Locale.ROOT));
+        if (sub.equals("create") || sub.equals("import") || sub.equals("set") || sub.equals("link") || sub.equals("clone")
+                || sub.equals("load") || sub.equals("unload")) return args.length > 1;
+        // delete and regen are written when they really run (after the typed name), in Actions
+        return AUDITED.contains(sub);
     }
 
     /** The switches that decide whether a subcommand is listed in tab completion and help. */

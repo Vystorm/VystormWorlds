@@ -58,7 +58,7 @@ Existing inventory snapshots from newer Minecraft versions must be restored on a
 **Players**
 - World selector in `/worlds` and the Vystorm main menu (`/vmenu` → World): icons, player counts, game mode, price state, locks. Left-click follows your arrival preference (by default, where you left that world), right-click goes to the spawn.
 - **Personal world favorites:** Shift-right-click a world in the selector to bookmark it. Favorites appear first; the star button switches between all visible worlds and favorites only. Bookmarks survive reconnects and restarts. Hidden, unloaded and permission-filtered worlds remain excluded. Admin settings use Shift-left-click. The selector opens with all worlds each time.
-- Personal arrival preference: `/worlds arrival spawn|last` is saved across reconnects and restarts without erasing remembered positions. Applies to selector left-click and `/worlds tp WORLD` (also `/worlds WORLD`). Default: last position where allowed. Right-click still goes to spawn; portals, respawns and admin-directed travel are unaffected.
+- Personal arrival preference: `/worlds arrival spawn|last`, or the "Arrive at" choice in the selector (1.20.0), is saved across reconnects and restarts without erasing remembered positions. Applies to selector left-click and `/worlds tp WORLD` (also `/worlds WORLD`). Default: last position where allowed. Right-click still goes to spawn; portals, respawns and admin-directed travel are unaffected.
 - Safe teleports: the target chunks load asynchronously, then a safe spot is searched (no lava, fire, cactus, suffocation or void).
 - Portals: nether and end portals lead to the world's own linked nether and end (with correct 8:1 scaling and the end platform). Worlds named `<world>_nether` / `<world>_the_end` link automatically.
 
@@ -68,7 +68,12 @@ Existing inventory snapshots from newer Minecraft versions must be restored on a
 - Vystorm Core plugin worlds and running Core visits are left alone, because Core already saves and restores players there.
 
 **Admins**
-- `/worlds admin`: every world as an icon with state, players, chunks and entities; click for the world menu with toggles, cycles and prompts for every property, load/unload, set spawn, go there, clone, regenerate and delete.
+- `/worlds admin` (or `/vmenu` → Admin → World management): every world with state, players and the settings Worlds manages for it (time and weather lock, border, game mode, PvP ...), with search. Buttons for New world, Import folder, Visit worlds (templates), World groups and Reload. No admin task needs a typed command (1.21.0); every command still works for the console and scripts.
+- The world page (click a world) has the tabs Overview, Rules, Travel, Access, Border, Spawn, Copies and Danger zone. Changed settings are collected and saved together with one "Apply" that lists them; "Copy command" puts the exact `/worlds set ...` commands into the chat. Spawn: "Set here" or "Pick spot" (point at the spot); border centre: "Centre here" or "Pick centre". "Send player" picks online players and sends them into the world. Unload asks first and says who is inside; regenerate (same, random or your own seed) and delete need the world name typed, as the commands do; players inside are moved to the main world first. A copy with players inside asks first.
+- "New world" is a form with type, generator, seed, structures, linked nether and end, group and build height; it shows the exact `/worlds create` command and creates after one confirm, then opens the new world's page. "Import folder" lists the folders `/worlds import` finds, with type and group. "Visit worlds" opens, closes and creates visit templates.
+- With Vystorm Control installed, the world page has a "Game rules" button that opens Control's game rules for that world.
+- On servers without Vystorm Screens the same pages are chests (with the same tabs); picks need Vystorm Core 0.71.0 or newer, older Cores ask for a typed name instead.
+- Audit log (`audit.enabled`): one line per admin action from the menu or `/worlds` in `plugins/VystormWorlds/log/<year-month>.log` (time, who, world, exact command); the world page shows the newest line.
 - `/worlds list`: clickable chat list with [Go] [Edit] [Info] [Load]/[Unload] buttons and a TPS/MSPT hint; `/worlds info` shows chunks, entities, block entities and all properties, and how many backups of the world are kept and how much space they take.
 - All properties also as a native settings dialog (`/worlds settings <world>`), the plugin config in `/vadmin config VystormWorlds`, and a module in the `/vadmin` dashboard.
 - Texts in seven languages (English, German, French, Italian, Brazilian Portuguese, Russian and Simplified Chinese) through the Vystorm Core language system (each player sees their language).
@@ -90,6 +95,8 @@ Administrators can define a protected visit landscape without copying an existin
 /worlds template close island
 /worlds template open island
 ```
+
+Players can also start a visit from the world selector (1.20.0): its Visit button lists the open templates with a Visit button each, and while a player is visiting the selector shows Leave instead. Both run the same code as `/worlds visit NAME` and `/worlds leave`.
 
 Recipes support `flat` or a small `island`, a 10–3,600 second visit and either `locked` inventory or a temporary `kit` (spyglass and compass). The world has a safe fixed spawn, a 128-block border, peaceful weather and building protection. The island has shallow water around it. Templates are lazy-loaded, saved and reusable; closing/reopening retains the world. Up to eight recipes persist atomically in `templates.yml`. Names are limited to lowercase letters, digits, hyphens and underscores. Existing recipes cannot be overwritten or deleted by these commands.
 
@@ -128,7 +135,7 @@ Main command `/worlds`, aliases `/vw` and `/mvw`. (`/vworlds` belongs to Vystorm
 | `/worlds regen WORLD [same\|random\|SEED]` | new terrain (typed confirmation) |
 | `/worlds delete WORLD` | delete (typed confirmation; console: repeat the name) |
 | `/worlds set WORLD PROPERTY VALUE` | change a property |
-| `/worlds edit [WORLD]`, `/worlds settings [WORLD]` | world menu / settings dialog |
+| `/worlds edit [WORLD]`, `/worlds settings [WORLD]` | world page / settings dialog |
 | `/worlds setspawn` | spawn of the world you stand in |
 | `/worlds link WORLD nether\|end TARGET` | link a nether or end (`none` removes) |
 | `/worlds reload` | re-read config.yml and worlds.yml |

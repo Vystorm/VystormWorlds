@@ -74,7 +74,8 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
         rules.handleSharedEvents(core.priority().stages());
         links.handleSharedEvents(core.priority().stages());
         pm.registerEvents(menus, this);
-        core.command().register(this, lang, WorldsCommand.commandSpec(new WorldsCommand(this)));
+        commands = new WorldsCommand(this);
+        core.command().register(this, lang, WorldsCommand.commandSpec(commands));
         registerCore();
         // after every plugin is enabled, so generator plugins and presets are ready
         tasks.later(1L, this::startup);
@@ -392,4 +393,26 @@ public final class WorldsPlugin extends JavaPlugin implements Listener {
     GroupSwitcher switcher() { return switcher; }
 
     Menus menus() { return menus; }
+
+    private WorldsCommand commands;
+
+    // ------------------------------------------------------------------ audit log (1.21.0)
+
+    private AuditLog auditLog;
+
+    AuditLog auditLog() {
+        if (auditLog == null) auditLog = AuditLog.of(this);
+        return auditLog;
+    }
+
+    /** One audit line for an admin action of {@code sender} (switch {@code audit.enabled}); server thread. */
+    void audit(org.bukkit.command.CommandSender sender, String world, String action) {
+        if (tasks == null) return;
+        boolean player = sender instanceof org.bukkit.entity.Player;
+        auditLog().record(Features.on(getConfig(), Features.AUDIT), sender == null ? "CONSOLE" : sender.getName(),
+                player ? ((org.bukkit.entity.Player) sender).getUniqueId() : null, world, action);
+    }
+
+    /** {@code /worlds}: menu buttons for player subcommands (arrival, visit, leave) run this same code (1.20.0). */
+    WorldsCommand commands() { return commands; }
 }

@@ -3,6 +3,7 @@ package at.esoren.vystormworlds;
 import Vystorm.vystorm_core.CoreApi;
 import Vystorm.vystorm_core._uiMethods.menu.MenuCategory;
 import Vystorm.vystorm_core.panel.Panel;
+import Vystorm.vystorm_core.panel.PanelAction;
 import Vystorm.vystorm_core.panel.PanelContext;
 import Vystorm.vystorm_core.panel.PanelOpenResult;
 import Vystorm.vystorm_core.panel.PanelSpec;
@@ -22,6 +23,8 @@ import org.bukkit.entity.Player;
 
 /** Optional Core adapter, constructed only inside the PANELS capability guard. Server thread only. */
 final class WorldPanelMenus implements WorldsPanel.Actions {
+    /** Panel names (Core ids {@code vystormworlds:<name>}); the world page keeps its 1.14.0 name. */
+    static final String PAGE = "world-settings", CREATE = "worlds-create", IMPORT = "worlds-import", TEMPLATES = "worlds-templates", GROUPS = "worlds-groups";
     private static final int PAGE_SIZE = 9;
     private final WorldsPlugin plugin;
     private final Menus menus;
@@ -54,11 +57,27 @@ final class WorldPanelMenus implements WorldsPanel.Actions {
                     .access(p -> allowed(p, true)).render(ctx -> overview(ctx, true))
                     .menu(MenuCategory.ADMIN, Material.COMPASS, plugin.lang().ref("vmenu-admin-desc"))
                     .fallback(p -> menus.adminChest(p, state(p, true).page)).build());
-            panels.register("world-settings", PanelSpec.builder(plugin.lang().ref("section-title"))
-                    .access(p -> allowed(p, true)).render(this::editor)
-                    .fallback(p -> menus.worldChest(p, editing.getOrDefault(p.getUniqueId(), ""))).build());
+            // 1.21.0: the world page with tabs, and its chest with the panel's context where Core has it
+            panels.register(PAGE, withChest(PanelSpec.builder(plugin.lang().ref("section-title")).access(p -> allowed(p, true)).render(this::page),
+                    (p, arg, ctx) -> menus.chests().world(p, arg.isBlank() ? editing.getOrDefault(p.getUniqueId(), "") : arg, null, ctx),
+                    p -> menus.worldChest(p, editing.getOrDefault(p.getUniqueId(), ""))).build());
+            panels.register("worlds-visit", PanelSpec.builder(plugin.lang().ref("visit-title"))
+                    .access(p -> allowed(p, false)).render(this::visits)
+                    .fallback(menus::visitChest).build());
+            panels.register(CREATE, PanelSpec.builder(plugin.lang().ref("create-title"))
+                    .access(p -> allowed(p, true) && menus.worldMenu().may(p, "new-world")).render(this::newWorld)
+                    .fallback(menus::createDialog).build());
+            panels.register(IMPORT, PanelSpec.builder(plugin.lang().ref("admin-import"))
+                    .access(p -> allowed(p, true) && menus.worldMenu().may(p, "import")).render(this::imports)
+                    .fallback(p -> menus.chests().imports(p)).build());
+            panels.register(TEMPLATES, PanelSpec.builder(plugin.lang().ref("page-templates"))
+                    .access(p -> allowed(p, true)).render(this::templates)
+                    .fallback(p -> menus.chests().templates(p)).build());
+            panels.register(GROUPS, PanelSpec.builder(plugin.lang().ref("page-groups"))
+                    .access(p -> allowed(p, true)).render(this::groups)
+                    .fallback(p -> menus.chests().groups(p)).build());
         } catch (RuntimeException failure) {
-            for (String name : List.of("worlds", "worlds-admin", "world-settings")) {
+            for (String name : List.of("worlds", "worlds-admin", PAGE, "worlds-visit", CREATE, IMPORT, TEMPLATES, GROUPS)) {
                 try { panels.unregister(name); } catch (RuntimeException ignored) { }
             }
             throw failure;
@@ -76,6 +95,8 @@ final class WorldPanelMenus implements WorldsPanel.Actions {
         state(player, true).page = Math.max(0, page);
         return open(player, "worlds-admin", "");
     }
+
+    boolean openVisits(Player player) { return open(player, "worlds-visit", ""); }
 
     boolean openWorld(Player player, String world) {
         editing.put(player.getUniqueId(), world);
@@ -130,7 +151,22 @@ final class WorldPanelMenus implements WorldsPanel.Actions {
         state.page = Math.clamp(state.page, 0, pages - 1);
         rows = rows.subList(state.page * PAGE_SIZE, Math.min(rows.size(), (state.page + 1) * PAGE_SIZE));
         return WorldsPanel.overview(ctx, new WorldsPanel.Overview(rows, admin, player.hasPermission("vystormworlds.admin"),
-                state.favorites, selected.get(player.getUniqueId()), state.page, pages, state.search, state.sort, Actions.tps(plugin.core().compat().platform())), this);
+                state.favorites, selected.get(player.getUniqueId()), state.page, pages, state.search, state.sort, Actions.tps(plugin.core().compat().platform()),
+                admin ? "" : menus.arrivalChoice(player), admin ? "" : menus.trip(player)), this);
+    }
+
+    private Panel visits(PanelContext ctx) {
+        TemplateVisits templates = plugin.templates();
+        List<WorldsPanel.Trip> trips = templates == null ? List.of()
+                : templates.open().stream().map(t -> new WorldsPanel.Trip(t.id(), t.terrain(), t.seconds(), t.inventory())).toList();
+        return WorldsPanel.visits(ctx, trips, templates != null && templates.visiting(ctx.player()), this);
+    }
+
+    @Override public Result arrival(Player player, String choice) {
+        if (!allowed(player, false)) return denied(player);
+        if (!List.of("spawn", "last").contains(choice)) return denied(player);
+        menus.command(player, "arrival", choice);
+        return Result.ok();
     }
 
     private WorldsPanel.Row row(Player player, WorldSettings w, boolean favorite, boolean admin) {
@@ -149,18 +185,262 @@ final class WorldPanelMenus implements WorldsPanel.Actions {
         return new WorldsPanel.Row(w.name, Menus.plain(w), Menus.icon(w), w.description, w.kind.id(), w.group,
                 world != null, w.serverWorld || world != null && WorldManager.serverWorld(world), world == null ? 0 : world.getPlayers().size(), w.playerLimit,
                 admin && world != null ? world.getLoadedChunks().length : 0, admin && world != null ? world.getEntities().size() : 0,
-                error == null ? "" : error, accessKey, favorite, world != null && world.equals(player.getWorld()), price, charge);
+                error == null ? "" : error, accessKey, favorite, world != null && world.equals(player.getWorld()), price, charge,
+                admin ? WorldBadges.summary(w, key -> plugin.lang().plain(player, key)) : "");
     }
 
-    private Panel editor(PanelContext ctx) {
-        String name = ctx.arg().isBlank() ? editing.getOrDefault(ctx.player().getUniqueId(), "") : ctx.arg();
+    // ------------------------------------------------------------------ 1.21.0: world page and admin pages
+
+    /** A chest fallback with the panel's context (Core 0.71.0) or, on older Cores, the plain one. */
+    private PanelSpec.Builder withChest(PanelSpec.Builder spec, WorldsPicks.Chest chest, java.util.function.Consumer<Player> plain) {
+        Menus.Picks picks = menus.picks();
+        if (picks != null && picks.context()) WorldsPicks.contextFallback(spec, chest);
+        else spec.fallback(plain);
+        return spec;
+    }
+
+    boolean openPage(Player player, String name) { return open(player, name, ""); }
+
+    private WorldMenu worldMenu() { return menus.worldMenu(); }
+
+    private Panel page(PanelContext ctx) {
+        Player player = ctx.player();
+        String name = ctx.arg().isBlank() ? editing.getOrDefault(player.getUniqueId(), "") : ctx.arg();
         WorldSettings w = plugin.registry().get(name);
         if (w == null) return Panel.page(ctx.text("section-title")).child(Ui.text(ctx.text("world-changed", "world", name)).id("missing-world"));
-        editing.put(ctx.player().getUniqueId(), w.name);
+        editing.put(player.getUniqueId(), w.name);
         Map<String, String> values = new HashMap<>();
         for (String key : Properties.KEYS) values.put(key, Properties.get(w, key));
-        return WorldsPanel.editor(ctx, new WorldsPanel.Editor(row(ctx.player(), w, false, true), Map.copyOf(values)), this);
+        Map<String, String> pending = WorldMenu.pending(ctx.session().get(WorldPage.PENDING_KEY));
+        World world = WorldManager.loaded(w.name);
+        Menus.Picks picks = menus.picks();
+        java.util.Set<String> allowed = new java.util.HashSet<>();
+        for (MenuAccess.Entry entry : MenuAccess.ENTRIES) if (worldMenu().may(player, entry.id())) allowed.add(entry.id());
+        AuditLog.Line last = plugin.auditLog().last(w.name);
+        String error = plugin.manager().loadError(w.name);
+        Object tab = ctx.session().get(WorldPage.TAB_KEY);
+        WorldPage.View view = new WorldPage.View(w.name, Menus.plain(w), Menus.icon(w), world != null,
+                w.serverWorld || world != null && WorldManager.serverWorld(world), plugin.manager().busy(w.name), w.kind.id(),
+                w.seed == null ? "-" : w.seed.toString(), w.generator.none() ? "-" : w.generator.toString(),
+                w.customHeight() ? w.minY + ".." + (w.minY + w.height) : "-", w.group, world == null ? 0 : world.getPlayers().size(),
+                world == null ? 0 : world.getLoadedChunks().length, world == null ? 0 : world.getEntities().size(), error == null ? "" : error,
+                world == null ? List.of() : world.getPlayers().stream().map(Player::getName).sorted().limit(20).toList(),
+                w.spawn == null ? "-" : String.format(Locale.ROOT, "%.1f %.1f %.1f", w.spawn.x(), w.spawn.y(), w.spawn.z()),
+                Map.copyOf(values), pending, PendingChanges.changes(w, pending, worldMenu().worldExists()),
+                plugin.registry().all().stream().map(s -> s.name).sorted().toList(), allowed, world != null && world.equals(player.getWorld()),
+                picks != null && picks.world(), ControlLink.available(plugin), worldMenu().needsCloneConfirm(w.name),
+                Features.on(plugin.getConfig(), Features.BORDER_EVENTS), last == null ? "" : last.time() + " " + last.actor() + ": " + last.action(),
+                tab instanceof String s ? s : "overview");
+        return WorldPage.render(ctx, view, new PageHandlers(w.name, view.cloneConfirm()));
     }
+
+    /** The world page's clicks for one world (the name is the panel argument, checked again on every click). */
+    private final class PageHandlers implements WorldPage.Handlers {
+        private final String world;
+        private final boolean cloneConfirmShown;
+
+        PageHandlers(String world, boolean cloneConfirmShown) { this.world = world; this.cloneConfirmShown = cloneConfirmShown; }
+
+        private Map<String, String> pending(PanelAction a) { return WorldMenu.pending(a.session().get(WorldPage.PENDING_KEY)); }
+
+        @Override public Result stage(PanelAction a, String key, String value) {
+            Map<String, String> pending = pending(a);
+            Result result = worldMenu().stage(a.player(), world, pending, key, value);
+            a.session().put(WorldPage.PENDING_KEY, new java.util.LinkedHashMap<>(pending));
+            return result;
+        }
+
+        @Override public Result apply(PanelAction a) {
+            Map<String, String> pending = pending(a);
+            Result result = worldMenu().apply(a.player(), world, pending);
+            a.session().put(WorldPage.PENDING_KEY, new java.util.LinkedHashMap<>(pending));
+            return result;
+        }
+
+        @Override public Result discard(PanelAction a) {
+            a.session().put(WorldPage.PENDING_KEY, new java.util.LinkedHashMap<String, String>());
+            return Result.ok(plugin.lang().plain(a.player(), "page-discarded"));
+        }
+
+        @Override public Result copy(PanelAction a) {
+            WorldSettings w = plugin.registry().get(world);
+            if (w == null) return Result.error(plugin.lang().plain(a.player(), "world-changed", "world", world));
+            return worldMenu().copy(a.player(), PendingChanges.commands(w.name, PendingChanges.changes(w, pending(a), worldMenu().worldExists())));
+        }
+
+        @Override public Result tab(PanelAction a, String tab) {
+            if (WorldPage.TABS.contains(tab)) a.session().put(WorldPage.TAB_KEY, tab);
+            return Result.ok();
+        }
+
+        @Override public Result run(PanelAction a, String op, Map<String, Object> values) {
+            Player player = a.player();
+            Menus.Picks picks = menus.picks();
+            Result result = switch (op) {
+                case "back" -> { a.closeAndThen(p -> menus.admin(p, 0)); yield Result.ok(); }
+                case "go" -> {
+                    Result refused = worldMenu().refuse(player, "go");
+                    if (refused != null) yield refused;
+                    a.closeAndThen(p -> say(p, worldMenu().go(p, world)));
+                    yield Result.ok();
+                }
+                case "send" -> {
+                    Result refused = worldMenu().refuse(player, "send");
+                    if (refused != null) yield refused;
+                    if (picks != null && picks.players()) yield WorldsPicks.send(worldMenu(), a, world);
+                    a.closeAndThen(p -> plugin.core().dialogs().prompt(plugin, p, plugin.lang().plain(p, "page-send"),
+                            plugin.lang().plain(p, "page-send-question", "world", world), "",
+                            typed -> { say(p, worldMenu().send(p, world, typed == null ? List.of() : List.of(typed))); menus.world(p, world); },
+                            () -> menus.world(p, world), q -> worldMenu().may(q, "send")));
+                    yield Result.ok();
+                }
+                case "load" -> worldMenu().load(player, world);
+                case "unload" -> worldMenu().unload(player, world);
+                case "game-rules" -> {
+                    Result refused = worldMenu().refuse(player, "game-rules");
+                    if (refused != null) yield refused;
+                    a.closeAndThen(p -> { Result r = worldMenu().gameRules(p, world); if (!r.success()) say(p, r); });
+                    yield Result.ok();
+                }
+                case "dialog" -> {
+                    Result refused = worldMenu().refuse(player, "settings-dialog");
+                    if (refused != null) yield refused;
+                    a.closeAndThen(p -> WorldSection.open(plugin, p, world));
+                    yield Result.ok();
+                }
+                case "info" -> {
+                    Result refused = worldMenu().refuse(player, "info");
+                    if (refused != null) yield refused;
+                    WorldSettings w = plugin.registry().get(world);
+                    if (w == null) yield Result.error(plugin.lang().plain(player, "world-changed", "world", world));
+                    menus.actions().info(player, w);
+                    yield Result.ok(plugin.lang().plain(player, "page-info-sent"));
+                }
+                case "icon-hand" -> {
+                    org.bukkit.Material hand = player.getInventory().getItemInMainHand().getType();
+                    yield stage(a, "icon", hand.isAir() ? "none" : hand.name());
+                }
+                case "center-here" -> stage(a, "border-center", WorldMenu.center(player.getLocation().getX(), player.getLocation().getZ()));
+                case "center-pick" -> picks != null && picks.world() ? pick(a, "apply", () -> WorldsPicks.center(worldMenu(), a, world)) : Result.ok();
+                case "border-start" -> worldMenu().borderStart(player, world);
+                case "spawn-here" -> worldMenu().spawnHere(player, world);
+                case "spawn-pick" -> picks != null && picks.world() ? pick(a, "set-spawn", () -> WorldsPicks.spawn(worldMenu(), a, world)) : Result.ok();
+                case "clone" -> worldMenu().cloneWorld(player, world, String.valueOf(values.getOrDefault("clone-target", "")), cloneConfirmShown);
+                case "regen" -> worldMenu().regen(player, world, String.valueOf(values.getOrDefault("regen-seed-choice", "same")),
+                        String.valueOf(values.getOrDefault("regen-seed", "")), String.valueOf(values.getOrDefault("regen-typed", "")));
+                case "delete" -> {
+                    Result r = worldMenu().delete(player, world, String.valueOf(values.getOrDefault("delete-typed", "")));
+                    if (r.success()) a.closeAndThen(p -> menus.admin(p, 0));
+                    yield r;
+                }
+                case "templates" -> { a.closeAndThen(menus::templates); yield Result.ok(); }
+                default -> denied(player);
+            };
+            if (!List.of("back", "go", "send", "game-rules", "dialog", "templates", "delete", "center-pick", "spawn-pick").contains(op)) a.refresh();
+            return result;
+        }
+
+        private Result pick(PanelAction a, String entry, java.util.function.Supplier<Result> start) {
+            Result refused = worldMenu().refuse(a.player(), entry);
+            return refused != null ? refused : start.get();
+        }
+    }
+
+    /** A menu result after the screen closed: as a chat line. */
+    private void say(Player player, Result result) {
+        if (result == null || result.message() == null || result.message().isBlank()) return;
+        plugin.core().compat().platform().sendMessage(player, net.kyori.adventure.text.Component.text(result.message(),
+                result.success() ? net.kyori.adventure.text.format.NamedTextColor.GREEN : net.kyori.adventure.text.format.NamedTextColor.RED));
+    }
+
+    // ------------------------------------------------------------------ new world, import, templates, groups
+
+    private static final String FORM = "form", IMPORT_TYPE = "import-type", IMPORT_GROUP = "import-group";
+
+    private Panel newWorld(PanelContext ctx) {
+        NewWorldForm form = ctx.session().get(FORM) instanceof NewWorldForm f ? f : NewWorldForm.defaults(plugin.defaultGroup());
+        List<AdminPages.Choice> generators = plugin.manager().generators().choices().stream()
+                .map(c -> new AdminPages.Choice(c.value(), ctx.text(c.preset() ? "generator-preset" : "generator-plugin", "name", c.label()))).toList();
+        boolean heights = Features.on(plugin.getConfig(), Features.BUILD_HEIGHT) && plugin.manager().paths().customHeights();
+        return AdminPages.newWorld(ctx, form, worldMenu().check(form), generators, heights, pageHandlers);
+    }
+
+    private Panel imports(PanelContext ctx) {
+        List<AdminPages.Folder> folders = plugin.manager().paths().candidates(plugin.usedNames()).stream()
+                .map(c -> new AdminPages.Folder(c.name(), c.kind().id(), c.legacy())).toList();
+        String type = ctx.session().get(IMPORT_TYPE) instanceof String s ? s : "detected";
+        String group = ctx.session().get(IMPORT_GROUP) instanceof String s ? s : plugin.defaultGroup();
+        return AdminPages.imports(ctx, folders, type, group, pageHandlers);
+    }
+
+    private Panel templates(PanelContext ctx) {
+        TemplateVisits visits = plugin.templates();
+        List<AdminPages.Template> list = visits == null ? List.of() : visits.all().stream()
+                .map(t -> new AdminPages.Template(t.id(), t.terrain(), t.seconds(), t.inventory(), t.enabled())).toList();
+        return AdminPages.templates(ctx, list, Features.on(plugin.getConfig(), Features.TEMPLATES), pageHandlers);
+    }
+
+    private Panel groups(PanelContext ctx) {
+        return AdminPages.groups(ctx, PageChests.groupMap(plugin), plugin.getConfig().getBoolean("groups.enabled", true),
+                String.join(", ", plugin.getConfig().getStringList("groups.separate")), pageHandlers);
+    }
+
+    private final AdminPages.Handlers pageHandlers = new AdminPages.Handlers() {
+        @Override public Result form(PanelAction a, String field, Object value) {
+            switch (field) {
+                case IMPORT_TYPE, IMPORT_GROUP -> a.session().put(field, String.valueOf(value));
+                default -> {
+                    NewWorldForm form = a.session().get(FORM) instanceof NewWorldForm f ? f : NewWorldForm.defaults(plugin.defaultGroup());
+                    a.session().put(FORM, form.with(Map.of(field, value)));
+                }
+            }
+            return Result.ok();
+        }
+
+        @Override public Result submit(PanelAction a, String op, Map<String, Object> values) {
+            Player player = a.player();
+            switch (op) {
+                case "create" -> {
+                    NewWorldForm form = (a.session().get(FORM) instanceof NewWorldForm f ? f : NewWorldForm.defaults(plugin.defaultGroup())).with(values);
+                    a.session().put(FORM, form);
+                    Result result = worldMenu().create(player, form);
+                    String name = form.name().toLowerCase(Locale.ROOT);
+                    if (result.success() && plugin.registry().contains(name)) a.closeAndThen(p -> menus.world(p, name));
+                    else a.refresh();
+                    return result;
+                }
+                case "template-create" -> {
+                    Object seconds = values.get("template-seconds");
+                    String s = seconds instanceof Number n ? Long.toString(n.longValue()) : String.valueOf(seconds);
+                    Result result = menus.chests().templateCreate(player, String.valueOf(values.getOrDefault("template-id", "")),
+                            String.valueOf(values.getOrDefault("template-terrain", "flat")), s, String.valueOf(values.getOrDefault("template-inventory", "locked")));
+                    a.refresh();
+                    return result;
+                }
+                default -> { return denied(player); }
+            }
+        }
+
+        @Override public Result go(PanelAction a, String op, String arg) {
+            Player player = a.player();
+            switch (op) {
+                case "admin" -> { a.closeAndThen(p -> menus.admin(p, 0)); return Result.ok(); }
+                case "copy" -> { return worldMenu().copy(player, List.of(arg)); }
+                case "import" -> {
+                    Result result = worldMenu().importFolder(player, arg, a.session().get(IMPORT_TYPE) instanceof String s ? s : "detected",
+                            a.session().get(IMPORT_GROUP) instanceof String g ? g : "");
+                    a.refresh();
+                    return result;
+                }
+                case "open", "close" -> {
+                    Result result = worldMenu().template(player, op, arg);
+                    a.refresh();
+                    return result;
+                }
+                default -> { return denied(player); }
+            }
+        }
+    };
 
     @Override public Result state(Player player, boolean admin, String key, String value) {
         if (!allowed(player, admin)) return denied(player);
@@ -207,8 +487,15 @@ final class WorldPanelMenus implements WorldsPanel.Actions {
     }
 
     @Override public void go(Player player, String action, String world) {
-        boolean admin = !List.of("travel", "travel-spawn", "spawn", "selector").contains(action);
+        boolean admin = !List.of("travel", "travel-spawn", "spawn", "selector", "visits", "visit", "leave").contains(action);
         if (!allowed(player, admin)) { plugin.lang().send(player, "denied"); return; }
+        switch (action) {
+            // visit worlds (1.20.0): the same code as /worlds visit TEMPLATE and /worlds leave; "world" is the template id
+            case "visits" -> { menus.visits(player); return; }
+            case "visit" -> { menus.command(player, "visit", world); return; }
+            case "leave" -> { menus.command(player, "leave"); return; }
+            default -> { }
+        }
         WorldSettings current = world.isEmpty() ? null : plugin.registry().get(world);
         if (!world.isEmpty() && current == null) { plugin.lang().send(player, "world-changed", "world", world); return; }
         switch (action) {
@@ -222,8 +509,11 @@ final class WorldPanelMenus implements WorldsPanel.Actions {
             case "selector" -> menus.selector(player, 0);
             case "admin" -> menus.admin(player, 0);
             case "edit" -> menus.world(player, world);
-            case "create" -> menus.createDialog(player);
-            case "import" -> menus.actions().importList(player);
+            case "create" -> menus.newWorld(player);
+            case "import" -> menus.imports(player);
+            case "templates" -> menus.templates(player);
+            case "groups" -> menus.groups(player);
+            case "reload" -> { Result r = menus.worldMenu().reload(player); if (!r.success()) say(player, r); }
             case "list" -> menus.actions().list(player);
             case "config" -> player.performCommand("vadmin config " + plugin.getName());
             case "dialog" -> WorldSection.open(plugin, player, world);

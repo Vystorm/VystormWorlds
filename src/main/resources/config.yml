@@ -125,6 +125,12 @@ admin-menu:
   # false: they answer that the feature is off; every action stays available as a /worlds command.
   enabled: true
 
+audit:
+  # One line per admin action (create, import, load, unload, delete, regenerate, copy, settings, spawn, sending players,
+  # templates, reload) from the menu and from /worlds in plugins/VystormWorlds/log/<year-month>.log: time, who, world and
+  # the exact command (1.21.0). The world page shows the newest line. false: nothing is written.
+  enabled: true
+
 rankings:
   # Ranking worlds:explored for Vystorm Boards and placeholders: how many different worlds each player has entered
   # (1.19.0). Counting starts with 1.19.0 and is kept in explored.yml. Needs Vystorm Core 0.67.0 or newer for the

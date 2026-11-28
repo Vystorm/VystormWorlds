@@ -48,14 +48,6 @@ class WorldsPanelTest {
         return new WorldsPanel.Overview(rows, admin, canAdmin, favorites, selected, 0, 2, "", new Ui.Sort("players", true), "20 TPS");
     }
 
-    private WorldsPanel.Editor editor(boolean loaded, boolean protectedWorld) {
-        WorldSettings world = new WorldSettings("farm");
-        world.border = 1000;
-        Map<String, String> values = new HashMap<>();
-        for (String key : Properties.KEYS) values.put(key, Properties.get(world, key));
-        return new WorldsPanel.Editor(row("farm", loaded, protectedWorld), values);
-    }
-
     @Test void givenSelector_whenRendered_thenSelectionDetailsFavoritesAndTravelArePresent() throws Exception {
         var doc = PanelTesting.render(WorldsPanel.overview(context("en"), overview(false, true, false,
                 List.of(row("lobby", true, true), row("farm", true, false)), "farm"), actions));
@@ -87,55 +79,74 @@ class WorldsPanelTest {
         JsonObject table = PanelTesting.find(doc, "worlds-table");
         assertEquals(2, table.getAsJsonObject("paging").get("pages").getAsInt());
         assertEquals("players", table.getAsJsonObject("sort").get("column").getAsString());
-        assertTrue(PanelTesting.ids(doc).containsAll(List.of("create", "import", "list", "selector", "config", "edit")));
+        assertTrue(PanelTesting.ids(doc).containsAll(List.of("create", "import", "templates", "groups", "reload", "list", "selector", "config", "edit")));
+        assertTrue(table.toString().contains("\"settings\""), "1.21.0: the managed settings column");
         assertTrue(doc.toString().contains("not loaded"));
     }
 
-    @Test void givenWorldEditor_whenRendered_thenEveryPropertyHasTheAppropriateControl() throws Exception {
-        var doc = PanelTesting.render(WorldsPanel.editor(context("en"), editor(true, false), actions));
-        for (String key : Properties.KEYS) assertNotNull(PanelTesting.find(doc, "set-" + key), key);
-        assertEquals("toggle", PanelTesting.find(doc, "set-pvp").get("type").getAsString());
-        assertEquals("select", PanelTesting.find(doc, "set-game-mode").get("type").getAsString());
-        assertEquals("number", PanelTesting.find(doc, "set-price").get("type").getAsString());
-        assertEquals("input", PanelTesting.find(doc, "set-description").get("type").getAsString());
-        for (String id : List.of("delete", "regen", "unload", "border-start")) assertTrue(PanelTesting.find(doc, id).has("confirm"), id);
-        assertTrue(doc.toString().contains("World rules"));
+    private WorldsPanel.Overview personal(String arrival, String trip) {
+        return new WorldsPanel.Overview(List.of(row("farm", true, false)), false, false, false, "farm", 0, 1, "",
+                new Ui.Sort("name", false), "20 TPS", arrival, trip);
     }
 
-    @Test void givenProtectedOrUnloadedWorld_whenRendered_thenOnlyValidOperationsExist() throws Exception {
-        var protectedDoc = PanelTesting.render(WorldsPanel.editor(context("en"), editor(true, true), actions));
-        for (String id : List.of("delete", "regen", "unload", "load")) assertNull(PanelTesting.find(protectedDoc, id), id);
-        var unloadedDoc = PanelTesting.render(WorldsPanel.editor(context("en"), editor(false, false), actions));
-        assertNotNull(PanelTesting.find(unloadedDoc, "load"));
-        for (String id : List.of("setspawn", "admin-travel", "unload", "border-start")) assertNull(PanelTesting.find(unloadedDoc, id), id);
+    private static final List<WorldsPanel.Trip> TRIPS = List.of(new WorldsPanel.Trip("meadow", "flat", 120, "kit"),
+            new WorldsPanel.Trip("isle", "island", 60, "locked"));
+
+    @Test void givenArrivalAndOpenVisitWorlds_whenSelectorRendered_thenArrivalChoiceAndVisitButtonArePresent() throws Exception {
+        var doc = PanelTesting.render(WorldsPanel.overview(context("en"), personal("spawn", "visit"), actions));
+        JsonObject arrival = PanelTesting.find(doc, "arrival");
+        assertEquals("select", arrival.get("type").getAsString());
+        assertEquals("spawn", arrival.get("value").getAsString());
+        assertTrue(doc.toString().contains("My last spot") && doc.toString().contains("World spawn"), doc.toString());
+        assertNotNull(PanelTesting.find(doc, "visits"));
+        assertNull(PanelTesting.find(doc, "leave"));
     }
 
-    @Test void givenLargePricesAndCustomTime_whenRendered_thenValuesRemainEditableWithinCoreLimits() throws Exception {
-        for (String price : List.of("1234.56", "98765432.12", "1000000000000.00")) {
-            WorldsPanel.Editor editor = editor(true, false);
-            editor.values().put("price", price);
-            editor.values().put("time-lock", "6000");
-            var doc = PanelTesting.render(WorldsPanel.editor(context("en"), editor, actions));
-            assertEquals(price, PanelTesting.find(doc, "exact-price").get("value").getAsString());
-            assertEquals("6000", PanelTesting.find(doc, "set-time-lock").get("value").getAsString());
-        }
+    @Test void givenVisitingPlayer_whenSelectorRendered_thenLeaveReplacesVisit() throws Exception {
+        var doc = PanelTesting.render(WorldsPanel.overview(context("en"), personal("last", "leave"), actions));
+        assertNotNull(PanelTesting.find(doc, "leave"));
+        assertNull(PanelTesting.find(doc, "visits"));
+        assertEquals("last", PanelTesting.find(doc, "arrival").get("value").getAsString());
     }
 
-    @Test void givenWorldEditor_whenRendered_thenTheSettingsAreListsWithANameAndADescriptionPerRowInEveryLanguage() throws Exception {
+    @Test void givenArrivalSwitchOffAndNoVisitWorlds_whenSelectorRendered_thenNeitherPartIsShown() throws Exception {
+        var doc = PanelTesting.render(WorldsPanel.overview(context("en"), personal("", ""), actions));
+        for (String id : List.of("arrival", "visits", "leave")) assertNull(PanelTesting.find(doc, id), id);
+        var admin = PanelTesting.render(WorldsPanel.overview(context("en"), new WorldsPanel.Overview(List.of(row("farm", true, false)),
+                true, true, false, "farm", 0, 1, "", new Ui.Sort("name", false), "20 TPS", "spawn", "visit"), actions));
+        for (String id : List.of("arrival", "visits", "leave")) assertNull(PanelTesting.find(admin, id), id);
+    }
+
+    @Test void givenOpenTemplates_whenVisitMenuRendered_thenEachHasAVisitButton() throws Exception {
+        var doc = PanelTesting.render(WorldsPanel.visits(context("en"), TRIPS, false, actions));
+        assertNotNull(PanelTesting.find(doc, "visit-table/meadow/visit"));
+        assertNotNull(PanelTesting.find(doc, "visit-table/isle/visit"));
+        assertTrue(doc.toString().contains("flat landscape") && doc.toString().contains("120s"), doc.toString());
+        assertNull(PanelTesting.find(doc, "leave"));
+        var empty = PanelTesting.render(WorldsPanel.visits(context("en"), List.of(), false, actions));
+        assertTrue(empty.toString().contains("No visit worlds are open"));
+        var visiting = PanelTesting.render(WorldsPanel.visits(context("en"), TRIPS, true, actions));
+        assertNotNull(PanelTesting.find(visiting, "leave"));
+        assertNull(PanelTesting.find(visiting, "visit-table/meadow/visit"));
+    }
+
+    @Test void givenEachLanguage_whenNewMenuPartsRender_thenNoKeyIsShownAndLabelsFit() throws Exception {
+        Lang lang = lang();
         for (String code : List.of("en", "de", "fr", "it", "pt_br", "ru", "zh_cn")) {
-            var doc = PanelTesting.render(WorldsPanel.editor(context(code), editor(true, false), actions));
-            long lists = java.util.regex.Pattern.compile("\"layout\":\"list\"").matcher(doc.toString()).results().count();
-            assertEquals(3, lists, code + ": rules, entry and borders are lists");
-            List<String> ids = new java.util.ArrayList<>();
-            for (String key : Properties.KEYS) ids.add("set-" + key);
-            ids.add("exact-price");
-            for (String id : ids) {
-                JsonObject row = PanelTesting.find(doc, id);
-                assertFalse(PanelTesting.plain(row.get("label")).isBlank(), code + " " + id);
-                String description = row.has("description") ? PanelTesting.plain(row.get("description"))
-                        : PanelTesting.plain(row.getAsJsonArray("tooltip").get(0));
-                assertFalse(description.isBlank() || description.endsWith("-desc"), code + " " + id + ": " + description);
+            var selector = PanelTesting.render(WorldsPanel.overview(context(code), personal("spawn", "visit"), actions));
+            var leaving = PanelTesting.render(WorldsPanel.overview(context(code), personal("last", "leave"), actions));
+            var visits = PanelTesting.render(WorldsPanel.visits(context(code), TRIPS, false, actions));
+            for (var doc : List.of(selector, leaving, visits))
+                for (String key : List.of("arrival-label", "arrival-option-last", "arrival-option-spawn", "arrival-desc", "visit-button",
+                        "leave-button", "visit-desc", "leave-desc", "visit-title", "visit-col-name", "visit-col-terrain", "visit-col-time",
+                        "visit-seconds", "template-terrain-flat", "template-terrain-island", "template-inventory-kit"))
+                    assertFalse(doc.toString().contains(key), code + " " + key + doc);
+            for (String key : List.of("arrival-label", "arrival-option-last", "arrival-option-spawn", "visit-button", "leave-button")) {
+                String label = lang.plain(code, key);
+                assertTrue(label.length() <= 14 && !label.equals(key), code + " " + key + " " + label);
             }
+            assertEquals(lang.plain(code, "visit-button"), PanelTesting.plain(PanelTesting.find(selector, "visits").get("label")), code);
+            assertEquals(lang.plain(code, "leave-button"), PanelTesting.plain(PanelTesting.find(leaving, "leave").get("label")), code);
         }
     }
 
@@ -143,10 +154,6 @@ class WorldsPanelTest {
         Lang lang = lang();
         for (String code : List.of("en", "de", "fr", "it", "pt_br", "ru", "zh_cn")) {
             PanelContext ctx = context(code);
-            var doc = PanelTesting.render(WorldsPanel.editor(ctx, editor(true, false), actions));
-            assertTrue(doc.toString().contains(lang.plain(code, "panel-rules")), code);
-            assertFalse(doc.toString().contains("panel-option-"), code);
-            assertFalse(doc.toString().contains("w-keep-spawn"), code);
             PanelTesting.render(WorldsPanel.overview(ctx, overview(false, false, false, List.of(row("farm", true, false)), null), actions));
         }
     }

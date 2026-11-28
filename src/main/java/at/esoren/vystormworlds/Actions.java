@@ -77,6 +77,31 @@ final class Actions {
         return true;
     }
 
+    /**
+     * Applies the world page's pending changes at once (1.21.0): every change is checked first with the rules of
+     * {@code /worlds set}, so either all are applied with one save or none. Each change gets its audit line.
+     *
+     * @return null when applied, else the first problem (nothing was changed)
+     */
+    PendingChanges.Problem applyAll(CommandSender sender, WorldSettings w, java.util.Map<String, String> changes) {
+        java.util.function.Predicate<String> exists = name -> plugin.registry().contains(name) || WorldManager.loaded(name) != null;
+        java.util.Map<String, String> checked = new java.util.LinkedHashMap<>();
+        for (var entry : changes.entrySet()) {
+            PendingChanges.Problem problem = PendingChanges.check(w, checked, entry.getKey(), entry.getValue(), plugin.getConfig(), exists);
+            if (problem != null) return problem;
+            checked.put(entry.getKey(), entry.getValue());
+        }
+        List<PendingChanges.Change> list = PendingChanges.changes(w, checked, exists);
+        if (list.isEmpty()) return null;
+        String before = w.timeLock + "|" + w.weatherLock;
+        for (PendingChanges.Change change : list) {
+            Properties.set(w, change.key(), checked.get(change.key()), exists);
+            plugin.audit(sender, w.name, change.command(w.name));
+        }
+        changed(w, !before.equals(w.timeLock + "|" + w.weatherLock));
+        return null;
+    }
+
     /** Asks the player to type a word (the world name) to confirm; anything else cancels. */
     void typedConfirm(Player player, String titleKey, String questionKey, String expected, Runnable action) {
         plugin.core().dialogs().prompt(plugin, player, lang().plain(player, titleKey, "world", expected), lang().plain(player, questionKey, "world", expected), "", typed -> {
@@ -130,6 +155,7 @@ final class Actions {
 
     void delete(CommandSender sender, String name) {
         if (!Features.on(plugin.getConfig(), Features.MANAGEMENT)) { lang().send(sender, Features.OFF); return; }
+        plugin.audit(sender, name, "/worlds delete " + name + " (confirmed)");
         lang().send(sender, "deleting", "world", name);
         plugin.manager().delete(name, problem -> {
             if (problem == null) lang().send(sender, plugin.getConfig().getBoolean("delete.backup", true) ? "deleted-backup" : "deleted", "world", name);
@@ -143,6 +169,7 @@ final class Actions {
         if (seedOption != null && !seedOption.isBlank() && !seedOption.equalsIgnoreCase("same")) {
             seed = seedOption.equalsIgnoreCase("random") ? java.util.concurrent.ThreadLocalRandom.current().nextLong() : CreateRequest.seed(seedOption);
         }
+        plugin.audit(sender, name, "/worlds regen " + name + " " + (seedOption == null || seedOption.isBlank() ? "same" : seedOption) + " (confirmed)");
         lang().send(sender, "regenerating", "world", name);
         plugin.manager().regenerate(name, seed, problem -> {
             if (problem == null) lang().send(sender, "regenerated", "world", name);
